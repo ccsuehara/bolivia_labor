@@ -1,0 +1,15 @@
+﻿dim,subcat,worked_round1,worked_round2
+area,urban,0.244,0.536
+area,rural,0.31,0.505
+sex,men,0.34,0.56
+sex,women,0.24,0.49
+is_entrepreneur,1,0.28,0.5
+is_entrepreneur,0,0.31,0.56
+is_skilled,1,0.32,0.58
+is_skilled,0,0.23,0.38
+has_wifi,1,0.31,0.57
+has_wifi,0,0.28,0.49
+has_dependents,1,0.46,0.56
+has_dependents,0,0.6,0.58
+total,headcount,0.26,0.53
+n_respondents,headcount,1075,670

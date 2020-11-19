@@ -1,0 +1,5 @@
+dim,subcat,0
+is_entrepreneur,False,0.10817944066366181
+is_entrepreneur,True,0.6397625921381405
+is_skilled,False,0.46132260814192705
+is_skilled,True,0.5239688490109984
