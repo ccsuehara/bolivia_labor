@@ -33,6 +33,20 @@ unpaid_sec_job <- with_job %>%
 unpaid_pri_job <- with_job %>%
   filter((startsWith(work_type, "7") | startsWith(work_type, "8")) & !startsWith(sec_work_type, "7") & !startsWith(sec_work_type, "8"))
 
+# Select child workers under 15
+child_worker <- with_job %>%
+  filter(age < 15) %>%
+  filter(startsWith(work_type, "7"))
+
+child <- personas %>%
+  filter(age < 15) %>%
+  filter(in_school == "2. No" & is.na(work_type))
+
+ggplot(child_worker) +
+  geom_bar(aes(x = age, fill = work_type), position = "dodge", width = 0.5) +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+
 
 
 # General population characteristics

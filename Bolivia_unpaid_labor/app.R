@@ -1,520 +1,642 @@
 library(shiny)
 library(shinydashboard)
+library(shinythemes)
 library(tidyverse)
 library(shinyWidgets)
 
 source("EDA.R")
-c1 <- "General population"
+c1 <- "General population (2018)"
 c2 <- "People with at least 1 job, paid or unpaid"
 c3 <- "People with at least 1 unpaid job"
 c4 <- "People with a paid primary job and an unpaid secondary job"
+wgt <- 258.651824951171
 
 # UI -------------------------------
 ui <- fluidPage(
+  theme = shinytheme("sandstone"),
   tags$style(type = "text/css",
              "h1, h2, h4 { text-align: center; }",
              "p { text-align: center; color: grey; }",
-             "hr { margin-top: 2em; margin-bottom: 2em; }"),
+             "hr { margin-top: 2em; margin-bottom: 2em; }",
+             "#landing { align-self: center; }"),
   
-  tabsetPanel(
-    # Tab panel: figures -----------------
-    tabPanel("Figures",
-             box(h2("Column overview"),
-                 fluidRow(
-                   column(3,
-                          p(c1),
-                          h1(textOutput("pop")),
-                          p("people")),
-                   column(3,
-                          p(c2),
-                          h1(textOutput("with_job")),
-                          p("people")),
-                   column(3,
-                          p(c3),
-                          h1(textOutput("unpaid")),
-                          p("people")),
-                   column(3,
-                          p(c4),
-                          h1(textOutput("unpaid_sec")),
-                          p("people"))
-                 ),
-                 width = 12,
-                 collapsible = T),
-             box(hr(), width = 12),
+  navbarPage("Working while female in Bolivia",
+             id = "main",
+             collapsible = T,
              
-             box(h2("Age"),
-                 h4(textOutput("age_t")),
-                 fluidRow(
-                   column(3,
-                          p(c1),
-                          plotOutput("pop_age")),
-                   column(3,
-                          p(c2),
-                          plotOutput("with_job_age")),
-                   column(3,
-                          p(c3),
-                          plotOutput("unpaid_age")),
-                   column(3,
-                          p(c4),
-                          plotOutput("unpaid_sec_age"))
-                 ),
-                 width = 12,
-                 collapsible = T),
-             box(hr(), width = 12),
+             # Tab panel: home -----------------
+             tabPanel("Home",
+                      fluidRow(width = 12,
+                               imageOutput("landing",
+                                           width = "1130px",
+                                           click = clickOpts(id = "landing_cl")))),
              
-             box(h2("School attendance"),
-                 h4(textOutput("sch_t")),
-                 fluidRow(
-                   column(3,
-                          p(c1),
-                          plotOutput("pop_sch")),
-                   column(3,
-                          p(c2),
-                          plotOutput("with_job_sch")),
-                   column(3,
-                          p(c3),
-                          plotOutput("unpaid_sch")),
-                   column(3,
-                          p(c4),
-                          plotOutput("unpaid_sec_sch"))
-                 ),
-                 width = 12,
-                 collapsible = T),
-             box(hr(), width = 12),
+             # Tab panel: age --------------------
+             tabPanel("Age",
+                      value = "age",
+                      
+                      h2("All age groups"),
+                      fluidRow(
+                        column(4,
+                               p(c1),
+                               plotOutput("pop_age_all")),
+                        column(4,
+                               p(c2),
+                               plotOutput("with_job_age_all")),
+                        column(4,
+                               p(c3),
+                               plotOutput("unpaid_age_all"))
+                      ),
+                      hr(),
+                      
+                      h2("Children under 10 (legal working age in Bolivia)"),
+                      fluidRow(
+                        column(4,
+                               p(c1),
+                               plotOutput("pop_age_10")),
+                        column(4,
+                               p(c2),
+                               plotOutput("with_job_age_10")),
+                        column(4,
+                               p(c3),
+                               plotOutput("unpaid_age_10"))
+                      ),
+                      hr(),
+                      
+                      h2("Adolescents (10-18)"),
+                      fluidRow(
+                        column(4,
+                               p(c1),
+                               plotOutput("pop_age_10_18")),
+                        column(4,
+                               p(c2),
+                               plotOutput("with_job_age_10_18")),
+                        column(4,
+                               p(c3),
+                               plotOutput("unpaid_age_10_18"))
+                      ),
+                      hr(),
+                      
+                      h2("Adults (18-60)"),
+                      fluidRow(
+                        column(4,
+                               p(c1),
+                               plotOutput("pop_age_18_60")),
+                        column(4,
+                               p(c2),
+                               plotOutput("with_job_age_18_60")),
+                        column(4,
+                               p(c3),
+                               plotOutput("unpaid_age_18_60"))
+                      ),
+                      hr(),
+                      
+                      h2("Older adults over 60 (retirement age in Bolivia)"),
+                      fluidRow(
+                        column(4,
+                               p(c1),
+                               plotOutput("pop_age_60")),
+                        column(4,
+                               p(c2),
+                               plotOutput("with_job_age_60")),
+                        column(4,
+                               p(c3),
+                               plotOutput("unpaid_age_60"))
+                      )),
              
-             box(h2("Urban/rural area"),
-                 h4(textOutput("ur_t")),
-                 fluidRow(
-                   column(3,
-                          p(c1),
-                          plotOutput("pop_ur")),
-                   column(3,
-                          p(c2),
-                          plotOutput("with_job_ur")),
-                   column(3,
-                          p(c3),
-                          plotOutput("unpaid_ur")),
-                   column(3,
-                          p(c4),
-                          plotOutput("unpaid_sec_ur"))
-                 ),
-                 width = 12,
-                 collapsible = T),
-             box(hr(), width = 12),
+             # Tab panel: education --------------------
+             tabPanel("Education",
+                      value = "edu"),
              
-             box(h2("Indigenous identity"),
-                 fluidRow(
-                   column(3,
-                          p(c1),
-                          plotOutput("pop_indi"),
-                          plotOutput("pop_indi_p"),
-                          plotOutput("pop_indi_id")),
-                   column(3,
-                          p(c2),
-                          plotOutput("with_job_indi"),
-                          plotOutput("with_job_indi_p"),
-                          plotOutput("with_job_indi_id")),
-                   column(3,
-                          p(c3),
-                          plotOutput("unpaid_indi"),
-                          plotOutput("unpaid_indi_p"),
-                          plotOutput("unpaid_indi_id")),
-                   column(3,
-                          p(c4),
-                          plotOutput("unpaid_sec_indi"),
-                          plotOutput("unpaid_sec_indi_p"),
-                          plotOutput("unpaid_sec_indi_id"))
-                 ),
-                 width = 12,
-                 collapsible = T),
-             box(hr(), width = 12),
+             # Tab panel: LFP --------------------
+             tabPanel("Labor force participation",
+                      value = "lfp"),
              
-             box(h2("Marital status"),
-                 h4(textOutput("mari_t")),
-                 fluidRow(
-                   column(3,
-                          p(c1),
-                          plotOutput("pop_mari")),
-                   column(3,
-                          p(c2),
-                          plotOutput("with_job_mari")),
-                   column(3,
-                          p(c3),
-                          plotOutput("unpaid_mari")),
-                   column(3,
-                          p(c4),
-                          plotOutput("unpaid_sec_mari"))
-                 ),
-                 fluidRow(
-                   column(3,
-                          p(c1),
-                          plotOutput("pop_mari_age")),
-                   column(3,
-                          p(c2),
-                          plotOutput("with_job_mari_age")),
-                   column(3,
-                          p(c3),
-                          plotOutput("unpaid_mari_age")),
-                   column(3,
-                          p(c4),
-                          plotOutput("unpaid_sec_mari_age"))
-                 ),
-                 width = 12,
-                 collapsible = T),
-             box(hr(), width = 12),
+             # Tab panel: Rural/urban --------------------
+             tabPanel("Rural/urban",
+                      value = "ru"),
              
-             box(h2("Number of children"),
-                 h4(textOutput("kid_t")),
-                 fluidRow(
-                   column(3,
-                          p(c1),
-                          plotOutput("pop_kid")),
-                   column(3,
-                          p(c2),
-                          plotOutput("with_job_kid")),
-                   column(3,
-                          p(c3),
-                          plotOutput("unpaid_kid")),
-                   column(3,
-                          p(c4),
-                          plotOutput("unpaid_sec_kid"))
-                 ),
-                 width = 12,
-                 collapsible = T),
-             box(hr(), width = 12),
+             # Tab panel: Indigenous --------------------
+             tabPanel("Indigenous identity",
+                      value = "indigenous"),
              
-             box(h2("Literacy"),
-                 h4(textOutput("lit_t")),
-                 fluidRow(
-                   column(3,
-                          p(c1),
-                          plotOutput("pop_lit")),
-                   column(3,
-                          p(c2),
-                          plotOutput("with_job_lit")),
-                   column(3,
-                          p(c3),
-                          plotOutput("unpaid_lit")),
-                   column(3,
-                          p(c4),
-                          plotOutput("unpaid_sec_lit"))
-                 ),
-                 width = 12,
-                 collapsible = T),
-             box(hr(), width = 12),
+             # Tab panel: figures -----------------
+             tabPanel("Figures",
+                      box(h2("Column overview"),
+                          fluidRow(
+                            column(3,
+                                   p(c1),
+                                   h1(textOutput("pop")),
+                                   p("people (est.)")),
+                            column(3,
+                                   p(c2),
+                                   h1(textOutput("with_job")),
+                                   p("people (est.)")),
+                            column(3,
+                                   p(c3),
+                                   h1(textOutput("unpaid")),
+                                   p("people (est.)")),
+                            column(3,
+                                   p(c4),
+                                   h1(textOutput("unpaid_sec")),
+                                   p("people (est.)"))
+                          ),
+                          width = 12,
+                          collapsible = T),
+                      box(hr(), width = 12),
+                      
+                      box(h2("Age"),
+                          h4(textOutput("age_t")),
+                          fluidRow(
+                            column(3,
+                                   p(c1),
+                                   plotOutput("pop_age")),
+                            column(3,
+                                   p(c2),
+                                   plotOutput("with_job_age")),
+                            column(3,
+                                   p(c3),
+                                   plotOutput("unpaid_age")),
+                            column(3,
+                                   p(c4),
+                                   plotOutput("unpaid_sec_age"))
+                          ),
+                          width = 12,
+                          collapsible = T),
+                      box(hr(), width = 12),
+                      
+                      box(h2("School attendance"),
+                          h4(textOutput("sch_t")),
+                          fluidRow(
+                            column(3,
+                                   p(c1),
+                                   plotOutput("pop_sch")),
+                            column(3,
+                                   p(c2),
+                                   plotOutput("with_job_sch")),
+                            column(3,
+                                   p(c3),
+                                   plotOutput("unpaid_sch")),
+                            column(3,
+                                   p(c4),
+                                   plotOutput("unpaid_sec_sch"))
+                          ),
+                          width = 12,
+                          collapsible = T),
+                      box(hr(), width = 12),
+                      
+                      box(h2("Urban/rural area"),
+                          h4(textOutput("ur_t")),
+                          fluidRow(
+                            column(3,
+                                   p(c1),
+                                   plotOutput("pop_ur")),
+                            column(3,
+                                   p(c2),
+                                   plotOutput("with_job_ur")),
+                            column(3,
+                                   p(c3),
+                                   plotOutput("unpaid_ur")),
+                            column(3,
+                                   p(c4),
+                                   plotOutput("unpaid_sec_ur"))
+                          ),
+                          width = 12,
+                          collapsible = T),
+                      box(hr(), width = 12),
+                      
+                      box(h2("Indigenous identity"),
+                          fluidRow(
+                            column(3,
+                                   p(c1),
+                                   plotOutput("pop_indi"),
+                                   plotOutput("pop_indi_p"),
+                                   plotOutput("pop_indi_id")),
+                            column(3,
+                                   p(c2),
+                                   plotOutput("with_job_indi"),
+                                   plotOutput("with_job_indi_p"),
+                                   plotOutput("with_job_indi_id")),
+                            column(3,
+                                   p(c3),
+                                   plotOutput("unpaid_indi"),
+                                   plotOutput("unpaid_indi_p"),
+                                   plotOutput("unpaid_indi_id")),
+                            column(3,
+                                   p(c4),
+                                   plotOutput("unpaid_sec_indi"),
+                                   plotOutput("unpaid_sec_indi_p"),
+                                   plotOutput("unpaid_sec_indi_id"))
+                          ),
+                          width = 12,
+                          collapsible = T),
+                      box(hr(), width = 12),
+                      
+                      box(h2("Marital status"),
+                          h4(textOutput("mari_t")),
+                          fluidRow(
+                            column(3,
+                                   p(c1),
+                                   plotOutput("pop_mari")),
+                            column(3,
+                                   p(c2),
+                                   plotOutput("with_job_mari")),
+                            column(3,
+                                   p(c3),
+                                   plotOutput("unpaid_mari")),
+                            column(3,
+                                   p(c4),
+                                   plotOutput("unpaid_sec_mari"))
+                          ),
+                          fluidRow(
+                            column(3,
+                                   p(c1),
+                                   plotOutput("pop_mari_age")),
+                            column(3,
+                                   p(c2),
+                                   plotOutput("with_job_mari_age")),
+                            column(3,
+                                   p(c3),
+                                   plotOutput("unpaid_mari_age")),
+                            column(3,
+                                   p(c4),
+                                   plotOutput("unpaid_sec_mari_age"))
+                          ),
+                          width = 12,
+                          collapsible = T),
+                      box(hr(), width = 12),
+                      
+                      box(h2("Number of children"),
+                          h4(textOutput("kid_t")),
+                          fluidRow(
+                            column(3,
+                                   p(c1),
+                                   plotOutput("pop_kid")),
+                            column(3,
+                                   p(c2),
+                                   plotOutput("with_job_kid")),
+                            column(3,
+                                   p(c3),
+                                   plotOutput("unpaid_kid")),
+                            column(3,
+                                   p(c4),
+                                   plotOutput("unpaid_sec_kid"))
+                          ),
+                          width = 12,
+                          collapsible = T),
+                      box(hr(), width = 12),
+                      
+                      box(h2("Literacy"),
+                          h4(textOutput("lit_t")),
+                          fluidRow(
+                            column(3,
+                                   p(c1),
+                                   plotOutput("pop_lit")),
+                            column(3,
+                                   p(c2),
+                                   plotOutput("with_job_lit")),
+                            column(3,
+                                   p(c3),
+                                   plotOutput("unpaid_lit")),
+                            column(3,
+                                   p(c4),
+                                   plotOutput("unpaid_sec_lit"))
+                          ),
+                          width = 12,
+                          collapsible = T),
+                      box(hr(), width = 12),
+                      
+                      box(h2("Education"),
+                          h4(textOutput("edu_t")),
+                          fluidRow(
+                            column(3,
+                                   p(c1),
+                                   plotOutput("pop_edu")),
+                            column(3,
+                                   p(c2),
+                                   plotOutput("with_job_edu")),
+                            column(3,
+                                   p(c3),
+                                   plotOutput("unpaid_edu")),
+                            column(3,
+                                   p(c4),
+                                   plotOutput("unpaid_sec_edu"))
+                          ),
+                          h4(textOutput("any_ed_t")),
+                          fluidRow(
+                            column(3,
+                                   p(c1),
+                                   plotOutput("pop_any_ed")),
+                            column(3,
+                                   p(c2),
+                                   plotOutput("with_job_any_ed")),
+                            column(3,
+                                   p(c3),
+                                   plotOutput("unpaid_any_ed")),
+                            column(3,
+                                   p(c4),
+                                   plotOutput("unpaid_sec_any_ed"))
+                          ),
+                          fluidRow(
+                            column(3,
+                                   p(c1),
+                                   plotOutput("pop_higher_ed")),
+                            column(3,
+                                   p(c2),
+                                   plotOutput("with_job_higher_ed")),
+                            column(3,
+                                   p(c3),
+                                   plotOutput("unpaid_higher_ed")),
+                            column(3,
+                                   p(c4),
+                                   plotOutput("unpaid_sec_higher_ed"))
+                          ),
+                          h4(textOutput("any_ed2_t")),
+                          fluidRow(
+                            column(3,
+                                   p(c1),
+                                   plotOutput("pop_any_ed2")),
+                            column(3,
+                                   p(c2),
+                                   plotOutput("with_job_any_ed2")),
+                            column(3,
+                                   p(c3),
+                                   plotOutput("unpaid_any_ed2")),
+                            column(3,
+                                   p(c4),
+                                   plotOutput("unpaid_sec_any_ed2"))
+                          ),
+                          fluidRow(
+                            column(3,
+                                   p(c1),
+                                   plotOutput("pop_higher_ed2")),
+                            column(3,
+                                   p(c2),
+                                   plotOutput("with_job_higher_ed2")),
+                            column(3,
+                                   p(c3),
+                                   plotOutput("unpaid_higher_ed2")),
+                            column(3,
+                                   p(c4),
+                                   plotOutput("unpaid_sec_higher_ed2"))
+                          ),
+                          width = 12,
+                          collapsible = T),
+                      box(hr(), width = 12),
+                      
+                      box(h2("Chronic disease"),
+                          fluidRow(
+                            column(3,
+                                   p(c1),
+                                   plotOutput("pop_disease")),
+                            column(3,
+                                   p(c2),
+                                   plotOutput("with_job_disease")),
+                            column(3,
+                                   p(c3),
+                                   plotOutput("unpaid_disease")),
+                            column(3,
+                                   p(c4),
+                                   plotOutput("unpaid_sec_disease"))
+                          ),
+                          width = 12,
+                          collapsible = T),
+                      box(hr(), width = 12),
+                      
+                      box(h2("Technology"),
+                          h4(textOutput("tech1")),
+                          fluidRow(
+                            column(3,
+                                   p(c1),
+                                   plotOutput("pop_cell1")),
+                            column(3,
+                                   p(c2),
+                                   plotOutput("with_job_cell1")),
+                            column(3,
+                                   p(c3),
+                                   plotOutput("unpaid_cell1")),
+                            column(3,
+                                   p(c4),
+                                   plotOutput("unpaid_sec_cell1"))
+                          ),
+                          fluidRow(
+                            column(3,
+                                   p(c1),
+                                   plotOutput("pop_cell2")),
+                            column(3,
+                                   p(c2),
+                                   plotOutput("with_job_cell2")),
+                            column(3,
+                                   p(c3),
+                                   plotOutput("unpaid_cell2")),
+                            column(3,
+                                   p(c4),
+                                   plotOutput("unpaid_sec_cell2"))
+                          ),
+                          h4(textOutput("tech2")),
+                          fluidRow(
+                            column(3,
+                                   p(c1),
+                                   plotOutput("pop_internet1")),
+                            column(3,
+                                   p(c2),
+                                   plotOutput("with_job_internet1")),
+                            column(3,
+                                   p(c3),
+                                   plotOutput("unpaid_internet1")),
+                            column(3,
+                                   p(c4),
+                                   plotOutput("unpaid_sec_internet1"))
+                          ),
+                          fluidRow(
+                            column(3,
+                                   p(c1),
+                                   plotOutput("pop_internet2")),
+                            column(3,
+                                   p(c2),
+                                   plotOutput("with_job_internet2")),
+                            column(3,
+                                   p(c3),
+                                   plotOutput("unpaid_internet2")),
+                            column(3,
+                                   p(c4),
+                                   plotOutput("unpaid_sec_internet2"))
+                          ),
+                          h4(textOutput("tech3")),
+                          fluidRow(
+                            column(3,
+                                   p(c1),
+                                   plotOutput("pop_inter_home1")),
+                            column(3,
+                                   p(c2),
+                                   plotOutput("with_job_inter_home1")),
+                            column(3,
+                                   p(c3),
+                                   plotOutput("unpaid_inter_home1")),
+                            column(3,
+                                   p(c4),
+                                   plotOutput("unpaid_sec_inter_home1"))
+                          ),
+                          fluidRow(
+                            column(3,
+                                   p(c1),
+                                   plotOutput("pop_inter_home2")),
+                            column(3,
+                                   p(c2),
+                                   plotOutput("with_job_inter_home2")),
+                            column(3,
+                                   p(c3),
+                                   plotOutput("unpaid_inter_home2")),
+                            column(3,
+                                   p(c4),
+                                   plotOutput("unpaid_sec_inter_home2"))
+                          ),
+                          width = 12,
+                          collapsible = T),
+                      box(hr(), width = 12),
+                      
+                      box(h2("Union member"),
+                          fluidRow(
+                            column(3,
+                                   p(c1),
+                                   plotOutput("pop_union1")),
+                            column(3,
+                                   p(c2),
+                                   plotOutput("with_job_union1")),
+                            column(3,
+                                   p(c3),
+                                   plotOutput("unpaid_union1")),
+                            column(3,
+                                   p(c4),
+                                   plotOutput("unpaid_sec_union1"))
+                          ),
+                          fluidRow(
+                            column(3,
+                                   p(c1),
+                                   plotOutput("pop_union2")),
+                            column(3,
+                                   p(c2),
+                                   plotOutput("with_job_union2")),
+                            column(3,
+                                   p(c3),
+                                   plotOutput("unpaid_union2")),
+                            column(3,
+                                   p(c4),
+                                   plotOutput("unpaid_sec_union2"))
+                          ),
+                          width = 12,
+                          collapsible = T),
+                      box(hr(), width = 12),
+                      
+                      box(h2("Income"),
+                          h4(textOutput("salary_t")),
+                          fluidRow(
+                            column(3,
+                                   p(c1),
+                                   plotOutput("pop_salary")),
+                            column(3,
+                                   p(c2),
+                                   plotOutput("with_job_salary")),
+                            column(3,
+                                   p(c3),
+                                   plotOutput("unpaid_salary")),
+                            column(3,
+                                   p(c4),
+                                   plotOutput("unpaid_sec_salary"))
+                          ),
+                          h4(textOutput("irr_t")),
+                          fluidRow(
+                            column(3,
+                                   p(c1),
+                                   plotOutput("pop_irr")),
+                            column(3,
+                                   p(c2),
+                                   plotOutput("with_job_irr")),
+                            column(3,
+                                   p(c3),
+                                   plotOutput("unpaid_irr")),
+                            column(3,
+                                   p(c4),
+                                   plotOutput("unpaid_sec_irr"))
+                          ),
+                          width = 12,
+                          collapsible = T),
+                      box(hr(), width = 12),
+                      
+                      box(h2("Want to work more?"),
+                          h4(textOutput("want1_t")),
+                          fluidRow(
+                            column(3,
+                                   p(c1),
+                                   plotOutput("pop_want1")),
+                            column(3,
+                                   p(c2),
+                                   plotOutput("with_job_want1")),
+                            column(3,
+                                   p(c3),
+                                   plotOutput("unpaid_want1")),
+                            column(3,
+                                   p(c4),
+                                   plotOutput("unpaid_sec_want1"))
+                          ),
+                          fluidRow(
+                            column(3,
+                                   p(c1),
+                                   plotOutput("pop_want2")),
+                            column(3,
+                                   p(c2),
+                                   plotOutput("with_job_want2")),
+                            column(3,
+                                   p(c3),
+                                   plotOutput("unpaid_want2")),
+                            column(3,
+                                   p(c4),
+                                   plotOutput("unpaid_sec_want2"))
+                          ),
+                          width = 12,
+                          collapsible = T)),
              
-             box(h2("Education"),
-                 h4(textOutput("edu_t")),
-                 fluidRow(
-                   column(3,
-                          p(c1),
-                          plotOutput("pop_edu")),
-                   column(3,
-                          p(c2),
-                          plotOutput("with_job_edu")),
-                   column(3,
-                          p(c3),
-                          plotOutput("unpaid_edu")),
-                   column(3,
-                          p(c4),
-                          plotOutput("unpaid_sec_edu"))
-                 ),
-                 h4(textOutput("any_ed_t")),
-                 fluidRow(
-                   column(3,
-                          p(c1),
-                          plotOutput("pop_any_ed")),
-                   column(3,
-                          p(c2),
-                          plotOutput("with_job_any_ed")),
-                   column(3,
-                          p(c3),
-                          plotOutput("unpaid_any_ed")),
-                   column(3,
-                          p(c4),
-                          plotOutput("unpaid_sec_any_ed"))
-                 ),
-                 fluidRow(
-                   column(3,
-                          p(c1),
-                          plotOutput("pop_higher_ed")),
-                   column(3,
-                          p(c2),
-                          plotOutput("with_job_higher_ed")),
-                   column(3,
-                          p(c3),
-                          plotOutput("unpaid_higher_ed")),
-                   column(3,
-                          p(c4),
-                          plotOutput("unpaid_sec_higher_ed"))
-                 ),
-                 h4(textOutput("any_ed2_t")),
-                 fluidRow(
-                   column(3,
-                          p(c1),
-                          plotOutput("pop_any_ed2")),
-                   column(3,
-                          p(c2),
-                          plotOutput("with_job_any_ed2")),
-                   column(3,
-                          p(c3),
-                          plotOutput("unpaid_any_ed2")),
-                   column(3,
-                          p(c4),
-                          plotOutput("unpaid_sec_any_ed2"))
-                 ),
-                 fluidRow(
-                   column(3,
-                          p(c1),
-                          plotOutput("pop_higher_ed2")),
-                   column(3,
-                          p(c2),
-                          plotOutput("with_job_higher_ed2")),
-                   column(3,
-                          p(c3),
-                          plotOutput("unpaid_higher_ed2")),
-                   column(3,
-                          p(c4),
-                          plotOutput("unpaid_sec_higher_ed2"))
-                 ),
-                 width = 12,
-                 collapsible = T),
-             box(hr(), width = 12),
-             
-             box(h2("Chronic disease"),
-                 fluidRow(
-                   column(3,
-                          p(c1),
-                          plotOutput("pop_disease")),
-                   column(3,
-                          p(c2),
-                          plotOutput("with_job_disease")),
-                   column(3,
-                          p(c3),
-                          plotOutput("unpaid_disease")),
-                   column(3,
-                          p(c4),
-                          plotOutput("unpaid_sec_disease"))
-                 ),
-                 width = 12,
-                 collapsible = T),
-             box(hr(), width = 12),
-             
-             box(h2("Technology"),
-                 h4(textOutput("tech1")),
-                 fluidRow(
-                   column(3,
-                          p(c1),
-                          plotOutput("pop_cell1")),
-                   column(3,
-                          p(c2),
-                          plotOutput("with_job_cell1")),
-                   column(3,
-                          p(c3),
-                          plotOutput("unpaid_cell1")),
-                   column(3,
-                          p(c4),
-                          plotOutput("unpaid_sec_cell1"))
-                 ),
-                 fluidRow(
-                   column(3,
-                          p(c1),
-                          plotOutput("pop_cell2")),
-                   column(3,
-                          p(c2),
-                          plotOutput("with_job_cell2")),
-                   column(3,
-                          p(c3),
-                          plotOutput("unpaid_cell2")),
-                   column(3,
-                          p(c4),
-                          plotOutput("unpaid_sec_cell2"))
-                 ),
-                 h4(textOutput("tech2")),
-                 fluidRow(
-                   column(3,
-                          p(c1),
-                          plotOutput("pop_internet1")),
-                   column(3,
-                          p(c2),
-                          plotOutput("with_job_internet1")),
-                   column(3,
-                          p(c3),
-                          plotOutput("unpaid_internet1")),
-                   column(3,
-                          p(c4),
-                          plotOutput("unpaid_sec_internet1"))
-                 ),
-                 fluidRow(
-                   column(3,
-                          p(c1),
-                          plotOutput("pop_internet2")),
-                   column(3,
-                          p(c2),
-                          plotOutput("with_job_internet2")),
-                   column(3,
-                          p(c3),
-                          plotOutput("unpaid_internet2")),
-                   column(3,
-                          p(c4),
-                          plotOutput("unpaid_sec_internet2"))
-                 ),
-                 h4(textOutput("tech3")),
-                 fluidRow(
-                   column(3,
-                          p(c1),
-                          plotOutput("pop_inter_home1")),
-                   column(3,
-                          p(c2),
-                          plotOutput("with_job_inter_home1")),
-                   column(3,
-                          p(c3),
-                          plotOutput("unpaid_inter_home1")),
-                   column(3,
-                          p(c4),
-                          plotOutput("unpaid_sec_inter_home1"))
-                 ),
-                 fluidRow(
-                   column(3,
-                          p(c1),
-                          plotOutput("pop_inter_home2")),
-                   column(3,
-                          p(c2),
-                          plotOutput("with_job_inter_home2")),
-                   column(3,
-                          p(c3),
-                          plotOutput("unpaid_inter_home2")),
-                   column(3,
-                          p(c4),
-                          plotOutput("unpaid_sec_inter_home2"))
-                 ),
-                 width = 12,
-                 collapsible = T),
-             box(hr(), width = 12),
-             
-             box(h2("Union member"),
-                 fluidRow(
-                   column(3,
-                          p(c1),
-                          plotOutput("pop_union1")),
-                   column(3,
-                          p(c2),
-                          plotOutput("with_job_union1")),
-                   column(3,
-                          p(c3),
-                          plotOutput("unpaid_union1")),
-                   column(3,
-                          p(c4),
-                          plotOutput("unpaid_sec_union1"))
-                 ),
-                 fluidRow(
-                   column(3,
-                          p(c1),
-                          plotOutput("pop_union2")),
-                   column(3,
-                          p(c2),
-                          plotOutput("with_job_union2")),
-                   column(3,
-                          p(c3),
-                          plotOutput("unpaid_union2")),
-                   column(3,
-                          p(c4),
-                          plotOutput("unpaid_sec_union2"))
-                 ),
-                 width = 12,
-                 collapsible = T),
-             box(hr(), width = 12),
-             
-             box(h2("Income"),
-                 h4(textOutput("salary_t")),
-                 fluidRow(
-                   column(3,
-                          p(c1),
-                          plotOutput("pop_salary")),
-                   column(3,
-                          p(c2),
-                          plotOutput("with_job_salary")),
-                   column(3,
-                          p(c3),
-                          plotOutput("unpaid_salary")),
-                   column(3,
-                          p(c4),
-                          plotOutput("unpaid_sec_salary"))
-                 ),
-                 h4(textOutput("irr_t")),
-                 fluidRow(
-                   column(3,
-                          p(c1),
-                          plotOutput("pop_irr")),
-                   column(3,
-                          p(c2),
-                          plotOutput("with_job_irr")),
-                   column(3,
-                          p(c3),
-                          plotOutput("unpaid_irr")),
-                   column(3,
-                          p(c4),
-                          plotOutput("unpaid_sec_irr"))
-                 ),
-                 width = 12,
-                 collapsible = T),
-             box(hr(), width = 12),
-             
-             box(h2("Want to work more?"),
-                 h4(textOutput("want1_t")),
-                 fluidRow(
-                   column(3,
-                          p(c1),
-                          plotOutput("pop_want1")),
-                   column(3,
-                          p(c2),
-                          plotOutput("with_job_want1")),
-                   column(3,
-                          p(c3),
-                          plotOutput("unpaid_want1")),
-                   column(3,
-                          p(c4),
-                          plotOutput("unpaid_sec_want1"))
-                 ),
-                 fluidRow(
-                   column(3,
-                          p(c1),
-                          plotOutput("pop_want2")),
-                   column(3,
-                          p(c2),
-                          plotOutput("with_job_want2")),
-                   column(3,
-                          p(c3),
-                          plotOutput("unpaid_want2")),
-                   column(3,
-                          p(c4),
-                          plotOutput("unpaid_sec_want2"))
-                 ),
-                 width = 12,
-                 collapsible = T)),
-    
-    # Tab panel: stories -----------------------------
-    tabPanel("Stories",
-             h3(textOutput("t1")),
-             actionBttn("b1", icon = icon("redo"), style = "material-circle"),
-             tableOutput("c1"),
-             hr(),
-             h3(textOutput("t2")),
-             actionBttn("b2", icon = icon("redo"), style = "material-circle"),
-             tableOutput("c2"),
-             hr(),
-             h3(textOutput("t3")),
-             actionBttn("b3", icon = icon("redo"), style = "material-circle"),
-             tableOutput("c3"))
+             # Tab panel: stories -----------------------------
+             tabPanel("Stories",
+                      h3(textOutput("t1")),
+                      actionButton("b1", label = "Tell me a story", icon = icon("redo")),
+                      tableOutput("c1"),
+                      hr(),
+                      h3(textOutput("t2")),
+                      actionButton("b2", label = "Tell me a story", icon = icon("redo")),
+                      tableOutput("c2"),
+                      hr(),
+                      h3(textOutput("t3")),
+                      actionButton("b3", label = "Tell me a story", icon = icon("redo")),
+                      tableOutput("c3"),
+                      hr(),
+                      h3(textOutput("t4")),
+                      actionButton("b4", label = "Tell me a story", icon = icon("redo")),
+                      tableOutput("c4"),
+                      hr(),
+                      h3(textOutput("t5")),
+                      actionButton("b5", label = "Tell me a story", icon = icon("redo")),
+                      tableOutput("c5"))
   )
 )
 
 # Server -----------------------------
 server <- function(input, output, session) {
-  output$pop <- renderText(nrow(personas))
-  output$with_job <- renderText(nrow(with_job))
-  output$unpaid <- renderText(nrow(unpaid_job))
-  output$unpaid_sec <- renderText(nrow(unpaid_sec_job))
+  output$landing <- renderImage(list(src = "www/landing_page.png", width = "100%"), deleteFile = F)
+  observeEvent(input$landing_cl, {
+    updateNavbarPage(session, "main", selected = {
+      if (between(input$landing_cl$x, 95, 280) & between(input$landing_cl$y, 19, 129)) {"age"}
+      else if (between(input$landing_cl$x, 23, 233) & between(input$landing_cl$y, 189, 311)) {"lfp"}
+      else if (between(input$landing_cl$x, 877, 1091) & between(input$landing_cl$y, 77, 209)) {"edu"}
+      else if (between(input$landing_cl$x, 347, 507) & between(input$landing_cl$y, 324, 495)) {"ru"}
+      else if (between(input$landing_cl$x, 890, 1053) & between(input$landing_cl$y, 266, 445)) {"indigenous"}
+    })
+  })
+  
+  output$pop <- renderText(round(nrow(personas) * wgt, 0))
+  output$with_job <- renderText(round(nrow(with_job) * wgt, 0))
+  output$unpaid <- renderText(round(nrow(unpaid_job) * wgt, 0))
+  output$unpaid_sec <- renderText(round(nrow(unpaid_sec_job) *wgt, 0))
   
   age <- function(df) {
     ggplot(df) +
@@ -936,21 +1058,27 @@ server <- function(input, output, session) {
   })
   
   output$t1 <- renderText(paste("Women with higher education working an unpaid job:", nrow(c1_df)))
+  observeEvent(input$b1, {
+    updateActionButton(session, "b1", label = " Tell me another story", icon = icon("redo"))
+  })
   output$c1 <- renderTable({ c1_df2() })
   
-  c2_df <- unpaid_pri_job %>%
+  c2_df <- unpaid_sec_job %>%
     select(area, sex, age, marital, indigenous, edu, in_school, chronic_disease_1, num_alive_child,
-           primary_job, work_type, sec_job, sec_employer_industry, sec_work_type, sec_salary, sec_salary_freq, sec_income, sec_income_freq,
+           primary_job, work_type, primary_job_salary, primary_job_salary_freq, primary_job_nonsalaried_income, primary_job_nonsalaried_income_freq,
+           sec_job, sec_employer_industry, sec_work_type,
            want_work_more, avail_work_more)
   c2_df2 <- eventReactive(input$b2, {
     c2_df[sample(nrow(c2_df), 1), ]
   })
   
-  output$t2 <- renderText(paste("People with an unpaid primary job and a paid secondary job:", nrow(c2_df)))
+  output$t2 <- renderText(paste("People with a paid primary job and an unpaid secondary job:", nrow(c2_df)))
+  observeEvent(input$b2, {
+    updateActionButton(session, "b2", label = " Tell me another story", icon = icon("redo"))
+  })
   output$c2 <- renderTable({ c2_df2() })
   
-  c3_df <- unpaid_job %>%
-    filter(union_member == "1. Si") %>%
+  c3_df <- unpaid_pri_job %>%
     select(area, sex, age, marital, indigenous, edu, in_school, chronic_disease_1, num_alive_child,
            primary_job, work_type, sec_job, sec_employer_industry, sec_work_type, sec_salary, sec_salary_freq, sec_income, sec_income_freq,
            want_work_more, avail_work_more)
@@ -958,8 +1086,41 @@ server <- function(input, output, session) {
     c3_df[sample(nrow(c3_df), 1), ]
   })
   
-  output$t3 <- renderText(paste("Union members with unpaid jobs:", nrow(c3_df)))
+  output$t3 <- renderText(paste("People with an unpaid primary job and a paid secondary job:", nrow(c3_df)))
+  observeEvent(input$b3, {
+    updateActionButton(session, "b3", label = " Tell me another story", icon = icon("redo"))
+  })
   output$c3 <- renderTable({ c3_df2() })
+  
+  c4_df <- unpaid_job %>%
+    filter(union_member == "1. Si") %>%
+    select(area, sex, age, marital, indigenous, edu, in_school, literate, chronic_disease_1, num_alive_child,
+           primary_job, work_type, sec_job, sec_employer_industry, sec_work_type, sec_salary, sec_salary_freq, sec_income, sec_income_freq,
+           want_work_more, avail_work_more)
+  c4_df2 <- eventReactive(input$b4, {
+    c4_df[sample(nrow(c4_df), 1), ]
+  })
+  
+  output$t4 <- renderText(paste("Union members with unpaid jobs:", nrow(c4_df)))
+  observeEvent(input$b4, {
+    updateActionButton(session, "b4", label = " Tell me another story", icon = icon("redo"))
+  })
+  output$c4 <- renderTable({ c4_df2() })
+  
+  c5_df <- with_job %>%
+    filter(age < 10) %>%
+    select(area, sex, age, indigenous, edu, in_school,
+           primary_job, work_type, primary_job_salary, primary_job_salary_freq, primary_job_nonsalaried_income, primary_job_nonsalaried_income_freq,
+           sec_job, sec_employer_industry, sec_work_type, union_member)
+  c5_df2 <- eventReactive(input$b5, {
+    c5_df[sample(nrow(c5_df), 1), ]
+  })
+  
+  output$t5 <- renderText(paste("Child laborers under ten:", nrow(c5_df)))
+  observeEvent(input$b5, {
+    updateActionButton(session, "b5", label = " Tell me another story", icon = icon("redo"))
+  })
+  output$c5 <- renderTable({ c5_df2() })
 }
 
 shinyApp(ui = ui, server = server)
