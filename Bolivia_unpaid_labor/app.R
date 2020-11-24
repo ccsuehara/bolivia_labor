@@ -10,8 +10,13 @@ c1 <- "General population (2018)"
 c2 <- "People with at least 1 job, paid or unpaid"
 c3 <- "People with at least 1 unpaid job"
 c4 <- "People with a paid primary job and an unpaid secondary job"
-#wgt <- 258.651824951171
-wgt <- 1
+
+lf1 <- "Employed Population"
+lf2 <- "Unemployed Population"
+lf3 <- "Inactive Population"
+
+wgt <- 258.651824951171
+#wgt <- 1
 # UI -------------------------------
 ui <- fluidPage(
   theme = shinytheme("sandstone"),
@@ -111,6 +116,41 @@ ui <- fluidPage(
              
              # Tab panel: LFP --------------------
              tabPanel("Labor force participation",
+                      box(h2("Column overview"),
+                          fluidRow(
+                            column(4,
+                                   p(lf1),
+                                   h1(textOutput("empl")),
+                                   p("people (est.)")),
+                            column(4,
+                                   p(lf2),
+                                   h1(textOutput("unempl")),
+                                   p("people (est.)")),
+                            column(4,
+                                   p(lf3),
+                                   h1(textOutput("inactiv")),
+                                   p("people (est.)"))
+                          ),
+                          width = 12,
+                          collapsible = T),
+                      box(hr(), width = 12),
+                      
+                      box(h2("Age"),
+                          h4(textOutput("age_t_lfp")),
+                          fluidRow(
+                            column(4,
+                                   p(lf1),
+                                   plotOutput("pop_emp")),
+                            column(4,
+                                   p(lf2),
+                                   plotOutput("pop_unemp")),
+                            column(4,
+                                   p(lf3),
+                                   plotOutput("pop_inac"))
+                          ),
+                          width = 12,
+                          collapsible = T),
+                      box(hr(), width = 12),
                       value = "lfp"),
              
              # Tab panel: Rural/urban --------------------
@@ -638,13 +678,24 @@ server <- function(input, output, session) {
   output$with_job <- renderText(round(nrow(with_job) * wgt, 0))
   output$unpaid <- renderText(round(nrow(unpaid_job) * wgt, 0))
   output$unpaid_sec <- renderText(round(nrow(unpaid_sec_job) *wgt, 0))
-  
+
+  output$empl <- renderText(round(nrow(employed) * wgt, 0))
+  output$unempl <- renderText(round(nrow(unemployed) * wgt, 0))
+  output$inactiv <- renderText(round(nrow(inactive) * wgt, 0))
+
   age <- function(df) {
     ggplot(df) +
       geom_bar(aes(x = age, fill = sex), position = "dodge") +
       theme_minimal() +
       theme(legend.position = "bottom", legend.title = element_blank()) +
       scale_x_continuous(breaks = c(7, 18, 90))
+  }
+  
+  age_lfp <- function(df) {
+    ggplot(df) +
+      geom_density(aes(x = age, fill = sex), position = "dodge", width = 0.5, alpha = 0.5) +
+      theme_minimal() +
+      theme(legend.position = "bottom")
   }
   
   output$age_t <- renderText('Men are more likely to do unpaid labor during their teenage years,
@@ -654,6 +705,11 @@ server <- function(input, output, session) {
   output$unpaid_age <- renderPlot(age(unpaid_job))
   output$unpaid_sec_age <- renderPlot(age(unpaid_sec_job))
   
+  output$age_t_lfp <- renderText('There are different trends in Labor Force Participation for each segment')
+  output$pop_emp <- renderPlot(age_lfp(employed))
+  output$pop_unemp <- renderPlot(age_lfp(unemployed))
+  output$pop_inac <- renderPlot(age_lfp(inactive))
+
   sch <- function(df) {
     ggplot(df) +
       geom_bar(aes(x = age, fill = in_school), position = "dodge") +

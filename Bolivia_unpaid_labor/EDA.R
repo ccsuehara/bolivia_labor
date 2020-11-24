@@ -78,9 +78,6 @@ personas <- personas %>% mutate(emp_status = case_when(
 
 personas <- personas %>% mutate(is_student = case_when( in_school == "1. Si" ~ "Yes",
                                                         in_school == "2. No" ~ "No"))
-  
-
-
 
 employed <- personas %>% filter(emp_status == "Employed") %>%
   select(folio, nro, area, sex, age, marital, literate, num_literate, indigenous, indigenous_id,
@@ -90,18 +87,49 @@ employed <- personas %>% filter(emp_status == "Employed") %>%
          cellphone, internet_use, internet_use_where_1, internet_use_where_2,
          primary_job, work_type, primary_job_salary, primary_job_salary_freq, primary_job_nonsalaried_income, primary_job_nonsalaried_income_freq,
          sec_job, sec_employer_industry, sec_work_type, sec_salary, sec_salary_freq, sec_income, sec_income_freq,
-         want_work_more, avail_work_more, union_member)
+         want_work_more, avail_work_more, union_member) %>% filter(age %in% 25:90)
 
 unemployed <-  personas %>% filter(emp_status == "Unemployed") %>% 
+  select(folio, nro, area, sex, age, marital, literate, num_literate, indigenous, indigenous_id,
+         edu, any_ed, higher_ed, in_school,
+         chronic_disease_1, disability_1, pregnant, num_alive_child,
+         manual_labor,
+         cellphone, internet_use, internet_use_where_1, internet_use_where_2,
+         primary_job, work_type, primary_job_salary, primary_job_salary_freq, primary_job_nonsalaried_income, primary_job_nonsalaried_income_freq,
+         sec_job, sec_employer_industry, sec_work_type, sec_salary, sec_salary_freq, sec_income, sec_income_freq,
+         want_work_more, avail_work_more, union_member) %>% filter(age %in% 25:90)
+
+inactive <- personas %>% filter(emp_status == "Inactive") %>% 
+  select(folio, nro, area, sex, age, marital, literate, num_literate, indigenous, indigenous_id,
+         edu, any_ed, higher_ed, in_school,
+         chronic_disease_1, disability_1, pregnant, num_alive_child,
+         manual_labor,
+         cellphone, internet_use, internet_use_where_1, internet_use_where_2,
+         primary_job, work_type, primary_job_salary, primary_job_salary_freq, primary_job_nonsalaried_income, primary_job_nonsalaried_income_freq,
+         sec_job, sec_employer_industry, sec_work_type, sec_salary, sec_salary_freq, sec_income, sec_income_freq,
+         want_work_more, avail_work_more, union_member) %>% filter(age %in% 25:90)
+
+neet  <- personas %>% filter(emp_status == "Inactive" & is_student == "No") %>%
+  select(folio, nro, area, sex, age, marital, literate, num_literate, indigenous, indigenous_id,
+         edu, any_ed, higher_ed, in_school,
+         chronic_disease_1, disability_1, pregnant, num_alive_child,
+         manual_labor,
+         cellphone, internet_use, internet_use_where_1, internet_use_where_2,
+         primary_job, work_type, primary_job_salary, primary_job_salary_freq, primary_job_nonsalaried_income, primary_job_nonsalaried_income_freq,
+         sec_job, sec_employer_industry, sec_work_type, sec_salary, sec_salary_freq, sec_income, sec_income_freq,
+         want_work_more, avail_work_more, union_member)  %>% filter(age %in% 15:45)
   
 
-ggplot(child_worker) +
-  geom_bar(aes(x = age, fill = work_type), position = "dodge", width = 0.5) +
-  theme_minimal() +
-  theme(legend.position = "bottom")
-
-
-
+# ggplot(child_worker) +
+#   geom_bar(aes(x = age, fill = work_type), position = "dodge", width = 0.5) +
+#   theme_minimal() +
+#   theme(legend.position = "bottom")
+# 
+# 
+# ggplot(unemployed) +
+#   geom_density(aes(x = age, fill = sex), position = "dodge", width = 0.5, alpha = 0.5) +
+#   theme_minimal() +
+#   theme(legend.position = "bottom")
 
 
 # General population characteristics
