@@ -3,14 +3,15 @@ library(shinydashboard)
 library(shinythemes)
 library(tidyverse)
 library(shinyWidgets)
+library(plotly)
 
 source("EDA.R")
 c1 <- "General population (2018)"
 c2 <- "People with at least 1 job, paid or unpaid"
 c3 <- "People with at least 1 unpaid job"
 c4 <- "People with a paid primary job and an unpaid secondary job"
-wgt <- 258.651824951171
-
+#wgt <- 258.651824951171
+wgt <- 1
 # UI -------------------------------
 ui <- fluidPage(
   theme = shinytheme("sandstone"),
@@ -113,7 +114,7 @@ ui <- fluidPage(
                       value = "lfp"),
              
              # Tab panel: Rural/urban --------------------
-             tabPanel("Rural/urban",
+             tabPanel("Neet Population",
                       value = "ru"),
              
              # Tab panel: Indigenous --------------------

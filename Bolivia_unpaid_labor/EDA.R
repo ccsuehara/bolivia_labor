@@ -1,7 +1,7 @@
 library(readxl)
 library(tidyverse)
 
-personas <- suppressWarnings(read_excel("../data/EH_2018/EH2018_Personas2.xlsx") %>%
+personas <- suppressWarnings(read_excel("/Users/csolisu/Documents/Carla/chamba/shared_Bolivia/data/EH_2018/EH2018_Personas2.xlsx") %>%
   mutate(higher_ed = ifelse(startsWith(edu, "7") | startsWith(edu, "8"), T, F),
          any_ed = ifelse(startsWith(edu, "11"), F, T)))
 
@@ -42,10 +42,65 @@ child <- personas %>%
   filter(age < 15) %>%
   filter(in_school == "2. No" & is.na(work_type))
 
+
+educ_list <- sort(unique(c(personas$edu)))
+educ_eq <- c("Less than Primary", "Less than Primary", #11, 12
+             "Less than Primary", #13
+             "Primary","Secondary", #21 22 
+             "Secondary", "Primary", "Secondary", #23, 31, 32, 
+             "Primary", "Secondary",  #41, 42
+             "Primary", "Secondary",  #51, 52
+             "Secondary","Primary",  #61, 62
+             "Secondary","Primary",  #63, 64
+             "Secondary", #65
+             "Tertiary", "Tertiary", "Tertiary", #71, 72, 73
+             "Tertiary", "Tertiary", "Tertiary", #74, 75, 76
+             "Tertiary", "Tertiary", "Tertiary", # 77, 79, 80
+             "Tertiary" #81
+             )
+
+personas <- personas %>% mutate(education = plyr::mapvalues(edu,educ_list, educ_eq))
+
+personas <- personas %>% mutate(emp_status = case_when(
+  work_last_week_1 == '1. Si' ~ "Employed", 
+  work_last_week_2 != "8.NINGUNA ACTIVIDAD" & is.na(work_last_week_2) == FALSE ~ "Employed",
+  work_last_week_3 == "1.Vacaciones o permisos?"| 
+    work_last_week_3 == "2.Licencia de maternidad?"|
+    work_last_week_3 == "8.Estar suspendido?" ~ "Employed",
+  work_last_week_3 == "5.Temporada baja?"| 
+  work_last_week_3 == "9.Problemas personales o familiares?"| 
+  work_last_week_3 == "4.Falta de materiales o insumos?"|
+  work_last_week_3 == "3.Enfermedad o accidente?" ~ "Unemployed",
+  unemployed =="1. Si" ~ "Unemployed",
+  looked_for_work  =="1. Si" ~ "Unemployed",
+  looked_for_work  =="2. No" ~ "Inactive")
+)
+
+personas <- personas %>% mutate(is_student = case_when( in_school == "1. Si" ~ "Yes",
+                                                        in_school == "2. No" ~ "No"))
+  
+
+
+
+employed <- personas %>% filter(emp_status == "Employed") %>%
+  select(folio, nro, area, sex, age, marital, literate, num_literate, indigenous, indigenous_id,
+         edu, any_ed, higher_ed, in_school,
+         chronic_disease_1, disability_1, pregnant, num_alive_child,
+         manual_labor,
+         cellphone, internet_use, internet_use_where_1, internet_use_where_2,
+         primary_job, work_type, primary_job_salary, primary_job_salary_freq, primary_job_nonsalaried_income, primary_job_nonsalaried_income_freq,
+         sec_job, sec_employer_industry, sec_work_type, sec_salary, sec_salary_freq, sec_income, sec_income_freq,
+         want_work_more, avail_work_more, union_member)
+
+unemployed <-  personas %>% filter(emp_status == "Unemployed") %>% 
+  
+
 ggplot(child_worker) +
   geom_bar(aes(x = age, fill = work_type), position = "dodge", width = 0.5) +
   theme_minimal() +
   theme(legend.position = "bottom")
+
+
 
 
 
