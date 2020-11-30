@@ -5,11 +5,14 @@ library(tidyverse)
 library(shinyWidgets)
 
 source("EDA.R")
-c1 <- "General population (2018)"
+c1 <- "General population"
 c2 <- "People with at least 1 job, paid or unpaid"
 c3 <- "People with at least 1 unpaid job"
 c4 <- "People with a paid primary job and an unpaid secondary job"
 wgt <- 258.651824951171
+color1 <- "#DDCC77"
+color2 <- "#88CCEE"
+color3 <- "#44AA99"
 
 # UI -------------------------------
 ui <- fluidPage(
@@ -36,6 +39,8 @@ ui <- fluidPage(
                       value = "age",
                       
                       h2("All age groups"),
+                      fluidRow(column(10, offset = 1,
+                                      h4(textOutput("age_all_t")))),
                       fluidRow(
                         column(4,
                                p(c1),
@@ -49,31 +54,19 @@ ui <- fluidPage(
                       ),
                       hr(),
                       
-                      h2("Children under 10 (legal working age in Bolivia)"),
+                      h2("Children and adolescents under 18"),
+                      fluidRow(column(10, offset = 1,
+                                      h4(textOutput("age_18_t")))),
                       fluidRow(
                         column(4,
                                p(c1),
-                               plotOutput("pop_age_10")),
+                               plotOutput("pop_age_18")),
                         column(4,
                                p(c2),
-                               plotOutput("with_job_age_10")),
+                               plotOutput("with_job_age_18")),
                         column(4,
                                p(c3),
-                               plotOutput("unpaid_age_10"))
-                      ),
-                      hr(),
-                      
-                      h2("Adolescents (10-18)"),
-                      fluidRow(
-                        column(4,
-                               p(c1),
-                               plotOutput("pop_age_10_18")),
-                        column(4,
-                               p(c2),
-                               plotOutput("with_job_age_10_18")),
-                        column(4,
-                               p(c3),
-                               plotOutput("unpaid_age_10_18"))
+                               plotOutput("unpaid_age_18"))
                       ),
                       hr(),
                       
@@ -118,14 +111,105 @@ ui <- fluidPage(
              
              # Tab panel: Indigenous --------------------
              tabPanel("Indigenous identity",
-                      value = "indigenous"),
+                      value = "indigenous",
+                      
+                      h2("Overall indigenous population"),
+                      fluidRow(column(10, offset = 1,
+                                      h4(textOutput("indi_all_t")))),
+                      fluidRow(
+                        column(4,
+                               p("All"),
+                               plotOutput("indi_all")),
+                        column(4,
+                               p("Women"),
+                               plotOutput("indi_w")),
+                        column(4,
+                               p("Men"),
+                               plotOutput("indi_m"))
+                      ),
+                      hr(),
+                      
+                      h2("Indigenous people and labor"),
+                      fluidRow(column(10, offset = 1,
+                                      h4(textOutput("indi_work_t")))),
+                      fluidRow(
+                        column(4,
+                               p(c1),
+                               plotOutput("pop_indi_work")),
+                        column(4,
+                               p(c2),
+                               plotOutput("with_job_indi_work")),
+                        column(4,
+                               p(c3),
+                               plotOutput("unpaid_indi_work"))
+                      ),
+                      hr(),
+                      
+                      h2("Indigenous people in rural areas"),
+                      fluidRow(column(10, offset = 1,
+                                      h4(textOutput("indi_r_t1")))),
+                      fluidRow(
+                        column(4,
+                               p("All"),
+                               plotOutput("indi_r_all")),
+                        column(4,
+                               p("Women"),
+                               plotOutput("indi_r_w")),
+                        column(4,
+                               p("Men"),
+                               plotOutput("indi_r_m"))
+                      ),
+                      hr(),
+                      fluidRow(column(10, offset = 1,
+                                      h4(textOutput("indi_r_t2")))),
+                      fluidRow(
+                        column(4,
+                               p(c1),
+                               plotOutput("pop_indi_r")),
+                        column(4,
+                               p(c2),
+                               plotOutput("with_job_indi_r")),
+                        column(4,
+                               p(c3),
+                               plotOutput("unpaid_indi_r"))
+                      ),
+                      hr(),
+                      
+                      h2("Indigenous people in urban areas"),
+                      fluidRow(column(10, offset = 1,
+                                      h4(textOutput("indi_u_t1")))),
+                      fluidRow(
+                        column(4,
+                               p("All"),
+                               plotOutput("indi_u_all")),
+                        column(4,
+                               p("Women"),
+                               plotOutput("indi_u_w")),
+                        column(4,
+                               p("Men"),
+                               plotOutput("indi_u_m"))
+                      ),
+                      hr(),
+                      fluidRow(column(10, offset = 1,
+                                      h4(textOutput("indi_u_t2")))),
+                      fluidRow(
+                        column(4,
+                               p(c1),
+                               plotOutput("pop_indi_u")),
+                        column(4,
+                               p(c2),
+                               plotOutput("with_job_indi_u")),
+                        column(4,
+                               p(c3),
+                               plotOutput("unpaid_indi_u"))
+                      )),
              
              # Tab panel: figures -----------------
              tabPanel("Figures",
                       box(h2("Column overview"),
                           fluidRow(
                             column(3,
-                                   p(c1),
+                                   p(paste(c1, "(2018)")),
                                    h1(textOutput("pop")),
                                    p("people (est.)")),
                             column(3,
@@ -622,6 +706,7 @@ ui <- fluidPage(
 
 # Server -----------------------------
 server <- function(input, output, session) {
+  # Tab panel: home --------------------------
   output$landing <- renderImage(list(src = "www/landing_page.png", width = "100%"), deleteFile = F)
   observeEvent(input$landing_cl, {
     updateNavbarPage(session, "main", selected = {
@@ -633,6 +718,149 @@ server <- function(input, output, session) {
     })
   })
   
+  # Tab panel: age ------------------------------
+  age_all <- function(df) {
+    ggplot(df) +
+      geom_bar(aes(x = age, fill = sex), position = "fill") +
+      geom_segment(aes(x = min(age) - 0.5, xend = max(age) + 0.5, y = 0.5, yend = 0.5), linetype = "dashed", color = "grey") +
+      geom_segment(aes(x = 10, xend = 10, y = 0, yend = 1), linetype = "dotted", color = "grey") +
+      geom_segment(aes(x = 18, xend = 18, y = 0, yend = 1), linetype = "dotted", color = "grey") +
+      geom_segment(aes(x = 60, xend = 60, y = 0, yend = 1), linetype = "dotted", color = "grey") +
+      theme_minimal() +
+      theme(legend.position = "bottom", legend.title = element_blank(), panel.grid.minor = element_blank()) +
+      scale_x_continuous(breaks = c(10, 18, 60)) +
+      scale_fill_manual(values = c(color1, color2), labels = c("men", "women")) +
+      ylab("proportion")
+  }
+  
+  output$age_all_t <- renderText("Although men make up a larger proportion of the labor force,
+                                  women are overwhelmingly overrepresented in unpaid labor.
+                                  Moreover, men are slightly more likely to do unpaid work only during their teenage years,
+                                  while women tend to work without pay throughout their lifetime and well into old age.")
+  output$pop_age_all <- renderPlot(age_all(personas))
+  output$with_job_age_all <- renderPlot(age_all(with_job))
+  output$unpaid_age_all <- renderPlot(age_all(unpaid_job))
+  
+  age_18 <- function(df) {
+    df <- df %>%
+      filter(age < 18)
+    ggplot(df) +
+      geom_bar(aes(x = age, fill = sex), position = "fill") +
+      geom_segment(aes(x = min(age) - 0.5, xend = max(age) + 0.5, y = 0.5, yend = 0.5), linetype = "dashed", color = "grey") +
+      theme_minimal() +
+      theme(legend.position = "bottom", legend.title = element_blank(), panel.grid.minor = element_blank()) +
+      scale_x_continuous(breaks = c(7, 10, 14, 17)) +
+      scale_fill_manual(values = c(color1, color2), labels = c("boys", "girls")) +
+      ylab("proportion")
+  }
+  
+  output$age_18_t <- renderText("While the international consensus for minimum working age is 14,
+                                Bolivia reduced it to 10 in 2014, lowest in the world.
+                                In the survey questionnaire, individuals 7 years and above are asked to report work status.")
+  output$pop_age_18 <- renderPlot(age_18(personas))
+  output$with_job_age_18 <- renderPlot(age_18(with_job))
+  output$unpaid_age_18 <- renderPlot(age_18(unpaid_job))
+  
+  age_18_60 <- function(df) {
+    df <- df %>%
+      filter(age > 17 & age < 61)
+    ggplot(df) +
+      geom_bar(aes(x = age, fill = sex), position = "fill") +
+      geom_segment(aes(x = min(age) - 0.5, xend = max(age) + 0.5, y = 0.5, yend = 0.5), linetype = "dashed", color = "grey") +
+      theme_minimal() +
+      theme(legend.position = "bottom", legend.title = element_blank(), panel.grid.minor = element_blank()) +
+      scale_fill_manual(values = c(color1, color2), labels = c("men", "women")) +
+      ylab("proportion")
+  }
+  
+  output$pop_age_18_60 <- renderPlot(age_18_60(personas))
+  output$with_job_age_18_60 <- renderPlot(age_18_60(with_job))
+  output$unpaid_age_18_60 <- renderPlot(age_18_60(unpaid_job))
+  
+  age_60 <- function(df) {
+    df <- df %>%
+      filter(age > 60)
+    ggplot(df) +
+      geom_bar(aes(x = age, fill = sex), position = "fill") +
+      geom_segment(aes(x = min(age) - 0.5, xend = max(age) + 0.5, y = 0.5, yend = 0.5), linetype = "dashed", color = "grey") +
+      theme_minimal() +
+      theme(legend.position = "bottom", legend.title = element_blank(), panel.grid.minor = element_blank()) +
+      scale_fill_manual(values = c(color1, color2), labels = c("men", "women")) +
+      ylab("proportion")
+  }
+  
+  output$pop_age_60 <- renderPlot(age_60(personas))
+  output$with_job_age_60 <- renderPlot(age_60(with_job))
+  output$unpaid_age_60 <- renderPlot(age_60(unpaid_job))
+  
+  # Tab panel: indigenous ---------------------------
+  output$indi_all <- renderPlot({
+    ggplot(personas) +
+      geom_bar(aes(x = age, fill = indigenous), position = "fill") +
+      theme_minimal() +
+      theme(legend.position = "bottom", legend.title = element_blank(), panel.grid.minor = element_blank()) +
+      scale_fill_manual(values = c(color1, color2, color3), labels = c("indigeous", "not indigenous", "not Bolivian")) +
+      ylab("proportion")
+  })
+  
+  output$indi_w <- renderPlot({
+    ggplot(personas %>% filter(sex == "2.Mujer")) +
+      geom_bar(aes(x = age, fill = indigenous), position = "fill") +
+      theme_minimal() +
+      theme(legend.position = "bottom", legend.title = element_blank(), panel.grid.minor = element_blank()) +
+      scale_fill_manual(values = c(color1, color2, color3), labels = c("indigeous", "not indigenous", "not Bolivian")) +
+      ylab("proportion")
+  })
+  
+  output$indi_m <- renderPlot({
+    ggplot(personas %>% filter(sex == "1.Hombre")) +
+      geom_bar(aes(x = age, fill = indigenous), position = "fill") +
+      theme_minimal() +
+      theme(legend.position = "bottom", legend.title = element_blank(), panel.grid.minor = element_blank()) +
+      scale_fill_manual(values = c(color1, color2, color3), labels = c("indigeous", "not indigenous", "not Bolivian")) +
+      ylab("proportion")
+  })
+  
+  indi_work <- function(df) {
+    ggplot(df) +
+      geom_bar(aes(x = indigenous, fill = sex), position = "fill", width = 0.5) +
+      theme_minimal() +
+      theme(legend.position = "bottom", legend.title = element_blank(), panel.grid.minor = element_blank()) +
+      scale_fill_manual(values = c(color1, color2), labels = c("men", "women")) +
+      ylab("proportion")
+  }
+  
+  output$pop_indi_work <- renderPlot(indi_work(personas))
+  output$with_job_indi_work <- renderPlot(indi_work(with_job))
+  output$unpaid_indi_work <- renderPlot(indi_work(unpaid_job))
+  
+  indi_ru <- function(df) {
+    ggplot(df) +
+      geom_bar(aes(x = age, fill = indigenous), position = "fill") +
+      theme_minimal() +
+      theme(legend.position = "bottom", legend.title = element_blank(), panel.grid.minor = element_blank()) +
+      scale_fill_manual(values = c(color1, color2, color3), labels = c("indigeous", "not indigenous", "not Bolivian")) +
+      ylab("proportion")
+  }
+  
+  output$indi_r_all <- renderPlot(indi_ru(personas %>% filter(area == "Rural")))
+  output$indi_r_w <- renderPlot(indi_ru(personas %>% filter(area == "Rural" & sex == "2.Mujer")))
+  output$indi_r_m <- renderPlot(indi_ru(personas %>% filter(area == "Rural" & sex == "1.Hombre")))
+  
+  output$pop_indi_r <- renderPlot(indi_work(personas %>% filter(area == "Rural")))
+  output$with_job_indi_r <- renderPlot(indi_work(with_job %>% filter(area == "Rural")))
+  output$unpaid_indi_r <- renderPlot(indi_work(unpaid_job %>% filter(area == "Rural")))
+  
+  output$indi_u_all <- renderPlot(indi_ru(personas %>% filter(area == "Urbana")))
+  output$indi_u_w <- renderPlot(indi_ru(personas %>% filter(area == "Urbana" & sex == "2.Mujer")))
+  output$indi_u_m <- renderPlot(indi_ru(personas %>% filter(area == "Urbana" & sex == "1.Hombre")))
+  
+  output$pop_indi_u <- renderPlot(indi_work(personas %>% filter(area == "Urbana")))
+  output$with_job_indi_u <- renderPlot(indi_work(with_job %>% filter(area == "Urbana")))
+  output$unpaid_indi_u <- renderPlot(indi_work(unpaid_job %>% filter(area == "Urbana")))
+  
+  
+  # Tab panel: figures -------------------------------
   output$pop <- renderText(round(nrow(personas) * wgt, 0))
   output$with_job <- renderText(round(nrow(with_job) * wgt, 0))
   output$unpaid <- renderText(round(nrow(unpaid_job) * wgt, 0))
