@@ -1,21 +1,78 @@
 library(readxl)
 library(tidyverse)
 
+income_freq <- function(var) {
+  case_when(
+    startsWith(var, "1") ~ 30,
+    startsWith(var, "2") ~ 30/7,
+    startsWith(var, "3") ~ 2,
+    startsWith(var, "4") ~ 1,
+    startsWith(var, "5") ~ 1/2,
+    startsWith(var, "6") ~ 1/3,
+    startsWith(var, "7") ~ 1/6,
+    startsWith(var, "8") ~ 1/12
+  )
+}
+
 personas <- suppressWarnings(read_excel("../data/EH_2018/EH2018_Personas2.xlsx") %>%
   mutate(higher_ed = ifelse(startsWith(edu, "7") | startsWith(edu, "8"), T, F),
-         any_ed = ifelse(startsWith(edu, "11"), F, T)))
+         any_ed = ifelse(startsWith(edu, "11"), F, T),
+         primary_work_week_hr = (work_day_hr + work_day_min/60) * work_days_week,
+         sec_work_week_hr = (sec_work_hr + sec_work_min/60) * sec_work_days_week,
+         tot_work_week_hr = ifelse(is.na(sec_work_week_hr), primary_work_week_hr, primary_work_week_hr + sec_work_week_hr),
+         primary_salary_freq = income_freq(primary_salary_freq),
+         primary_nonsalaried_income_freq = income_freq(primary_nonsalaried_income_freq),
+         primary_monthly_inc = ifelse(is.na(primary_job), NA,
+                                      case_when(is.na(primary_salary) & is.na(primary_nonsalaried_income) ~ 0,
+                                                is.na(primary_salary) ~ primary_nonsalaried_income * primary_nonsalaried_income_freq,
+                                                !is.na(primary_salary) ~ primary_salary * primary_salary_freq)),
+         sec_salary_freq = income_freq(sec_salary_freq),
+         sec_nonsalaried_income_freq = income_freq(sec_nonsalaried_income_freq),
+         sec_monthly_inc = ifelse(startsWith(sec_job, "2"), NA,
+                                  case_when(is.na(sec_salary) & is.na(sec_nonsalaried_income) ~ 0,
+                                            is.na(sec_salary) ~ sec_nonsalaried_income * sec_nonsalaried_income_freq,
+                                            !is.na(sec_salary) ~ sec_salary * sec_salary_freq)),
+         tot_monthly_inc = ifelse(is.na(primary_monthly_inc), NA,
+                                  case_when(is.na(sec_monthly_inc) ~ primary_monthly_inc,
+                                            !is.na(sec_monthly_inc) ~ primary_monthly_inc + sec_monthly_inc))))
 
-# Select people with at least 1 job
-with_job <- personas %>%
-  filter(!is.na(primary_job) | !is.na(sec_job)) %>%
+# Select age groups
+# Children
+children <- personas %>%
+  filter(age < 18) %>%
   select(folio, nro, area, sex, age, marital, literate, num_literate, indigenous, indigenous_id,
-         edu, any_ed, higher_ed, in_school,
+         edu, any_ed, higher_ed, in_school, why_not_in_school, current_edu, in_attendance, why_absence,
          chronic_disease_1, disability_1, pregnant, num_alive_child,
          manual_labor,
          cellphone, internet_use, internet_use_where_1, internet_use_where_2,
-         primary_job, work_type, primary_job_salary, primary_job_salary_freq, primary_job_nonsalaried_income, primary_job_nonsalaried_income_freq,
-         sec_job, sec_employer_industry, sec_work_type, sec_salary, sec_salary_freq, sec_income, sec_income_freq,
-         want_work_more, avail_work_more, union_member)
+         primary_job, work_type, primary_work_week_hr,
+         primary_salary, primary_salary_freq, primary_nonsalaried_income, primary_nonsalaried_income_freq, primary_monthly_inc,
+         sec_job, sec_employer_industry, sec_work_type, sec_work_week_hr,
+         sec_salary, sec_salary_freq, sec_nonsalaried_income, sec_nonsalaried_income_freq, sec_monthly_inc,
+         tot_monthly_inc, tot_work_week_hr, want_work_more, avail_work_more, union_member) %>%
+  mutate(edu_status = case_when(  # children 0-3 are all NA
+    startsWith(in_school, "1") & startsWith(in_attendance, "1") ~ "enrolled,\nattending",
+    startsWith(in_school, "1") & startsWith(in_attendance, "2") ~ "enrolled,\nnot attending",
+    startsWith(in_school, "2") ~ "not\nenrolled"
+  ))
+
+# Youth
+# Adults
+# Older adults
+
+# Select people with at least 1 job--------------
+with_job <- personas %>%
+  filter(!is.na(primary_job)) %>%
+  select(folio, nro, depto, area, sex, age, language_1, marital, literate, num_literate, indigenous, indigenous_id,
+         edu, any_ed, higher_ed, in_school, why_not_in_school, current_edu, in_attendance, why_absence,
+         chronic_disease_1, disability_1, pregnant, num_alive_child,
+         manual_labor,
+         cellphone, internet_use, internet_use_where_1, internet_use_where_2,
+         primary_job, work_type, primary_work_week_hr,
+         primary_salary, primary_salary_freq, primary_nonsalaried_income, primary_nonsalaried_income_freq, primary_monthly_inc,
+         sec_job, sec_employer_industry, sec_work_type, sec_work_week_hr,
+         sec_salary, sec_salary_freq, sec_nonsalaried_income, sec_nonsalaried_income_freq, sec_monthly_inc,
+         tot_monthly_inc, tot_work_week_hr, want_work_more, avail_work_more, union_member)
 
 # Select people with at least 1 unpaid job
 unpaid_job <- with_job %>%
@@ -35,17 +92,12 @@ unpaid_pri_job <- with_job %>%
 
 # Select child workers under 15
 child_worker <- with_job %>%
-  filter(age < 15) %>%
-  filter(startsWith(work_type, "7"))
+  filter(age < 15)
 
-child <- personas %>%
-  filter(age < 15) %>%
-  filter(in_school == "2. No" & is.na(work_type))
-
-ggplot(child_worker) +
-  geom_bar(aes(x = age, fill = work_type), position = "dodge", width = 0.5) +
-  theme_minimal() +
-  theme(legend.position = "bottom")
+# ggplot(child_worker) +
+#   geom_bar(aes(x = age, fill = work_type), position = "dodge", width = 0.5) +
+#   theme_minimal() +
+#   theme(legend.position = "bottom")
 
 
 
