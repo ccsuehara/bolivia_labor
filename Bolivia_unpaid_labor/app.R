@@ -1,11 +1,16 @@
-library(shiny)
-library(shinydashboard)
-library(shinythemes)
-library(tidyverse)
-library(shinyWidgets)
-library(plotly)
+packages.list <- c("shiny", "shinydashboard","shinythemes",
+                   "tidyverse", "shinyWidgets", "plotly", "waffle", "ggridges")
+for (p in packages.list) {
+  if (!p %in% installed.packages()[, "Package"]) install.packages(p)
+  library(p, character.only = TRUE)
+}
+
+#change folder path
+setwd("/Users/csolisu/Documents/Carla/chamba/shared_Bolivia/Bolivia_unpaid_labor")
 
 source("EDA.R")
+source("EDA2.R")
+
 c1 <- "General population (2018)"
 c2 <- "People with at least 1 job, paid or unpaid"
 c3 <- "People with at least 1 unpaid job"
@@ -151,6 +156,73 @@ ui <- fluidPage(
                           width = 12,
                           collapsible = T),
                       box(hr(), width = 12),
+                      
+                      box(h2("Proportions"),
+                          h4(textOutput("proportion_exp")),
+                          fluidRow(
+                            column(4,
+                                   p(lf1),
+                                   plotOutput("waf_emp")),
+                            column(4,
+                                   p(lf2),
+                                   plotOutput("waf_unemp")),
+                            column(4,
+                                   p(lf3),
+                                   plotOutput("waf_inac"))
+                          ),
+                          width = 12,
+                          collapsible = T),
+                      box(hr(), width = 12),
+                      box(h2("Rural/ Urban population"),
+                          h4(textOutput("ar_lf")),
+                          fluidRow(
+                            column(4,
+                                   p(lf1),
+                                   plotOutput("ar_emp")),
+                            column(4,
+                                   p(lf2),
+                                   plotOutput("ar_unemp")),
+                            column(4,
+                                   p(lf3),
+                                   plotOutput("ar_inac"))
+                          ),
+                          width = 12,
+                          collapsible = T),
+                      box(hr(), width = 12),
+                      box(h2("School attendance"),
+                          h4(textOutput("sch_lf")),
+                          fluidRow(
+                            column(4,
+                                   p(lf1),
+                                   plotOutput("ed_emp")),
+                            column(4,
+                                   p(lf2),
+                                   plotOutput("ed_unemp")),
+                            column(4,
+                                   p(lf3),
+                                   plotOutput("ed_inac"))
+                            ),
+                          width = 12,
+                          collapsible = T),
+                      box(hr(), width = 12),
+                      box(h2("Indigenous Belonging"),
+                          h4(textOutput("ind_lf")),
+                          fluidRow(
+                            column(4,
+                                   p(lf1),
+                                   plotOutput("ind_emp")),
+                            column(4,
+                                   p(lf2),
+                                   plotOutput("ind_unemp")),
+                            column(4,
+                                   p(lf3),
+                                   plotOutput("ind_inac"))
+                          ),
+                          width = 12,
+                          collapsible = T),
+                      box(hr(), width = 12),
+                      
+                      
                       value = "lfp"),
              
              # Tab panel: Rural/urban --------------------
@@ -691,13 +763,6 @@ server <- function(input, output, session) {
       scale_x_continuous(breaks = c(7, 18, 90))
   }
   
-  age_lfp <- function(df) {
-    ggplot(df) +
-      geom_density(aes(x = age, fill = sex), position = "dodge", width = 0.5, alpha = 0.5) +
-      theme_minimal() +
-      theme(legend.position = "bottom")
-  }
-  
   output$age_t <- renderText('Men are more likely to do unpaid labor during their teenage years,
                              while women tend to work without pay throughout their lifetime.')
   output$pop_age <- renderPlot(age(personas))
@@ -709,6 +774,27 @@ server <- function(input, output, session) {
   output$pop_emp <- renderPlot(age_lfp(employed))
   output$pop_unemp <- renderPlot(age_lfp(unemployed))
   output$pop_inac <- renderPlot(age_lfp(inactive))
+  
+  
+  output$proportion_exp <- renderText("Let's look at the proportions of people in each category")
+  output$waf_emp <- renderPlot(wfl_plot(employed_gender,50000))
+  output$waf_unemp <- renderPlot(wfl_plot(unemp_gender,50000))
+  output$waf_inac <- renderPlot(wfl_plot(inactive_gender,50000))
+  
+  output$sch_lf <- renderText("let's look at the distributions by education, gender, age and participation in the labor force")
+  output$ed_emp <- renderPlot(ridge_educ(employed))
+  output$ed_unemp <- renderPlot(ridge_educ(unemployed))
+  output$ed_inac <- renderPlot(ridge_educ(inactive))
+  
+  output$ar_lf <- renderText("Population Distributions by gender, area, age and participation in the labor force")
+  output$ar_emp <- renderPlot(ridge_urban(employed))
+  output$ar_unemp <- renderPlot(ridge_urban(unemployed))
+  output$ar_inac <- renderPlot(ridge_urban(inactive))
+  
+  output$ind_lf <- renderText("Population Distributions by gender, indigenous belonging, age and participation in the labor force")
+  output$ind_emp <- renderPlot(ridge_indigen(employed))
+  output$ind_unemp <- renderPlot(ridge_indigen(unemployed))
+  output$ind_inac <- renderPlot(ridge_indigen(inactive))
 
   sch <- function(df) {
     ggplot(df) +
