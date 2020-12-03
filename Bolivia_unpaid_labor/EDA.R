@@ -1,4 +1,3 @@
-library(readxl)
 library(tidyverse)
 
 income_freq <- function(var) {
@@ -35,6 +34,17 @@ personas <- suppressWarnings(read_excel("../data/EH_2018/EH2018_Personas2.xlsx")
          tot_monthly_inc = ifelse(is.na(primary_monthly_inc), NA,
                                   case_when(is.na(sec_monthly_inc) ~ primary_monthly_inc,
                                             !is.na(sec_monthly_inc) ~ primary_monthly_inc + sec_monthly_inc))))
+hh_inc_df <- personas %>%
+  group_by(folio) %>%
+  summarize(hh_inc = sum(tot_monthly_inc, na.rm = T),
+            hh_hr = sum(tot_work_week_hr, na.rm = T))
+personas <- personas %>%
+  left_join(hh_inc_df, by = "folio") %>%
+  mutate(hh_inc_pct = tot_monthly_inc / hh_inc * 100,
+         hh_hr_pct = tot_work_week_hr / hh_hr * 100)
+# Remaining question: do we want to replace NA values (including those who do not work, not including those who work withotu pay) with 0?
+personas$hh_inc_pct[is.na(personas$hh_inc_pct)] <- 0
+personas$hh_hr_pct[is.na(personas$hh_hr_pct)] <- 0
 
 # Select age groups
 # Children
@@ -49,12 +59,93 @@ children <- personas %>%
          primary_salary, primary_salary_freq, primary_nonsalaried_income, primary_nonsalaried_income_freq, primary_monthly_inc,
          sec_job, sec_employer_industry, sec_work_type, sec_work_week_hr,
          sec_salary, sec_salary_freq, sec_nonsalaried_income, sec_nonsalaried_income_freq, sec_monthly_inc,
-         tot_monthly_inc, tot_work_week_hr, want_work_more, avail_work_more, union_member) %>%
+         tot_monthly_inc, tot_work_week_hr, hh_inc, hh_inc_pct, hh_hr, hh_hr_pct, want_work_more, avail_work_more, union_member) %>%
   mutate(edu_status = case_when(  # children 0-3 are all NA
     startsWith(in_school, "1") & startsWith(in_attendance, "1") ~ "enrolled,\nattending",
     startsWith(in_school, "1") & startsWith(in_attendance, "2") ~ "enrolled,\nnot attending",
     startsWith(in_school, "2") ~ "not\nenrolled"
   ))
+
+ggplot(children %>% filter(!is.na(primary_job))) +
+  geom_jitter(aes(x = age, y = hh_inc_pct, color = sex, size = tot_monthly_inc), alpha = 0.15) +
+  scale_size(range = c(0.1, 30)) +
+  theme_minimal()
+
+df1 <- children %>% filter(!is.na(primary_job) & startsWith(sex, "2"))
+mean(df1$hh_inc_pct)
+
+ggplot(children %>% filter(!is.na(tot_monthly_inc))) +
+  geom_jitter(aes(x = age, y = hh_inc_pct, size = tot_work_week_hr, color = sex), alpha = 0.15) +
+  geom_line(data = children %>% filter(!is.na(tot_monthly_inc)) %>% group_by(age, sex) %>% summarize(mean_hr = mean(tot_work_week_hr), mean_inc = mean(tot_monthly_inc), mean_pct = mean(hh_inc_pct)),
+            aes(y = mean_pct, x = age, color = sex), size = 1) +
+  geom_point(data = children %>% filter(!is.na(tot_monthly_inc)) %>% group_by(age, sex) %>% summarize(mean_hr = mean(tot_work_week_hr), mean_inc = mean(tot_monthly_inc), mean_pct = mean(hh_inc_pct)),
+             aes(y = mean_pct, x = age, size = mean_hr, color = sex)) +
+  theme_minimal() +
+  theme(legend.position = "bottom", panel.grid.major.y = element_blank(), panel.grid.minor = element_blank()) +
+  scale_x_continuous(limits = c(7, 17.8)) +
+  scale_color_manual(values = c(color1, color2), labels = c("boys", "girls")) +
+  scale_size(range = c(0.1, 10)) +
+  labs(y = "contribution to household income (%)", size = "weekly work hours", color = "average value")
+
+hh_hr_area <- ggplot(children %>% filter(!is.na(tot_monthly_inc))) +
+  geom_jitter(aes(x = age, y = hh_hr_pct, size = tot_monthly_inc, color = area), alpha = 0.15) +
+  geom_line(data = children %>% filter(!is.na(tot_monthly_inc)) %>% group_by(age, area) %>%
+              summarize(mean_hr = mean(tot_work_week_hr), mean_inc = mean(tot_monthly_inc), mean_pct = mean(hh_hr_pct)),
+            aes(y = mean_pct, x = age, color = area), size = 1) +
+  geom_point(data = children %>% filter(!is.na(tot_monthly_inc)) %>% group_by(age, area) %>%
+               summarize(mean_hr = mean(tot_work_week_hr), mean_inc = mean(tot_monthly_inc), mean_pct = mean(hh_hr_pct)),
+             aes(y = mean_pct, x = age, size = mean_inc, color = area)) +
+  theme_minimal() +
+  theme(legend.position = "bottom", panel.grid.minor = element_blank()) +
+  scale_x_continuous(limits = c(7, 17.8)) +
+  scale_color_manual(values = c(color1, color2), labels = c("rural", "urban")) +
+  scale_size(range = c(0.1, 30)) +
+  labs(y = "share of household work hours (%)", size = "monthly income", color = "average")
+
+hh_hr_sex <- ggplot(children %>% filter(!is.na(tot_monthly_inc))) +
+  geom_jitter(aes(x = age, y = hh_hr_pct, size = tot_monthly_inc, color = sex), alpha = 0.15) +
+  geom_line(data = children %>% filter(!is.na(tot_monthly_inc)) %>% group_by(age, sex) %>% 
+              summarize(mean_hr = mean(tot_work_week_hr), mean_inc = mean(tot_monthly_inc), mean_pct = mean(hh_hr_pct)),
+            aes(y = mean_pct, x = age, color = sex), size = 1) +
+  geom_point(data = children %>% filter(!is.na(tot_monthly_inc)) %>% group_by(age, sex) %>% 
+               summarize(mean_hr = mean(tot_work_week_hr), mean_inc = mean(tot_monthly_inc), mean_pct = mean(hh_hr_pct)),
+             aes(y = mean_pct, x = age, size = mean_inc, color = sex)) +
+  theme_minimal() +
+  theme(legend.position = "bottom", panel.grid.minor = element_blank()) +
+  scale_x_continuous(limits = c(7, 17.8)) +
+  scale_color_manual(values = c(color1, color2), labels = c("boys", "girls")) +
+  scale_size(range = c(0.1, 30)) +
+  labs(y = "share of household work hours (%)", size = "monthly income", color = "average")
+
+hh_inc_area <- ggplot(children %>% filter(!is.na(tot_monthly_inc))) +
+  geom_jitter(aes(x = age, y = hh_inc_pct, size = tot_work_week_hr, color = area), alpha = 0.15) +
+  geom_line(data = children %>% filter(!is.na(tot_monthly_inc)) %>% group_by(age, area) %>% 
+              summarize(mean_hr = mean(tot_work_week_hr), mean_inc = mean(tot_monthly_inc), mean_pct = mean(hh_inc_pct)),
+            aes(y = mean_pct, x = age, color = area), size = 1) +
+  geom_point(data = children %>% filter(!is.na(tot_monthly_inc)) %>% group_by(age, area) %>% 
+               summarize(mean_hr = mean(tot_work_week_hr), mean_inc = mean(tot_monthly_inc), mean_pct = mean(hh_inc_pct)),
+             aes(y = mean_pct, x = age, size = mean_hr, color = area)) +
+  theme_minimal() +
+  theme(legend.position = "bottom", panel.grid.minor = element_blank()) +
+  scale_x_continuous(limits = c(7, 17.8)) +
+  scale_color_manual(values = c(color1, color2), labels = c("rural", "urban")) +
+  scale_size(range = c(0.1, 10)) +
+  labs(y = "contribution to household income (%)", size = "weekly work hours", color = "average")
+
+hh_inc_sex <- ggplot(children %>% filter(!is.na(tot_monthly_inc))) +
+  geom_jitter(aes(x = age, y = hh_inc_pct, size = tot_work_week_hr, color = sex), alpha = 0.15) +
+  geom_line(data = children %>% filter(!is.na(tot_monthly_inc)) %>% group_by(age, sex) %>% 
+              summarize(mean_hr = mean(tot_work_week_hr), mean_inc = mean(tot_monthly_inc), mean_pct = mean(hh_inc_pct)),
+            aes(y = mean_pct, x = age, color = sex), size = 1) +
+  geom_point(data = children %>% filter(!is.na(tot_monthly_inc)) %>% group_by(age, sex) %>% 
+               summarize(mean_hr = mean(tot_work_week_hr), mean_inc = mean(tot_monthly_inc), mean_pct = mean(hh_inc_pct)),
+             aes(y = mean_pct, x = age, size = mean_hr, color = sex)) +
+  theme_minimal() +
+  theme(legend.position = "bottom", panel.grid.minor = element_blank()) +
+  scale_x_continuous(limits = c(7, 17.8)) +
+  scale_color_manual(values = c(color1, color2), labels = c("boys", "girls")) +
+  scale_size(range = c(0.1, 10)) +
+  labs(y = "contribution to household income (%)", size = "weekly work hours", color = "average")
 
 # Youth
 # Adults

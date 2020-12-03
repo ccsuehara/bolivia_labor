@@ -22,8 +22,8 @@ color8 <- "#882255"
 color9 <- "#e6e6e6" # grey 10
 color_pal <- c(color1, color2, color3, color4, color5, color6, color7, color8, color9)
 filler <- "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Eget felis eget nunc lobortis. Viverra nam libero justo laoreet sit amet cursus sit amet. Gravida quis blandit turpis cursus in hac habitasse platea. Id interdum velit laoreet id donec ultrices tincidunt. Diam ut venenatis tellus in metus. Donec adipiscing tristique risus nec feugiat in fermentum posuere urna. Penatibus et magnis dis parturient montes nascetur. Orci a scelerisque purus semper. Nisi vitae suscipit tellus mauris a diam maecenas sed enim. Leo vel fringilla est ullamcorper eget nulla facilisi etiam. Sed arcu non odio euismod. Turpis egestas maecenas pharetra convallis posuere morbi. At volutpat diam ut venenatis tellus in metus vulputate. Morbi tincidunt ornare massa eget. Enim sit amet venenatis urna cursus eget nunc."
-names_m <- c("Juan", "Jose", "Luis", "Carlos", "Mario", "Jorge", "Victor")
-names_w <- c("Maria", "Juana", "Ana", "Martha", "Carmen", "Rosa", "Julia")
+names_m <- c("Juan", "Jose", "Luis", "Carlos", "Mario", "Jorge", "Victor", "Miguel", "Pedro", "Antonio", "Fernando", "Roberto", "Felix", "Julio")
+names_w <- c("Maria", "Juana", "Ana", "Martha", "Carmen", "Rosa", "Julia", "Elizabeth", "Cristina", "Lidia", "Patricia", "Sonia", "Isabel", "Victoria")
 
 # UI -------------------------------
 ui <- fluidPage(
@@ -32,6 +32,7 @@ ui <- fluidPage(
              "h1, h2, h3, h4 { text-align: center; }",
              "p { text-align: center; color: grey; }",
              "hr { margin-top: 2em; margin-bottom: 2em; }",
+             "#children_madlib { color: white; }",
              "#landing { align-self: center; }"),
   
   navbarPage("Working while female in Bolivia",
@@ -112,12 +113,11 @@ ui <- fluidPage(
              tabPanel("Children under 18",
                       value = "children",
                       
-                      fluidRow(
-                        column(8,
-                               offset = 2,
-                               h3(textOutput("children_madlib")))
-                      ),
-                      hr(),
+                      fluidRow(column(12, style = "background-color: #3e3f3a; padding: 80px 50px;",
+                                      fluidRow(
+                                        column(8,
+                                               offset = 2,
+                                               h3(textOutput("children_madlib")))))),
                       hr(),
                       fluidRow(
                         column(6,
@@ -131,7 +131,7 @@ ui <- fluidPage(
                                         plotOutput("children_overview2"))
                                ),
                                hr(),
-                               textOutput("children_t3"),
+                               textOutput("children_t1"),
                                h3("School enrollment and attendance"),
                                fluidRow(
                                  column(6,
@@ -140,11 +140,13 @@ ui <- fluidPage(
                                         plotOutput("children_edu2"))
                                ),
                                hr(),
+                               textOutput("children_t2"),
                                h3("Reasons for not enrolling in school"),
                                d3tree2Output("children_edu3"),
                                plotOutput("children_edu4"),
                                hr(),
-                               h3("Reasons for missing school"),
+                               textOutput("children_t3"),
+                               h3("Educational attainment"),
                                fluidRow(
                                  column(6,
                                         plotOutput("children_edu5")),
@@ -152,36 +154,22 @@ ui <- fluidPage(
                                         plotOutput("children_edu6"))
                                ),
                                hr(),
-                               h3("Educational attainment"),
-                               fluidRow(
-                                 column(6,
-                                        plotOutput("children_edu7")),
-                                 column(6,
-                                        plotOutput("children_edu8"))
-                               ),
-                               hr(),
                                textOutput("children_t4"),
                                h3("Work hours and income"),
                                plotOutput("children_lfp1"),
                                plotOutput("children_lfp2"),
                                hr(),
-                               h3("Employment status in relation to education"),
-                               fluidRow(
-                                 column(6,
-                                        plotOutput("children_lfp3")),
-                                 column(6,
-                                        plotOutput("children_lfp4"))
-                               ),
-                               textOutput("children_t1"),
-                               h3("Children in rural and urban areas"),
-                               fluidRow(
-                                 column(6,
-                                        plotOutput("children_ru1")),
-                                 column(6,
-                                        plotOutput("children_ru2"))
-                               ),
+                               textOutput("children_t5"),
+                               h3("Work hours and income in relation to the household"),
+                               plotOutput("children_lfp3"),
+                               plotOutput("children_lfp4"),
                                hr(),
-                               textOutput("children_t2"),
+                               textOutput("children_t6"),
+                               h3("Children in rural and urban areas"),
+                               plotOutput("children_ru1"),
+                               plotOutput("children_ru2"),
+                               hr(),
+                               textOutput("children_t7"),
                                h3("Children and indigeneity"),
                                fluidRow(
                                  column(6,
@@ -820,28 +808,56 @@ server <- function(input, output, session) {
   })
   
   # Tab panel: children --------------------------
-  madlib_df <- child_worker[sample(nrow(child_worker), 1), ]
-  madlib_name <- ifelse(startsWith(madlib_df$sex, "1"), sample(names_m, 1), sample(names_w, 1))
-  madlib_pron1 <- ifelse(startsWith(madlib_df$sex, "1"), "He", "She")
-  madlib_pron2 <- ifelse(startsWith(madlib_df$sex, "1"), "he", "she")
+  output$children_madlib <- renderText({
+    invalidateLater(10000)
+    
+    madlib_df <- child_worker[sample(nrow(child_worker), 1), ]
+    sex_test <- startsWith(madlib_df$sex, "1")
+    madlib_name <- ifelse(sex_test, sample(names_m, 1), sample(names_w, 1))
+    madlib_pron1 <- ifelse(sex_test, "He", "She")
+    madlib_pron2 <- ifelse(sex_test, "he", "she")
+    madlib_pron3 <- ifelse(sex_test, "his", "her")
+    madlib_lang <- paste0(substring(madlib_df$language_1, 1, 1), tolower(substring(madlib_df$language_1, 2, nchar(madlib_df$language_1))))
+    
+    paste(
+      madlib_name, "is", round(madlib_df$age, 0), "years old.",
+      madlib_pron1, "lives in", ifelse(madlib_df$area == "Rural", "rural", "urban"), madlib_df$depto, "and primarily speaks", paste0(madlib_lang, "."),
+      case_when(startsWith(madlib_df$in_school, "1") & startsWith(madlib_df$in_attendance, "1") ~ paste(madlib_pron1, "goes to school every day."),
+                      startsWith(madlib_df$in_school, "1") & startsWith(madlib_df$in_attendance, "2") ~ paste(madlib_pron1, "is enrolled in school but is not always able to attend it."),
+                      startsWith(madlib_df$in_school, "2") ~ paste(madlib_pron1, "is not going to school.")),
+      case_when(!is.na(madlib_df$primary_job) & startsWith(madlib_df$sec_job, "2") ~ paste(madlib_pron1, "works as a", tolower(madlib_df$primary_job), "for", madlib_df$tot_work_week_hr, "hours per week."),
+                      !is.na(madlib_df$primary_job) & startsWith(madlib_df$sec_job, "1") ~ paste(madlib_pron1, "mainly works as a", madlib_df$primary_job, "for", madlib_df$primary_work_week_hr, "hours per week, but", madlib_pron2, "also has a second job for another", madlib_df$sec_work_week_hr, "weekly hours."),
+                      is.na(madlib_df$primary_job) ~ paste(madlib_pron1, "does not have a job.")),
+      ifelse(round(madlib_df$tot_monthly_inc, 0) == 0,
+                   paste(madlib_pron1, "does not earn any income from", madlib_pron3, "work."),
+                   paste("In total,", madlib_pron2, "makes", round(madlib_df$tot_monthly_inc, 0), "Bolivianos every month."))
+    )
+  })
   
-  output$children_madlib <- renderText(paste(
-    madlib_name, "is", round(madlib_df$age, 0), "years old.",
-    madlib_pron1, "lives in", ifelse(madlib_df$area == "Rural", "rural", "urban"), madlib_df$depto, "and primarily speaks", madlib_df$language_1, ".",
-    case_when(startsWith(madlib_df$in_school, "1") & startsWith(madlib_df$in_attendance, "1") ~ paste(madlib_pron1, "goes to school every day."),
-              startsWith(madlib_df$in_school, "1") & startsWith(madlib_df$in_attendance, "2") ~ paste(madlib_pron1, "is enrolled in school but is not always able to attend it."),
-              startsWith(madlib_df$in_school, "2") ~ paste(madlib_pron1, "is not going to school.")),
-    case_when(!is.na(madlib_df$primary_job) & startsWith(madlib_df$sec_job, "2") ~ paste(madlib_pron1, "works as a", madlib_df$primary_job, "for", madlib_df$tot_work_week_hr, "hours per week."),
-              !is.na(madlib_df$primary_job) & startsWith(madlib_df$sec_job, "1") ~ paste(madlib_pron1, "mainly works as a", madlib_df$primary_job, "for", madlib_df$primary_work_week_hr, "hours per week, but", madlib_pron2, "also has a second job for another", madlib_df$sec_work_week_hr, "weekly hours."),
-              is.na(madlib_df$primary_job) ~ paste(madlib_pron1, "does not have a job.")),
-    "In total,", madlib_pron2, "makes", round(madlib_df$tot_monthly_inc, 0), "Bolivianos every month."
-  ))
-  
-  output$children_intro <- renderText(substr(filler, 1, 300))
-  output$children_t1 <- renderText(filler)
-  output$children_t2 <- renderText(filler)
-  output$children_t3 <- renderText(filler)
-  output$children_t4 <- renderText(filler)
+  output$children_intro <- renderText("In this household survey, children make up about 35% of the sampled population, indicating that children are an important demographic in Bolivia.
+                                      It is also worth highlighting that Bolivia has the lowest legal minimum working age, ten, instead of the international consensus of fourteen. This labor law remains controversial today, with some arguing that it destigmatizes child workers' struggle for fair labor, while others casting doubt on the legislation's efficacy and its implications for children's long-term well-being.
+                                      Given this reality, it is even more crucial to understand the conditions in which children live and work, as well as the persistent impact of social disparities.")
+  output$children_t1 <- renderText('Bolivia enjoys a high level of school enrollment among children.
+                                   Even among those in the category of "enrolled, not attending", the vast majority are simply due to school break or recess (i.e. the timing of the survey), not structural barriers.
+                                   There is no evidence for gender disparity in receiving education.')
+  output$children_t2 <- renderText('However, there is still a notable minority of children who could not go to school, and the survey largely fails to capture the complex reasons.
+                                   From the available data, poverty and inaccessibility appear to remain an obstacle for many children.')
+  output$children_t3 <- renderText("TBD")
+  output$children_t4 <- renderText("When we look at children individually, there is not a significant difference between boys' and girls' work hours and incomes,
+                                   except that boys start earning more than girls on a monthly basis as they approach 18.
+                                   Interestingly, their hourly incomes do not differ, which means that teenage boys probably work more hours than girls.
+                                   Overall, a large number of boys and girls merely help out with their families' work, rather than seeking outside employment.")
+  output$children_t5 <- renderText("More intriguing patterns emerge, however, when we examine children's work as contributions to their households.
+                                   Clearly, starting from age 16, boys begin to make a larger contribution to their family's income than girls, but their share of total work hours among all family members remains equal.
+                                   This likely means that girls start doing unpaid or family-based labor during adolescence.
+                                   Puberty -> devaluation of female labor. Sexualization and devaluation go hand in hand.
+                                   In terms of DRM, the data show that men/boys are more likely to have income sources outside their homes and access an additional channel of financial stability.
+                                   Yet, in some scenarios, teenage boys are actual the main breadwinners in their families, which denotes heightened vulnerability to social and economic shocks.")
+  output$children_t6 <- renderText("An even more stark contrast exists between children in rural and urban areas.
+                                   Children in cities start contributing to their family finances at an earlier age, work more hours, and bring home more money.
+                                   Additionally, while rural children work a similar amount of hours throughout their childhood and adolescence, city kids pick up more work as they grow older, especially from age 12.")
+  output$children_t7 <- renderText("Not much to note here yet, except that the indigenous population seems to be in decline (the trend is more obvious when all age groups are mapped together).
+                                   The exact reason remains to be investigated.")
   
   output$children_overview1 <- renderPlot(
     ggplot(children) +
@@ -863,24 +879,25 @@ server <- function(input, output, session) {
       ylab("proportion")
   )
   
-  output$children_ru1 <- renderPlot(
-    ggplot(children) +
-      geom_bar(aes(x = area, fill = sex), position = "stack", width = 0.5) +
-      theme_minimal() +
-      theme(legend.position = "bottom", legend.title = element_blank(), panel.grid.minor = element_blank()) +
-      scale_x_discrete(labels = c("Rural" = "rural", "Urbana" = "urban")) +
-      scale_fill_manual(values = c(color1, color2), labels = c("boys", "girls")) +
-      xlab("") + ylab("population")
-  )
-  output$children_ru2 <- renderPlot(
-    ggplot(children) +
-      geom_bar(aes(x = area, fill = sex), position = "fill", width = 0.5) +
-      theme_minimal() +
-      theme(legend.position = "bottom", legend.title = element_blank(), panel.grid.minor = element_blank()) +
-      scale_x_discrete(labels = c("Rural" = "rural", "Urbana" = "urban")) +
-      scale_fill_manual(values = c(color1, color2), labels = c("boys", "girls")) +
-      xlab("") + ylab("proportion")
-  )
+  # output$children_ru1 <- renderPlot(
+  #   ggplot(children) +
+  #     geom_bar(aes(x = area, fill = sex), position = "stack", width = 0.5) +
+  #     theme_minimal() +
+  #     theme(legend.position = "bottom", legend.title = element_blank(), panel.grid.minor = element_blank()) +
+  #     scale_x_discrete(labels = c("Rural" = "rural", "Urbana" = "urban")) +
+  #     scale_fill_manual(values = c(color1, color2), labels = c("boys", "girls")) +
+  #     xlab("") + ylab("population")
+  # )
+  # output$children_ru2 <- renderPlot(
+  #   ggplot(children) +
+  #     geom_bar(aes(x = area, fill = sex), position = "fill", width = 0.5) +
+  #     theme_minimal() +
+  #     theme(legend.position = "bottom", legend.title = element_blank(), panel.grid.minor = element_blank()) +
+  #     scale_x_discrete(labels = c("Rural" = "rural", "Urbana" = "urban")) +
+  #     scale_fill_manual(values = c(color1, color2), labels = c("boys", "girls")) +
+  #     xlab("") + ylab("proportion")
+  # )
+  
   output$children_indi1 <- renderPlot(
     ggplot(children) +
       geom_bar(aes(x = indigenous, fill = sex), position = "stack", width = 0.5) +
@@ -937,7 +954,7 @@ server <- function(input, output, session) {
   
   why_not_in_school_df <- children %>%
     filter(!is.na(why_not_in_school)) %>%
-    mutate(why_not_in_school = case_when(startsWith(why_not_in_school, "14") ~ "reason not\nlisted in survey",
+    mutate(why_not_in_school = case_when(startsWith(why_not_in_school, "14") ~ "reasons not\nlisted in survey",
                                          startsWith(why_not_in_school, "11") ~ "work",
                                          startsWith(why_not_in_school, "2") ~ "illness,\naccident,\ndisability",
                                          startsWith(why_not_in_school, "3") ~ "pregnancy",
@@ -1004,6 +1021,12 @@ server <- function(input, output, session) {
       scale_size(range = c(0.1, 30)) +
       labs(y = "weekly work hours", size = "hourly income (BOB)", color = "")
   )
+  
+  output$children_lfp3 <- renderPlot(hh_inc_sex)
+  output$children_lfp4 <- renderPlot(hh_hr_sex)
+  
+  output$children_ru1 <- renderPlot(hh_inc_area)
+  output$children_ru2 <- renderPlot(hh_hr_area)
   
   # Tab panel: age ------------------------------
   age_all <- function(df) {
