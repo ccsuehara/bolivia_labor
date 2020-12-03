@@ -1,6 +1,9 @@
 library(tidyverse)
+library(readxl)
 library(ggridges)
 
+color1 <- "#DDCC77"
+color2 <- "#88CCEE"
 
 income_freq <- function(var) {
   case_when(
