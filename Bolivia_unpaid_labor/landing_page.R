@@ -2,25 +2,25 @@ library(tidyverse)
 library(shiny)
 library(shinythemes)
 
-# olive_green <- "#99b18f"
-# 
-# headings <- data.frame(
-#   "title" = c("Age", "Education", "Labor force\nparticipation", "Rural/urban", "Indigenous\nidentity"),
-#   "x" = c(2, 9.5, 6.5, 8.9, 1.5),
-#   "y" = c(10, 9, 6.4, 2.8, 1.2)
-# )
-# 
-# subh <- data.frame(
-#   "title" = c("Age", "Education", "Labor force\nparticipation", "Rural/urban", "Indigenous\nidentity")
-# )
-# 
-# ggplot(headings) +
-#   geom_point(aes(x = x, y = y), size = 60, color = olive_green) +
-#   geom_point(aes(x = x, y = y), size = 55, color = "white") +
-#   geom_text(aes(x = x, y = y, label = title), color = olive_green, size = 5.5) +
-#   # theme_void() +
-#   coord_fixed() +
-#   xlim(0, 11) + ylim(0, 11)
+olive_green <- "#99b18f"
+
+headings <- data.frame(
+  "title" = c("Age", "Education", "Labor force\nparticipation", "Rural/urban", "Indigenous\nidentity"),
+  "x" = c(2, 9.5, 6.5, 8.9, 1.5),
+  "y" = c(10, 9, 6.4, 2.8, 1.2)
+)
+
+subh <- data.frame(
+  "title" = c("Age", "Education", "Labor force\nparticipation", "Rural/urban", "Indigenous\nidentity")
+)
+
+ggplot(headings) +
+  geom_point(aes(x = x, y = y), size = 60, color = olive_green) +
+  geom_point(aes(x = x, y = y), size = 55, color = "white") +
+  geom_text(aes(x = x, y = y, label = title), color = olive_green, size = 5.5) +
+  # theme_void() +
+  coord_fixed() +
+  xlim(0, 11) + ylim(0, 11)
 
 ui <- fluidPage(
   theme = shinytheme("sandstone"),

@@ -1,16 +1,24 @@
-library(shiny)
-library(shinydashboard)
-library(shinythemes)
-library(tidyverse)
-library(shinyWidgets)
+
+packages.list <- c("shiny", "shinydashboard","shinythemes",
+                   "tidyverse", "shinyWidgets", "plotly", "waffle", "ggridges")
+for (p in packages.list) {
+  if (!p %in% installed.packages()[, "Package"]) install.packages(p)
+  library(p, character.only = TRUE)
+}
+
 library(treemap)
 library(d3treeR)
+#change folder path
+setwd("/Users/csolisu/Documents/Carla/chamba/shared_Bolivia/Bolivia_unpaid_labor")
 
 source("EDA.R")
-c1 <- "General population"
+source("EDA2.R")
+
+c1 <- "General population (2018)"
 c2 <- "People with at least 1 job, paid or unpaid"
 c3 <- "People with at least 1 unpaid job"
 c4 <- "People with a paid primary job and an unpaid secondary job"
+
 color1 <- "#DDCC77"
 color2 <- "#88CCEE"
 color3 <- "#44AA99"
@@ -25,6 +33,13 @@ filler <- "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusm
 names_m <- c("Juan", "Jose", "Luis", "Carlos", "Mario", "Jorge", "Victor", "Miguel", "Pedro", "Antonio", "Fernando", "Roberto", "Felix", "Julio")
 names_w <- c("Maria", "Juana", "Ana", "Martha", "Carmen", "Rosa", "Julia", "Elizabeth", "Cristina", "Lidia", "Patricia", "Sonia", "Isabel", "Victoria")
 
+
+lf1 <- "Employed Population"
+lf2 <- "Unemployed Population"
+lf3 <- "Inactive Population"
+
+wgt <- 258.651824951171
+#wgt <- 1
 # UI -------------------------------
 ui <- fluidPage(
   theme = shinytheme("sandstone"),
@@ -292,8 +307,116 @@ ui <- fluidPage(
                                p(c3),
                                plotOutput("unpaid_indi_u"))
                       )),
+             # Tab panel: LFP --------------------
+             tabPanel("Labor force participation",
+                      box(h2("Column overview"),
+                          fluidRow(
+                            column(4,
+                                   p(lf1),
+                                   h1(textOutput("empl")),
+                                   p("people (est.)")),
+                            column(4,
+                                   p(lf2),
+                                   h1(textOutput("unempl")),
+                                   p("people (est.)")),
+                            column(4,
+                                   p(lf3),
+                                   h1(textOutput("inactiv")),
+                                   p("people (est.)"))
+                          ),
+                          width = 12,
+                          collapsible = T),
+                      box(hr(), width = 12),
+                      
+                      box(h2("Age"),
+                          h4(textOutput("age_t_lfp")),
+                          fluidRow(
+                            column(4,
+                                   p(lf1),
+                                   plotOutput("pop_emp")),
+                            column(4,
+                                   p(lf2),
+                                   plotOutput("pop_unemp")),
+                            column(4,
+                                   p(lf3),
+                                   plotOutput("pop_inac"))
+                          ),
+                          width = 12,
+                          collapsible = T),
+                      box(hr(), width = 12),
+                      
+                      box(h2("Proportions"),
+                          h4(textOutput("proportion_exp")),
+                          fluidRow(
+                            column(4,
+                                   p(lf1),
+                                   plotOutput("waf_emp")),
+                            column(4,
+                                   p(lf2),
+                                   plotOutput("waf_unemp")),
+                            column(4,
+                                   p(lf3),
+                                   plotOutput("waf_inac"))
+                          ),
+                          width = 12,
+                          collapsible = T),
+                      box(hr(), width = 12),
+                      box(h2("Rural/ Urban population"),
+                          h4(textOutput("ar_lf")),
+                          fluidRow(
+                            column(4,
+                                   p(lf1),
+                                   plotOutput("ar_emp")),
+                            column(4,
+                                   p(lf2),
+                                   plotOutput("ar_unemp")),
+                            column(4,
+                                   p(lf3),
+                                   plotOutput("ar_inac"))
+                          ),
+                          width = 12,
+                          collapsible = T),
+                      box(hr(), width = 12),
+                      box(h2("School attendance"),
+                          h4(textOutput("sch_lf")),
+                          fluidRow(
+                            column(4,
+                                   p(lf1),
+                                   plotOutput("ed_emp")),
+                            column(4,
+                                   p(lf2),
+                                   plotOutput("ed_unemp")),
+                            column(4,
+                                   p(lf3),
+                                   plotOutput("ed_inac"))
+                            ),
+                          width = 12,
+                          collapsible = T),
+                      box(hr(), width = 12),
+                      box(h2("Indigenous Belonging"),
+                          h4(textOutput("ind_lf")),
+                          fluidRow(
+                            column(4,
+                                   p(lf1),
+                                   plotOutput("ind_emp")),
+                            column(4,
+                                   p(lf2),
+                                   plotOutput("ind_unemp")),
+                            column(4,
+                                   p(lf3),
+                                   plotOutput("ind_inac"))
+                          ),
+                          width = 12,
+                          collapsible = T),
+                      box(hr(), width = 12),
+                      
+                      
+                      value = "lfp"),
              
-             # Tab panel: figures -----------------
+             # Tab panel: Neets --------------------
+             tabPanel("Neet Population",
+                      value = "ru"),
+             
              tabPanel("Figures",
                       box(h2("Column overview"),
                           fluidRow(
@@ -807,6 +930,17 @@ server <- function(input, output, session) {
     })
   })
   
+
+  output$pop <- renderText(round(nrow(personas) * wgt, 0))
+  output$with_job <- renderText(round(nrow(with_job) * wgt, 0))
+  output$unpaid <- renderText(round(nrow(unpaid_job) * wgt, 0))
+  output$unpaid_sec <- renderText(round(nrow(unpaid_sec_job) *wgt, 0))
+
+  output$empl <- renderText(round(nrow(employed) * wgt, 0))
+  output$unempl <- renderText(round(nrow(unemployed) * wgt, 0))
+  output$inactiv <- renderText(round(nrow(inactive) * wgt, 0))
+
+
   # Tab panel: children --------------------------
   output$children_madlib <- renderText({
     invalidateLater(10000)
@@ -1176,6 +1310,7 @@ server <- function(input, output, session) {
   output$unpaid <- renderText(round(nrow(unpaid_job), 0))
   output$unpaid_sec <- renderText(round(nrow(unpaid_sec_job), 0))
   
+>>>>>>> origin/v1
   age <- function(df) {
     ggplot(df) +
       geom_bar(aes(x = age, fill = sex), position = "dodge") +
@@ -1191,6 +1326,32 @@ server <- function(input, output, session) {
   output$unpaid_age <- renderPlot(age(unpaid_job))
   output$unpaid_sec_age <- renderPlot(age(unpaid_sec_job))
   
+  output$age_t_lfp <- renderText('There are different trends in Labor Force Participation for each segment')
+  output$pop_emp <- renderPlot(age_lfp(employed))
+  output$pop_unemp <- renderPlot(age_lfp(unemployed))
+  output$pop_inac <- renderPlot(age_lfp(inactive))
+  
+  
+  output$proportion_exp <- renderText("Let's look at the proportions of people in each category")
+  output$waf_emp <- renderPlot(wfl_plot(employed_gender,50000))
+  output$waf_unemp <- renderPlot(wfl_plot(unemp_gender,50000))
+  output$waf_inac <- renderPlot(wfl_plot(inactive_gender,50000))
+  
+  output$sch_lf <- renderText("let's look at the distributions by education, gender, age and participation in the labor force")
+  output$ed_emp <- renderPlot(ridge_educ(employed))
+  output$ed_unemp <- renderPlot(ridge_educ(unemployed))
+  output$ed_inac <- renderPlot(ridge_educ(inactive))
+  
+  output$ar_lf <- renderText("Population Distributions by gender, area, age and participation in the labor force")
+  output$ar_emp <- renderPlot(ridge_urban(employed))
+  output$ar_unemp <- renderPlot(ridge_urban(unemployed))
+  output$ar_inac <- renderPlot(ridge_urban(inactive))
+  
+  output$ind_lf <- renderText("Population Distributions by gender, indigenous belonging, age and participation in the labor force")
+  output$ind_emp <- renderPlot(ridge_indigen(employed))
+  output$ind_unemp <- renderPlot(ridge_indigen(unemployed))
+  output$ind_inac <- renderPlot(ridge_indigen(inactive))
+
   sch <- function(df) {
     ggplot(df) +
       geom_bar(aes(x = age, fill = in_school), position = "dodge") +

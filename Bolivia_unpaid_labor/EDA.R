@@ -1,4 +1,6 @@
 library(tidyverse)
+library(ggridges)
+
 
 income_freq <- function(var) {
   case_when(
@@ -185,11 +187,56 @@ unpaid_pri_job <- with_job %>%
 child_worker <- with_job %>%
   filter(age < 15)
 
+
+educ_list <- sort(unique(c(personas$edu)))
+educ_eq <- c("Less than Primary", "Less than Primary", #11, 12
+             "Less than Primary", #13
+             "Primary","Secondary", #21 22 
+             "Secondary", "Primary", "Secondary", #23, 31, 32, 
+             "Primary", "Secondary",  #41, 42
+             "Primary", "Secondary",  #51, 52
+             "Secondary","Primary",  #61, 62
+             "Secondary","Primary",  #63, 64
+             "Secondary", #65
+             "Tertiary", "Tertiary", "Tertiary", #71, 72, 73
+             "Tertiary", "Tertiary", "Tertiary", #74, 75, 76
+             "Tertiary", "Tertiary", "Tertiary", # 77, 79, 80
+             "Tertiary" #81
+             )
+
+personas <- personas %>% mutate(education = plyr::mapvalues(edu,educ_list, educ_eq))
+
+personas <- personas %>% mutate(emp_status = case_when(
+  work_last_week_1 == '1. Si' ~ "Employed", 
+  work_last_week_2 != "8.NINGUNA ACTIVIDAD" & is.na(work_last_week_2) == FALSE ~ "Employed",
+  work_last_week_3 == "1.Vacaciones o permisos?"| 
+    work_last_week_3 == "2.Licencia de maternidad?"|
+    work_last_week_3 == "8.Estar suspendido?" ~ "Employed",
+  work_last_week_3 == "5.Temporada baja?"| 
+  work_last_week_3 == "9.Problemas personales o familiares?"| 
+  work_last_week_3 == "4.Falta de materiales o insumos?"|
+  work_last_week_3 == "3.Enfermedad o accidente?" ~ "Unemployed",
+  unemployed =="1. Si" ~ "Unemployed",
+  looked_for_work  =="1. Si" ~ "Unemployed",
+  looked_for_work  =="2. No" ~ "Inactive")
+)
+
+personas <- personas %>% mutate(is_student = case_when( in_school == "1. Si" ~ "Yes",
+                                                        in_school == "2. No" ~ "No"))
+
+
+
+
 # ggplot(child_worker) +
 #   geom_bar(aes(x = age, fill = work_type), position = "dodge", width = 0.5) +
 #   theme_minimal() +
 #   theme(legend.position = "bottom")
-
+# 
+# 
+# ggplot(unemployed) +
+#   geom_density(aes(x = age, fill = sex), position = "dodge", width = 0.5, alpha = 0.5) +
+#   theme_minimal() +
+#   theme(legend.position = "bottom")
 
 
 # General population characteristics
