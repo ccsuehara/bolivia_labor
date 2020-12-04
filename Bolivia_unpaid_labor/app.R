@@ -144,6 +144,7 @@ ui <- fluidPage(
              # Tab panel: adults 25-60 --------------------
              navbarMenu("Adults 25-60",
                         tabPanel("Entering the job market",
+                                 value = "employment",
                                  box(h2("Column overview"),
                                      fluidRow(
                                        column(4,
@@ -849,14 +850,13 @@ ui <- fluidPage(
 # Server -----------------------------
 server <- function(input, output, session) {
   # Tab panel: home --------------------------
-  output$landing <- renderImage(list(src = "www/landing_page.png", width = "100%"), deleteFile = F)
+  output$landing <- renderImage(list(src = "www/landing_page1.png", width = "100%"), deleteFile = F)
   observeEvent(input$landing_cl, {
     updateNavbarPage(session, "main", selected = {
-      if (between(input$landing_cl$x, 95, 280) & between(input$landing_cl$y, 19, 129)) {"age"}
-      else if (between(input$landing_cl$x, 23, 233) & between(input$landing_cl$y, 189, 311)) {"lfp"}
-      else if (between(input$landing_cl$x, 877, 1091) & between(input$landing_cl$y, 77, 209)) {"edu"}
-      else if (between(input$landing_cl$x, 347, 507) & between(input$landing_cl$y, 324, 495)) {"ru"}
-      else if (between(input$landing_cl$x, 890, 1053) & between(input$landing_cl$y, 266, 445)) {"indigenous"}
+      if (between(input$landing_cl$x, 161, 421) & between(input$landing_cl$y, 19, 277)) {"children"}
+      else if (between(input$landing_cl$x, 380, 647) & between(input$landing_cl$y, 214, 490)) {"youth"}
+      else if (between(input$landing_cl$x, 603, 870) & between(input$landing_cl$y, 14, 271)) {"employment"}
+      else if (between(input$landing_cl$x, 843, 1118) & between(input$landing_cl$y, 200, 472)) {"older"}
     })
   })
   
