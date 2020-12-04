@@ -76,8 +76,8 @@ ggplot(children %>% filter(!is.na(primary_job))) +
   scale_size(range = c(0.1, 30)) +
   theme_minimal()
 
-df1 <- children %>% filter(!is.na(primary_job) & startsWith(sex, "2"))
-mean(df1$hh_inc_pct)
+# df1 <- children %>% filter(!is.na(primary_job) & startsWith(sex, "2"))
+# mean(df1$hh_inc_pct)
 
 ggplot(children %>% filter(!is.na(tot_monthly_inc))) +
   geom_jitter(aes(x = age, y = hh_inc_pct, size = tot_work_week_hr, color = sex), alpha = 0.15) +
@@ -105,7 +105,7 @@ hh_hr_area <- ggplot(children %>% filter(!is.na(tot_monthly_inc))) +
   scale_x_continuous(limits = c(7, 17.8)) +
   scale_color_manual(values = c(color1, color2), labels = c("rural", "urban")) +
   scale_size(range = c(0.1, 30)) +
-  labs(y = "share of household work hours (%)", size = "monthly income", color = "average")
+  labs(y = "share of household work hours (%)", size = "monthly income (BOB)", color = "average")
 
 hh_hr_sex <- ggplot(children %>% filter(!is.na(tot_monthly_inc))) +
   geom_jitter(aes(x = age, y = hh_hr_pct, size = tot_monthly_inc, color = sex), alpha = 0.15) +
@@ -120,7 +120,7 @@ hh_hr_sex <- ggplot(children %>% filter(!is.na(tot_monthly_inc))) +
   scale_x_continuous(limits = c(7, 17.8)) +
   scale_color_manual(values = c(color1, color2), labels = c("boys", "girls")) +
   scale_size(range = c(0.1, 30)) +
-  labs(y = "share of household work hours (%)", size = "monthly income", color = "average")
+  labs(y = "share of household work hours (%)", size = "monthly income (BOB)", color = "average")
 
 hh_inc_area <- ggplot(children %>% filter(!is.na(tot_monthly_inc))) +
   geom_jitter(aes(x = age, y = hh_inc_pct, size = tot_work_week_hr, color = area), alpha = 0.15) +

@@ -116,11 +116,15 @@ ui <- fluidPage(
                                plotOutput("children_lfp4"),
                                hr(),
                                textOutput("children_t6"),
+                               plotOutput("children_lfp5"),
+                               plotOutput("children_lfp6"),
+                               hr(),
+                               textOutput("children_t7"),
                                h3("Children in rural and urban areas"),
                                plotOutput("children_ru1"),
                                plotOutput("children_ru2"),
                                hr(),
-                               textOutput("children_t7"),
+                               textOutput("children_t8"),
                                h3("Children and indigeneity"),
                                fluidRow(
                                  column(6,
@@ -917,10 +921,12 @@ server <- function(input, output, session) {
                                    Puberty -> devaluation of female labor. Sexualization and devaluation go hand in hand.
                                    In terms of DRM, the data show that men/boys are more likely to have income sources outside their homes and access an additional channel of financial stability.
                                    Yet, in some scenarios, teenage boys are actual the main breadwinners in their families, which denotes heightened vulnerability to social and economic shocks.")
-  output$children_t6 <- renderText("An even more stark contrast exists between children in rural and urban areas.
+  output$children_t6 <- renderText("Although working children only make up about 3% of the total children population, their characteristics and vulnerabilities should not be overlooked.
+                                   The vast majority of them come from lower-income households, many of whom heavily depend on the children as their source of income.")
+  output$children_t7 <- renderText("An even more stark contrast exists between children in rural and urban areas.
                                    Children in cities start contributing to their family finances at an earlier age, work more hours, and bring home more money.
                                    Additionally, while rural children work a similar amount of hours throughout their childhood and adolescence, city kids pick up more work as they grow older, especially from age 12.")
-  output$children_t7 <- renderText("Not much to note here yet, except that the indigenous population seems to be in decline (the trend is more obvious when all age groups are mapped together).
+  output$children_t8 <- renderText("Not much to note here yet, except that the indigenous population seems to be in decline (the trend is more obvious when all age groups are mapped together).
                                    The exact reason remains to be investigated.")
   
   output$children_overview1 <- renderPlot(
@@ -1065,7 +1071,7 @@ server <- function(input, output, session) {
       geom_point(data = children %>% filter(!is.na(tot_monthly_inc)) %>% group_by(age, sex) %>% summarize(mean_hr = mean(tot_work_week_hr), mean_inc = mean(tot_monthly_inc)),
                  aes(y = mean_hr, x = age, size = mean_inc, color = sex)) +
       theme_minimal() +
-      theme(legend.position = "bottom", panel.grid.major.y = element_blank(), panel.grid.minor = element_blank()) +
+      theme(legend.position = "bottom", panel.grid.minor = element_blank()) +
       scale_x_continuous(limits = c(7, 17.8)) +
       scale_color_manual(values = c(color1, color2), labels = c("boys", "girls")) +
       scale_size(range = c(0.1, 30)) +
@@ -1079,7 +1085,7 @@ server <- function(input, output, session) {
       geom_point(data = children %>% filter(!is.na(tot_monthly_inc)) %>% group_by(age, sex) %>% summarize(mean_hr = mean(tot_work_week_hr), mean_inc = mean(tot_monthly_inc / tot_work_week_hr / 4.33)),
                  aes(y = mean_hr, x = age, size = mean_inc, color = sex)) +
       theme_minimal() +
-      theme(legend.position = "bottom", panel.grid.major.y = element_blank(), panel.grid.minor = element_blank()) +
+      theme(legend.position = "bottom", panel.grid.minor = element_blank()) +
       scale_x_continuous(limits = c(7, 17.8)) +
       scale_color_manual(values = c(color1, color2), labels = c("boys", "girls")) +
       scale_size(range = c(0.1, 30)) +
@@ -1088,6 +1094,41 @@ server <- function(input, output, session) {
   
   output$children_lfp3 <- renderPlot(hh_inc_sex)
   output$children_lfp4 <- renderPlot(hh_hr_sex)
+  
+  output$children_lfp5 <- renderPlot(
+    ggplot(children %>% filter(!is.na(tot_monthly_inc))) +
+      geom_point(aes(x = hh_inc, y = hh_inc_pct, size = tot_work_week_hr, color = sex), alpha = 0.3) +
+      # geom_line(data = children %>% filter(!is.na(tot_monthly_inc)) %>% group_by(hh_inc, sex) %>%
+      #             summarize(mean_hr = mean(tot_work_week_hr), mean_inc = mean(tot_monthly_inc), mean_pct = mean(hh_inc_pct)),
+      #           aes(y = mean_pct, x = hh_inc, color = sex), size = 1) +
+      # geom_point(data = children %>% filter(!is.na(tot_monthly_inc)) %>% group_by(hh_inc, sex) %>%
+      #              summarize(mean_hr = mean(tot_work_week_hr), mean_inc = mean(tot_monthly_inc), mean_pct = mean(hh_inc_pct)),
+      #            aes(y = mean_pct, x = hh_inc, size = mean_hr, color = sex)) +
+      # geom_smooth(aes(x = hh_inc, y = hh_inc_pct, color = sex)) +
+      facet_wrap(vars(sex), labeller = labeller(sex = c("1.Hombre" = "boys", "2.Mujer" = "girls"))) +
+      theme_minimal() +
+      theme(legend.position = "bottom", panel.grid.minor = element_blank()) +
+      scale_color_manual(values = c(color1, color2), labels = c("boys", "girls")) +
+      scale_size(range = c(0.1, 10)) +
+      labs(x = "monthly household income (BOB)", y = "contribution to household income (%)", size = "weekly work hours")
+  )
+  output$children_lfp6 <- renderPlot(
+    ggplot(children %>% filter(!is.na(tot_monthly_inc))) +
+      geom_point(aes(x = hh_inc, y = hh_hr_pct, size = tot_monthly_inc, color = sex), alpha = 0.3) +
+      # geom_line(data = children %>% filter(!is.na(tot_monthly_inc)) %>% group_by(age, sex) %>% 
+      #             summarize(mean_hr = mean(tot_work_week_hr), mean_inc = mean(tot_monthly_inc), mean_pct = mean(hh_hr_pct)),
+      #           aes(y = mean_pct, x = hh_inc, color = sex), size = 1) +
+      # geom_point(data = children %>% filter(!is.na(tot_monthly_inc)) %>% group_by(age, sex) %>% 
+      #              summarize(mean_hr = mean(tot_work_week_hr), mean_inc = mean(tot_monthly_inc), mean_pct = mean(hh_hr_pct)),
+      #            aes(y = mean_pct, x = hh_inc, size = mean_inc, color = sex)) +
+      # geom_smooth(aes(x = hh_inc, y = hh_hr_pct, color = sex)) +
+      facet_wrap(vars(sex), labeller = labeller(sex = c("1.Hombre" = "boys", "2.Mujer" = "girls"))) +
+      theme_minimal() +
+      theme(legend.position = "bottom", panel.grid.minor = element_blank()) +
+      scale_color_manual(values = c(color1, color2), labels = c("boys", "girls")) +
+      scale_size(range = c(0.1, 15)) +
+      labs(x = "monthly household income (BOB)", y = "share of household work hours (%)", size = "monthly income (BOB)")
+  )
   
   output$children_ru1 <- renderPlot(hh_inc_area)
   output$children_ru2 <- renderPlot(hh_hr_area)
