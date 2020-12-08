@@ -47,7 +47,7 @@ personas <- personas %>%
   left_join(hh_inc_df, by = "folio") %>%
   mutate(hh_inc_pct = tot_monthly_inc / hh_inc * 100,
          hh_hr_pct = tot_work_week_hr / hh_hr * 100)
-# Remaining question: do we want to replace NA values (including those who do not work, not including those who work withotu pay) with 0?
+# Remaining question: do we want to replace NA values (including those who do not work, not including those who work without pay) with 0?
 personas$hh_inc_pct[is.na(personas$hh_inc_pct)] <- 0
 personas$hh_hr_pct[is.na(personas$hh_hr_pct)] <- 0
 
