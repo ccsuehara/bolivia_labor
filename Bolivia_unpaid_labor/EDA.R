@@ -72,32 +72,6 @@ personas0 <- read_excel("../data/EH_2018/EH2018_Personas2.xlsx", guess_max = 375
            ifelse(is.na(dom_trans_monthly_inc), 0, dom_trans_monthly_inc) + ifelse(is.na(intl_remit_monthly_inc), 0, intl_remit_monthly_inc),
          tot_monthly_inc = ifelse(is.na(lab_monthly_inc), 0, lab_monthly_inc) + nonlab_monthly_inc)
 
-# Have ever had children
-# moms <- personas %>%
-#   filter(!is.na(num_child) & num_child != 0)
-# 
-# moms_sum <- moms %>%
-#   mutate(num_alive_child = ifelse(num_alive_child > 7, "8+", num_alive_child)) %>%
-#   group_by(num_alive_child) %>%
-#   summarize(mean_inc = mean(hh_lab_inc), count = n())
-# 
-# ggplot(moms_sum) +
-#   geom_col(aes(x = num_alive_child, y = mean_inc))
-# 
-# # Moms with at least 1 dead child
-# moms1 <- personas %>%
-#   filter(!is.na(num_child) & num_child != 0) %>%
-#   mutate(dead_child = num_child - num_alive_child) %>%
-#   filter(dead_child > 0)
-# 
-# ggplot(moms) +
-#   geom_jitter(aes(x = num_alive_child, y = hh_lab_inc), alpha = 0.1) +
-#   theme_minimal()
-# 
-# ggplot(moms1) +
-#   geom_jitter(aes(x = num_alive_child, y = hh_lab_inc), alpha = 0.1) +
-#   theme_minimal()
-
 hh_inc_df <- personas0 %>%
   group_by(folio) %>%
   summarize(hh_lab_inc = sum(lab_monthly_inc, na.rm = T),
@@ -114,7 +88,8 @@ personas <- personas0 %>%
          hh_tot_inc_pct = tot_monthly_inc / hh_tot_inc * 100) %>%
   replace_na(list(hh_lab_inc_pct = 0, hh_hr_pct = 0, hh_sp_inc_pct = 0, hh_nonlab_inc_pct = 0, hh_tot_inc_pct = 0))
 
-# Select age groups
+# Segment by age groups ----------------------------------------------
+
 # Children
 children <- personas %>%
   filter(age < 18) %>%
@@ -198,9 +173,60 @@ hh_lab_inc_sex <- ggplot(children %>% filter(!is.na(lab_monthly_inc))) +
 
 # Youth
 # Adults
+educ_list <- sort(unique(personas$edu))
+educ_eq <- c("Less than Primary", "Less than Primary", #11, 12
+             "Less than Primary", #13
+             "Primary","Secondary", #21 22 
+             "Secondary", "Primary", "Secondary", #23, 31, 32, 
+             "Primary", "Secondary",  #41, 42
+             "Primary", "Secondary",  #51, 52
+             "Secondary","Primary",  #61, 62
+             "Secondary","Primary",  #63, 64
+             "Secondary", #65
+             "Tertiary", "Tertiary", "Tertiary", #71, 72, 73
+             "Tertiary", "Tertiary", "Tertiary", #74, 75, 76
+             "Tertiary", "Tertiary", "Tertiary", # 77, 79, 80
+             "Tertiary") #81
+
+adults <- personas %>%
+  filter(age %in% 25:60) %>%
+  select(folio, nro, depto, area, sex, age, language_1, marital, literate, num_literate, indigenous, indigenous_id,
+         edu, any_ed, higher_ed, in_school, why_not_in_school, current_edu, in_attendance, why_absence,
+         chronic_disease_1, disability_1, pregnant, num_alive_child,
+         manual_labor,
+         cellphone, internet_use, internet_use_where_1, internet_use_where_2,
+         primary_job, work_type, primary_work_week_hr,
+         primary_salary, primary_salary_freq, primary_nonsalaried_income, primary_nonsalaried_income_freq, primary_monthly_inc,
+         sec_job, sec_employer_industry, sec_work_type, sec_work_week_hr,
+         sec_salary, sec_salary_freq, sec_nonsalaried_income, sec_nonsalaried_income_freq, sec_monthly_inc,
+         lab_monthly_inc, tot_work_week_hr, hh_lab_inc, hh_lab_inc_pct, hh_hr, hh_hr_pct, want_work_more, avail_work_more, union_member,
+         sp_monthly_inc, extra_monthly_inc, dom_trans_monthly_inc, intl_remit_monthly_inc, nonlab_monthly_inc, tot_monthly_inc,
+         hh_sp_inc, hh_sp_inc_pct, hh_nonlab_inc, hh_nonlab_inc_pct, hh_tot_inc, hh_tot_inc_pct) %>%
+  mutate(emp_status = case_when(
+    work_last_week_1 == '1. Si' ~ "Employed", 
+    work_last_week_2 != "8.NINGUNA ACTIVIDAD" & is.na(work_last_week_2) == FALSE ~ "Employed",
+    work_last_week_3 == "1.Vacaciones o permisos?" | 
+      work_last_week_3 == "2.Licencia de maternidad?" |
+      work_last_week_3 == "8.Estar suspendido?" ~ "Employed",
+    work_last_week_3 == "5.Temporada baja?" | 
+      work_last_week_3 == "9.Problemas personales o familiares?" | 
+      work_last_week_3 == "4.Falta de materiales o insumos?" |
+      work_last_week_3 == "3.Enfermedad o accidente?" ~ "Unemployed",
+    unemployed =="1. Si" ~ "Unemployed",
+    looked_for_work  =="1. Si" ~ "Unemployed",
+    looked_for_work  =="2. No" ~ "Inactive"
+  ),
+  education = plyr::mapvalues(edu, educ_list, educ_eq),
+  is_student = case_when(in_school == "1. Si" ~ "Yes",
+                         in_school == "2. No" ~ "No"))
+
 # Older adults
 
-# Select people with at least 1 job--------------
+
+
+# Segment by employment ------------------------------------
+
+# Select people with at least 1 job
 with_job <- personas %>%
   filter(!is.na(primary_job)) %>%
   select(folio, nro, depto, area, sex, age, language_1, marital, literate, num_literate, indigenous, indigenous_id,
@@ -237,41 +263,54 @@ child_worker <- with_job %>%
   filter(age < 15)
 
 
-educ_list <- sort(unique(c(personas$edu)))
-educ_eq <- c("Less than Primary", "Less than Primary", #11, 12
-             "Less than Primary", #13
-             "Primary","Secondary", #21 22 
-             "Secondary", "Primary", "Secondary", #23, 31, 32, 
-             "Primary", "Secondary",  #41, 42
-             "Primary", "Secondary",  #51, 52
-             "Secondary","Primary",  #61, 62
-             "Secondary","Primary",  #63, 64
-             "Secondary", #65
-             "Tertiary", "Tertiary", "Tertiary", #71, 72, 73
-             "Tertiary", "Tertiary", "Tertiary", #74, 75, 76
-             "Tertiary", "Tertiary", "Tertiary", # 77, 79, 80
-             "Tertiary" #81
-             )
 
-personas <- personas %>% mutate(education = plyr::mapvalues(edu,educ_list, educ_eq))
+# All commented out below ------------------------------------------
 
-personas <- personas %>% mutate(emp_status = case_when(
-  work_last_week_1 == '1. Si' ~ "Employed", 
-  work_last_week_2 != "8.NINGUNA ACTIVIDAD" & is.na(work_last_week_2) == FALSE ~ "Employed",
-  work_last_week_3 == "1.Vacaciones o permisos?"| 
-    work_last_week_3 == "2.Licencia de maternidad?"|
-    work_last_week_3 == "8.Estar suspendido?" ~ "Employed",
-  work_last_week_3 == "5.Temporada baja?"| 
-  work_last_week_3 == "9.Problemas personales o familiares?"| 
-  work_last_week_3 == "4.Falta de materiales o insumos?"|
-  work_last_week_3 == "3.Enfermedad o accidente?" ~ "Unemployed",
-  unemployed =="1. Si" ~ "Unemployed",
-  looked_for_work  =="1. Si" ~ "Unemployed",
-  looked_for_work  =="2. No" ~ "Inactive")
-)
+# Have ever had children
+# moms <- personas %>%
+#   filter(!is.na(num_child) & num_child != 0)
+# 
+# moms_sum <- moms %>%
+#   mutate(num_alive_child = ifelse(num_alive_child > 7, "8+", num_alive_child)) %>%
+#   group_by(num_alive_child) %>%
+#   summarize(mean_inc = mean(hh_lab_inc), count = n())
+# 
+# ggplot(moms_sum) +
+#   geom_col(aes(x = num_alive_child, y = mean_inc))
+# 
+# # Moms with at least 1 dead child
+# moms1 <- personas %>%
+#   filter(!is.na(num_child) & num_child != 0) %>%
+#   mutate(dead_child = num_child - num_alive_child) %>%
+#   filter(dead_child > 0)
+# 
+# ggplot(moms) +
+#   geom_jitter(aes(x = num_alive_child, y = hh_lab_inc), alpha = 0.1) +
+#   theme_minimal()
+# 
+# ggplot(moms1) +
+#   geom_jitter(aes(x = num_alive_child, y = hh_lab_inc), alpha = 0.1) +
+#   theme_minimal()
 
-personas <- personas %>% mutate(is_student = case_when( in_school == "1. Si" ~ "Yes",
-                                                        in_school == "2. No" ~ "No"))
+# personas <- personas %>% mutate(education = plyr::mapvalues(edu, educ_list, educ_eq))
+
+# personas <- personas %>% mutate(emp_status = case_when(
+#   work_last_week_1 == '1. Si' ~ "Employed", 
+#   work_last_week_2 != "8.NINGUNA ACTIVIDAD" & is.na(work_last_week_2) == FALSE ~ "Employed",
+#   work_last_week_3 == "1.Vacaciones o permisos?"| 
+#     work_last_week_3 == "2.Licencia de maternidad?"|
+#     work_last_week_3 == "8.Estar suspendido?" ~ "Employed",
+#   work_last_week_3 == "5.Temporada baja?"| 
+#   work_last_week_3 == "9.Problemas personales o familiares?"| 
+#   work_last_week_3 == "4.Falta de materiales o insumos?"|
+#   work_last_week_3 == "3.Enfermedad o accidente?" ~ "Unemployed",
+#   unemployed =="1. Si" ~ "Unemployed",
+#   looked_for_work  =="1. Si" ~ "Unemployed",
+#   looked_for_work  =="2. No" ~ "Inactive")
+# )
+
+# personas <- personas %>% mutate(is_student = case_when( in_school == "1. Si" ~ "Yes",
+#                                                         in_school == "2. No" ~ "No"))
 
 
 

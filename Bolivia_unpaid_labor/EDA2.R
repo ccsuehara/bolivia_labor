@@ -1,6 +1,3 @@
-
-
-
 employed <- personas %>% filter(emp_status == "Employed") %>%
   select(folio, nro, area, sex, age, marital, literate, num_literate, indigenous, indigenous_id,
          edu, any_ed, higher_ed, in_school,
@@ -59,7 +56,6 @@ wfl_plot <- function(df,people) {
   waffle(df$total_pop/people, rows=4, size=0.5, 
          colors=c("#DDCC77", "#88CCEE"),
          xlab=paste0("1 sq. = ", as.integer(people/1000), " k people"))
-  
 }
 
 ridge_educ <- function(df) {
@@ -80,7 +76,6 @@ df %>%
   coord_cartesian(clip = "off") +
   theme_ridges(grid = TRUE) +
   theme(axis.text.y = element_text(angle = 70, hjust = 1, vjust = 0.5))
-  
 }
   
 
