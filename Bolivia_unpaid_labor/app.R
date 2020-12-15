@@ -120,11 +120,15 @@ ui <- fluidPage(
                                plotOutput("children_lfp6"),
                                hr(),
                                textOutput("children_t7"),
+                               plotOutput("children_lfp7"),
+                               plotOutput("children_lfp8"),
+                               hr(),
+                               textOutput("children_t8"),
                                h3("Children in rural and urban areas"),
                                plotOutput("children_ru1"),
                                plotOutput("children_ru2"),
                                hr(),
-                               textOutput("children_t8"),
+                               textOutput("children_t9"),
                                h3("Children and indigeneity"),
                                fluidRow(
                                  column(6,
@@ -896,9 +900,9 @@ server <- function(input, output, session) {
       case_when(!is.na(madlib_df$primary_job) & startsWith(madlib_df$sec_job, "2") ~ paste(madlib_pron1, "works as a", tolower(madlib_df$primary_job), "for", madlib_df$tot_work_week_hr, "hours per week."),
                       !is.na(madlib_df$primary_job) & startsWith(madlib_df$sec_job, "1") ~ paste(madlib_pron1, "mainly works as a", madlib_df$primary_job, "for", madlib_df$primary_work_week_hr, "hours per week, but", madlib_pron2, "also has a second job for another", madlib_df$sec_work_week_hr, "weekly hours."),
                       is.na(madlib_df$primary_job) ~ paste(madlib_pron1, "does not have a job.")),
-      ifelse(round(madlib_df$tot_monthly_inc, 0) == 0,
+      ifelse(round(madlib_df$lab_monthly_inc, 0) == 0,
                    paste(madlib_pron1, "does not earn any income from", madlib_pron3, "work."),
-                   paste("In total,", madlib_pron2, "makes", round(madlib_df$tot_monthly_inc, 0), "Bolivianos every month."))
+                   paste("In total,", madlib_pron2, "makes", round(madlib_df$lab_monthly_inc, 0), "Bolivianos every month."))
     )
   })
   
@@ -923,10 +927,11 @@ server <- function(input, output, session) {
                                    Yet, in some scenarios, teenage boys are actual the main breadwinners in their families, which denotes heightened vulnerability to social and economic shocks.")
   output$children_t6 <- renderText("Although working children only make up about 3% of the total children population, their characteristics and vulnerabilities should not be overlooked.
                                    The vast majority of them come from lower-income households, many of whom heavily depend on the children as their source of income.")
-  output$children_t7 <- renderText("An even more stark contrast exists between children in rural and urban areas.
+  output$children_t7 <- renderText("Relationship between children's contribution to household income and household total income (labor and non-labor).")
+  output$children_t8 <- renderText("An even more stark contrast exists between children in rural and urban areas.
                                    Children in cities start contributing to their family finances at an earlier age, work more hours, and bring home more money.
                                    Additionally, while rural children work a similar amount of hours throughout their childhood and adolescence, city kids pick up more work as they grow older, especially from age 12.")
-  output$children_t8 <- renderText("Not much to note here yet, except that the indigenous population seems to be in decline (the trend is more obvious when all age groups are mapped together).
+  output$children_t9 <- renderText("Not much to note here yet, except that the indigenous population seems to be in decline (the trend is more obvious when all age groups are mapped together).
                                    The exact reason remains to be investigated.")
   
   output$children_overview1 <- renderPlot(
@@ -1064,11 +1069,11 @@ server <- function(input, output, session) {
   )
   
   output$children_lfp1 <- renderPlot(
-    ggplot(children %>% filter(!is.na(tot_monthly_inc))) +
-      geom_jitter(aes(x = age, y = tot_work_week_hr, size = tot_monthly_inc, color = sex), alpha = 0.15) +
-      geom_line(data = children %>% filter(!is.na(tot_monthly_inc)) %>% group_by(age, sex) %>% summarize(mean_hr = mean(tot_work_week_hr), mean_inc = mean(tot_monthly_inc)),
+    ggplot(children %>% filter(!is.na(lab_monthly_inc))) +
+      geom_jitter(aes(x = age, y = tot_work_week_hr, size = lab_monthly_inc, color = sex), alpha = 0.15) +
+      geom_line(data = children %>% filter(!is.na(lab_monthly_inc)) %>% group_by(age, sex) %>% summarize(mean_hr = mean(tot_work_week_hr), mean_inc = mean(lab_monthly_inc)),
                 aes(y = mean_hr, x = age, color = sex), size = 1) +
-      geom_point(data = children %>% filter(!is.na(tot_monthly_inc)) %>% group_by(age, sex) %>% summarize(mean_hr = mean(tot_work_week_hr), mean_inc = mean(tot_monthly_inc)),
+      geom_point(data = children %>% filter(!is.na(lab_monthly_inc)) %>% group_by(age, sex) %>% summarize(mean_hr = mean(tot_work_week_hr), mean_inc = mean(lab_monthly_inc)),
                  aes(y = mean_hr, x = age, size = mean_inc, color = sex)) +
       theme_minimal() +
       theme(legend.position = "bottom", panel.grid.minor = element_blank()) +
@@ -1078,11 +1083,11 @@ server <- function(input, output, session) {
       labs(y = "weekly work hours", size = "monthly income (BOB)", color = "")
   )
   output$children_lfp2 <- renderPlot(
-    ggplot(children %>% filter(!is.na(tot_monthly_inc))) +
-      geom_jitter(aes(x = age, y = tot_work_week_hr, size = tot_monthly_inc / tot_work_week_hr / 4.33, color = sex), alpha = 0.15) +
-      geom_line(data = children %>% filter(!is.na(tot_monthly_inc)) %>% group_by(age, sex) %>% summarize(mean_hr = mean(tot_work_week_hr), mean_inc = mean(tot_monthly_inc / tot_work_week_hr / 4.33)),
+    ggplot(children %>% filter(!is.na(lab_monthly_inc))) +
+      geom_jitter(aes(x = age, y = tot_work_week_hr, size = lab_monthly_inc / tot_work_week_hr / 4.33, color = sex), alpha = 0.15) +
+      geom_line(data = children %>% filter(!is.na(lab_monthly_inc)) %>% group_by(age, sex) %>% summarize(mean_hr = mean(tot_work_week_hr), mean_inc = mean(lab_monthly_inc / tot_work_week_hr / 4.33)),
                 aes(y = mean_hr, x = age, color = sex), size = 1) +
-      geom_point(data = children %>% filter(!is.na(tot_monthly_inc)) %>% group_by(age, sex) %>% summarize(mean_hr = mean(tot_work_week_hr), mean_inc = mean(tot_monthly_inc / tot_work_week_hr / 4.33)),
+      geom_point(data = children %>% filter(!is.na(lab_monthly_inc)) %>% group_by(age, sex) %>% summarize(mean_hr = mean(tot_work_week_hr), mean_inc = mean(lab_monthly_inc / tot_work_week_hr / 4.33)),
                  aes(y = mean_hr, x = age, size = mean_inc, color = sex)) +
       theme_minimal() +
       theme(legend.position = "bottom", panel.grid.minor = element_blank()) +
@@ -1092,45 +1097,52 @@ server <- function(input, output, session) {
       labs(y = "weekly work hours", size = "hourly income (BOB)", color = "")
   )
   
-  output$children_lfp3 <- renderPlot(hh_inc_sex)
+  output$children_lfp3 <- renderPlot(hh_lab_inc_sex)
   output$children_lfp4 <- renderPlot(hh_hr_sex)
   
   output$children_lfp5 <- renderPlot(
-    ggplot(children %>% filter(!is.na(tot_monthly_inc))) +
-      geom_point(aes(x = hh_inc, y = hh_inc_pct, size = tot_work_week_hr, color = sex), alpha = 0.3) +
-      # geom_line(data = children %>% filter(!is.na(tot_monthly_inc)) %>% group_by(hh_inc, sex) %>%
-      #             summarize(mean_hr = mean(tot_work_week_hr), mean_inc = mean(tot_monthly_inc), mean_pct = mean(hh_inc_pct)),
-      #           aes(y = mean_pct, x = hh_inc, color = sex), size = 1) +
-      # geom_point(data = children %>% filter(!is.na(tot_monthly_inc)) %>% group_by(hh_inc, sex) %>%
-      #              summarize(mean_hr = mean(tot_work_week_hr), mean_inc = mean(tot_monthly_inc), mean_pct = mean(hh_inc_pct)),
-      #            aes(y = mean_pct, x = hh_inc, size = mean_hr, color = sex)) +
-      # geom_smooth(aes(x = hh_inc, y = hh_inc_pct, color = sex)) +
+    ggplot(children %>% filter(!is.na(lab_monthly_inc))) +
+      geom_point(aes(x = hh_lab_inc, y = hh_lab_inc_pct, size = tot_work_week_hr, color = sex), alpha = 0.3) +
       facet_wrap(vars(sex), labeller = labeller(sex = c("1.Hombre" = "boys", "2.Mujer" = "girls"))) +
       theme_minimal() +
       theme(legend.position = "bottom", panel.grid.minor = element_blank()) +
       scale_color_manual(values = c(color1, color2), labels = c("boys", "girls")) +
       scale_size(range = c(0.1, 10)) +
-      labs(x = "monthly household income (BOB)", y = "contribution to household income (%)", size = "weekly work hours")
+      labs(x = "monthly household labor income (BOB)", y = "contribution to household labor income (%)", size = "weekly work hours")
   )
   output$children_lfp6 <- renderPlot(
-    ggplot(children %>% filter(!is.na(tot_monthly_inc))) +
-      geom_point(aes(x = hh_inc, y = hh_hr_pct, size = tot_monthly_inc, color = sex), alpha = 0.3) +
-      # geom_line(data = children %>% filter(!is.na(tot_monthly_inc)) %>% group_by(age, sex) %>% 
-      #             summarize(mean_hr = mean(tot_work_week_hr), mean_inc = mean(tot_monthly_inc), mean_pct = mean(hh_hr_pct)),
-      #           aes(y = mean_pct, x = hh_inc, color = sex), size = 1) +
-      # geom_point(data = children %>% filter(!is.na(tot_monthly_inc)) %>% group_by(age, sex) %>% 
-      #              summarize(mean_hr = mean(tot_work_week_hr), mean_inc = mean(tot_monthly_inc), mean_pct = mean(hh_hr_pct)),
-      #            aes(y = mean_pct, x = hh_inc, size = mean_inc, color = sex)) +
-      # geom_smooth(aes(x = hh_inc, y = hh_hr_pct, color = sex)) +
+    ggplot(children %>% filter(!is.na(lab_monthly_inc))) +
+      geom_point(aes(x = hh_lab_inc, y = hh_hr_pct, size = lab_monthly_inc, color = sex), alpha = 0.3) +
       facet_wrap(vars(sex), labeller = labeller(sex = c("1.Hombre" = "boys", "2.Mujer" = "girls"))) +
       theme_minimal() +
       theme(legend.position = "bottom", panel.grid.minor = element_blank()) +
       scale_color_manual(values = c(color1, color2), labels = c("boys", "girls")) +
       scale_size(range = c(0.1, 15)) +
-      labs(x = "monthly household income (BOB)", y = "share of household work hours (%)", size = "monthly income (BOB)")
+      labs(x = "monthly household labor income (BOB)", y = "share of household work hours (%)", size = "monthly income (BOB)")
   )
   
-  output$children_ru1 <- renderPlot(hh_inc_area)
+  output$children_lfp7 <- renderPlot(
+    ggplot(children %>% filter(!is.na(lab_monthly_inc))) +
+      geom_point(aes(x = hh_tot_inc, y = hh_lab_inc_pct, size = tot_work_week_hr, color = sex), alpha = 0.3) +
+      facet_wrap(vars(sex), labeller = labeller(sex = c("1.Hombre" = "boys", "2.Mujer" = "girls"))) +
+      theme_minimal() +
+      theme(legend.position = "bottom", panel.grid.minor = element_blank()) +
+      scale_color_manual(values = c(color1, color2), labels = c("boys", "girls")) +
+      scale_size(range = c(0.1, 10)) +
+      labs(x = "monthly household income (labor & non-labor) (BOB)", y = "contribution to household labor income (%)", size = "weekly work hours")
+  )
+  output$children_lfp8 <- renderPlot(
+    ggplot(children %>% filter(!is.na(lab_monthly_inc))) +
+      geom_point(aes(x = hh_tot_inc, y = hh_hr_pct, size = lab_monthly_inc, color = sex), alpha = 0.3) +
+      facet_wrap(vars(sex), labeller = labeller(sex = c("1.Hombre" = "boys", "2.Mujer" = "girls"))) +
+      theme_minimal() +
+      theme(legend.position = "bottom", panel.grid.minor = element_blank()) +
+      scale_color_manual(values = c(color1, color2), labels = c("boys", "girls")) +
+      scale_size(range = c(0.1, 15)) +
+      labs(x = "monthly household income (labor & non-labor) (BOB)", y = "share of household work hours (%)", size = "monthly income (BOB)")
+  )
+  
+  output$children_ru1 <- renderPlot(hh_lab_inc_area)
   output$children_ru2 <- renderPlot(hh_hr_area)
   
   # Tab panel: entering the job market --------------------------
