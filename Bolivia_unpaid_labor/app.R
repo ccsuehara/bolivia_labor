@@ -7,6 +7,7 @@ for (p in packages.list) {
 
 library(treemap)
 library(d3treeR)
+library(wordcloud2)
 
 # change folder path
 # setwd("/Users/csolisu/Documents/Carla/chamba/shared_Bolivia/Bolivia_unpaid_labor")
@@ -27,7 +28,7 @@ color5 <- "#332288"
 color6 <- "#CC6677"
 color7 <- "#AA4499"
 color8 <- "#882255"
-color9 <- "#e6e6e6" # grey 10
+color9 <- "#e6e6e6" # grey10
 color_pal <- c(color1, color2, color3, color4, color5, color6, color7, color8, color9)
 filler <- "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Eget felis eget nunc lobortis. Viverra nam libero justo laoreet sit amet cursus sit amet. Gravida quis blandit turpis cursus in hac habitasse platea. Id interdum velit laoreet id donec ultrices tincidunt. Diam ut venenatis tellus in metus. Donec adipiscing tristique risus nec feugiat in fermentum posuere urna. Penatibus et magnis dis parturient montes nascetur. Orci a scelerisque purus semper. Nisi vitae suscipit tellus mauris a diam maecenas sed enim. Leo vel fringilla est ullamcorper eget nulla facilisi etiam. Sed arcu non odio euismod. Turpis egestas maecenas pharetra convallis posuere morbi. At volutpat diam ut venenatis tellus in metus vulputate. Morbi tincidunt ornare massa eget. Enim sit amet venenatis urna cursus eget nunc."
 names_m <- c("Juan", "Jose", "Luis", "Carlos", "Mario", "Jorge", "Victor", "Miguel", "Pedro", "Antonio", "Fernando", "Roberto", "Felix", "Julio")
@@ -39,6 +40,7 @@ lf3 <- "Inactive Population"
 
 wgt <- 258.651824951171
 # wgt <- 1
+
 # UI -------------------------------
 ui <- fluidPage(
   theme = shinytheme("sandstone"),
@@ -142,6 +144,11 @@ ui <- fluidPage(
                                         plotOutput("children_indi3")),
                                  column(6,
                                         plotOutput("children_indi4"))
+                               )),
+                        column(3,
+                               fixedPanel(
+                                 actionButton("to_youth", label = "youth >"),
+                                 right = 10, bottom = 10
                                ))
                       )),
              
@@ -151,6 +158,8 @@ ui <- fluidPage(
              
              # Tab panel: adults 25-60 --------------------
              navbarMenu("Adults 25-60",
+                        
+                        # Entering the job market -------------------------
                         tabPanel("Entering the job market",
                                  value = "employment",
                                  box(h2("Column overview"),
@@ -253,8 +262,56 @@ ui <- fluidPage(
                                      width = 12,
                                      collapsible = T),
                                  box(hr(), width = 12)),
-                        tabPanel("Paid and unpaid labor"),
-                        tabPanel("NEET population")),
+                        
+                        # Paid and unpaid labor ------------------------------
+                        tabPanel("Paid and unpaid labor",
+                                 value = "pay",
+                                 
+                                 fluidRow(
+                                   column(3,
+                                          fixedPanel(
+                                            actionButton("to_employment", label = "< adults - entering the job market"),
+                                            left = 10, bottom = 10
+                                          )),
+                                   
+                                   column(6,
+                                          
+                                          textOutput("pay_intro"),
+                                          h3("Paid and unpaid labor throughout the lifetime"),
+                                          plotOutput("pay_age"),
+                                          hr(),
+                                          textOutput("pay_t1"),
+                                          h3("Average income by age and sex"),
+                                          plotOutput("pay_lab_inc1"),
+                                          h3("Average income among paid workers by age and sex"),
+                                          plotOutput("pay_lab_inc2"),
+                                          hr(),
+                                          textOutput("pay_t2"),
+                                          h3("Economic contribution of unpaid labor on household level"),
+                                          plotOutput("pay_worth"),
+                                          hr(),
+                                          textOutput("pay_t3"),
+                                          h3("Aggregate contribution of unpaid labor per month"),
+                                          fluidRow(
+                                            column(6,
+                                                   p("men"),
+                                                   h2(textOutput("pay_worth_tot1")),
+                                                   p("bolivianos")),
+                                            column(6,
+                                                   p("women"),
+                                                   h2(textOutput("pay_worth_tot2")),
+                                                   p("bolivianos"))
+                                          ),
+                                          hr()
+                                   ),
+                                   column(3,
+                                          fixedPanel(
+                                            actionButton("to_neet", label = "adults - neet population >"),
+                                            right = 10, bottom = 10
+                                          )))),
+                        
+                        tabPanel("NEET population",
+                                 value = "neet")),
              
              # Tab panel: older adults 60+ --------------------
              tabPanel("Older adults 60+",
@@ -1172,6 +1229,68 @@ server <- function(input, output, session) {
   output$ind_unemp <- renderPlot(ridge_indigen(unemployed))
   output$ind_inac <- renderPlot(ridge_indigen(inactive))
   
+  # Tab panel: paid and unpaid labor --------------------------------
+  output$pay_intro <- renderText("The unpaid labor force is dominated by women, while men make up almost two thirds of the paid labor market.")
+  output$pay_t1 <- renderText("As a result, on average, women earn much less labor income than men. Interestingly, even when we only look at paid workers, the average values do not change very much at all.")
+  output$pay_t2 <- renderText("How much is the unpaid labor really worth? To calculate this, we assume that all workers within a household, paid or unpaid, contribute the same value to household labor income with each unit of time they spend working. Therefore, for a 2-person household where one paid and one unpaid worker each reports 50 weekly work hours, we would evenly distribute the monthly labor income across the two, for example.")
+  output$pay_t3 <- renderText("Although women are overrepresented in unpaid labor, the above graph does not indicate that unpaid women contribute significantly more to their households than unpaid men.")
+  
+  output$pay_age <- renderPlot(
+    ggplot(adults %>% filter(!is.na(paid))) +
+      geom_bar(aes(age, fill = sex), position = "fill", width = 0.9) +
+      geom_hline(yintercept = 0.5, alpha = 0.2, linetype = "dashed") +
+      facet_wrap(vars(paid)) +
+      theme_minimal() +
+      theme(legend.position = "bottom", legend.title = element_blank(), panel.grid.minor = element_blank()) +
+      scale_fill_manual(values = c(color1, color2), labels = c("men", "women")) +
+      ylab("proportion")
+  )
+  
+  output$pay_lab_inc1 <- renderPlot(
+    ggplot(adults %>% filter(!is.na(paid))) +
+      geom_jitter(aes(x = age, y = lab_monthly_inc, color = sex), alpha = 0.05) +
+      geom_line(data = adults %>% filter(!is.na(paid)) %>% group_by(age, sex) %>% summarize(mean = mean(lab_monthly_inc, na.rm = T)),
+                aes(x = age, y = mean, color = sex), size = 1) +
+      geom_point(data = adults %>% filter(!is.na(paid)) %>% group_by(age, sex) %>% summarize(mean = mean(lab_monthly_inc, na.rm = T)),
+                 aes(x = age, y = mean, color = sex), size = 2.5) +
+      theme_minimal() +
+      theme(legend.position = "bottom", legend.title = element_blank(), panel.grid.minor = element_blank()) +
+      scale_color_manual(values = c(color1, color2), labels = c("men", "women")) +
+      ylab("monthly labor income (BOB)") +
+      ylim(0, 20000)
+  )
+  
+  output$pay_lab_inc2 <- renderPlot(
+    ggplot(adults %>% filter(paid == "paid")) +
+      geom_jitter(aes(x = age, y = lab_monthly_inc, color = sex), alpha = 0.05) +
+      geom_line(data = adults %>% filter(!is.na(paid)) %>% group_by(age, sex) %>% summarize(mean = mean(lab_monthly_inc, na.rm = T)),
+                aes(x = age, y = mean, color = sex), size = 1) +
+      geom_point(data = adults %>% filter(!is.na(paid)) %>% group_by(age, sex) %>% summarize(mean = mean(lab_monthly_inc, na.rm = T)),
+                 aes(x = age, y = mean, color = sex), size = 2.5) +
+      theme_minimal() +
+      theme(legend.position = "bottom", legend.title = element_blank(), panel.grid.minor = element_blank()) +
+      scale_color_manual(values = c(color1, color2), labels = c("men", "women")) +
+      ylab("monthly labor income (BOB)") +
+      ylim(0, 20000)
+  )
+  
+  output$pay_worth <- renderPlot(
+    ggplot(adults %>% mutate(unpaid_worth = hh_lab_inc * hh_hr_pct)) +
+      geom_density(aes(unpaid_worth, fill = sex), alpha = 0.35, color = "grey") +
+      theme_minimal() +
+      theme(legend.position = "bottom", legend.title = element_blank(), panel.grid.minor = element_blank(), axis.text.y = element_blank()) +
+      scale_fill_manual(values = c(color1, color2), labels = c("men", "women")) +
+      xlim(0, 1700000) + xlab("Contribution to monthly household labor income (BOB)")
+  )
+  
+  adults_unpaid_worth <- adults %>%
+    mutate(unpaid_worth = hh_lab_inc * hh_hr_pct) %>%
+    group_by(sex) %>%
+    summarize(sum = sum(unpaid_worth))
+
+  output$pay_worth_tot1 <- renderText(comma(adults_unpaid_worth$sum[1]))
+  output$pay_worth_tot2 <- renderText(comma(adults_unpaid_worth$sum[2]))
+  
   # Tab panel: age ------------------------------
   # age_all <- function(df) {
   #   ggplot(df) +
@@ -1805,6 +1924,17 @@ server <- function(input, output, session) {
     updateActionButton(session, "b5", label = " Tell me another story", icon = icon("redo"))
   })
   output$c5 <- renderTable({ c5_df2() })
+  
+  # Page navigation ---------------------------------
+  observeEvent(input$to_youth, {
+    updateNavbarPage(session, "main", selected = "youth")
+  })
+  observeEvent(input$to_employment, {
+    updateNavbarPage(session, "main", selected = "employment")
+  })
+  observeEvent(input$to_neet, {
+    updateNavbarPage(session, "main", selected = "neet")
+  })
 }
 
 shinyApp(ui = ui, server = server)

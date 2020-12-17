@@ -1,4 +1,4 @@
-employed <- personas %>% filter(emp_status == "Employed") %>%
+employed <- adults %>% filter(emp_status == "Employed") %>%
   select(folio, nro, area, sex, age, marital, literate, num_literate, indigenous, indigenous_id,
          edu, any_ed, higher_ed, in_school,
          chronic_disease_1, disability_1, pregnant, num_alive_child,
@@ -6,9 +6,9 @@ employed <- personas %>% filter(emp_status == "Employed") %>%
          cellphone, internet_use, internet_use_where_1, internet_use_where_2,
          primary_job, work_type, primary_salary, primary_salary_freq, primary_nonsalaried_income, primary_nonsalaried_income_freq,
          sec_job, sec_employer_industry, sec_work_type, sec_salary, sec_salary_freq, sec_nonsalaried_income, sec_nonsalaried_income_freq,
-         want_work_more, avail_work_more, union_member, factor, education) %>% filter(age %in% 25:60)
+         want_work_more, avail_work_more, union_member, factor, education)
 
-unemployed <-  personas %>% filter(emp_status == "Unemployed") %>% 
+unemployed <-  adults %>% filter(emp_status == "Unemployed") %>% 
   select(folio, nro, area, sex, age, marital, literate, num_literate, indigenous, indigenous_id,
          edu, any_ed, higher_ed, in_school,
          chronic_disease_1, disability_1, pregnant, num_alive_child,
@@ -16,9 +16,9 @@ unemployed <-  personas %>% filter(emp_status == "Unemployed") %>%
          cellphone, internet_use, internet_use_where_1, internet_use_where_2,
          primary_job, work_type, primary_salary, primary_salary_freq, primary_nonsalaried_income, primary_nonsalaried_income_freq,
          sec_job, sec_employer_industry, sec_work_type, sec_salary, sec_salary_freq, sec_nonsalaried_income, sec_nonsalaried_income_freq,
-         want_work_more, avail_work_more, union_member, factor, education ) %>% filter(age %in% 25:60)
+         want_work_more, avail_work_more, union_member, factor, education)
 
-inactive <- personas %>% filter(emp_status == "Inactive") %>% 
+inactive <- adults %>% filter(emp_status == "Inactive") %>% 
   select(folio, nro, area, sex, age, marital, literate, num_literate, indigenous, indigenous_id,
          edu, any_ed, higher_ed, in_school,
          chronic_disease_1, disability_1, pregnant, num_alive_child,
@@ -26,9 +26,9 @@ inactive <- personas %>% filter(emp_status == "Inactive") %>%
          cellphone, internet_use, internet_use_where_1, internet_use_where_2,
          primary_job, work_type, primary_salary, primary_salary_freq, primary_nonsalaried_income, primary_nonsalaried_income_freq,
          sec_job, sec_employer_industry, sec_work_type, sec_salary, sec_salary_freq, sec_nonsalaried_income, sec_nonsalaried_income_freq,
-         want_work_more, avail_work_more, union_member, factor, education) %>% filter(age %in% 25:60)
+         want_work_more, avail_work_more, union_member, factor, education)
 
-neet  <- personas %>% filter(emp_status == "Inactive" & is_student == "No") %>%
+neet <- personas %>% filter(emp_status == "Inactive" & is_student == "No") %>%
   select(folio, nro, area, sex, age, marital, literate, num_literate, indigenous, indigenous_id,
          edu, any_ed, higher_ed, in_school,
          chronic_disease_1, disability_1, pregnant, num_alive_child,

@@ -32,7 +32,7 @@ cur_conv <- function(var) {
 }
 
 personas0 <- read_excel("../data/EH_2018/EH2018_Personas2.xlsx", guess_max = 37517) %>%
-  mutate(higher_ed = ifelse(startsWith(edu, "7") | startsWith(edu, "8"), T, F),
+  mutate(higher_ed = ifelse(str_detect(edu, "^[78]"), T, F),
          any_ed = ifelse(startsWith(edu, "11"), F, T),
          primary_work_week_hr = (work_day_hr + work_day_min/60) * work_days_week,
          sec_work_week_hr = (sec_work_hr + sec_work_min/60) * sec_work_days_week,
@@ -72,6 +72,21 @@ personas0 <- read_excel("../data/EH_2018/EH2018_Personas2.xlsx", guess_max = 375
            ifelse(is.na(dom_trans_monthly_inc), 0, dom_trans_monthly_inc) + ifelse(is.na(intl_remit_monthly_inc), 0, intl_remit_monthly_inc),
          tot_monthly_inc = ifelse(is.na(lab_monthly_inc), 0, lab_monthly_inc) + nonlab_monthly_inc)
 
+educ_list <- sort(unique(personas0$edu))
+educ_eq <- c("Less than Primary", "Less than Primary", #11, 12
+             "Less than Primary", #13
+             "Primary","Secondary", #21 22 
+             "Secondary", "Primary", "Secondary", #23, 31, 32, 
+             "Primary", "Secondary",  #41, 42
+             "Primary", "Secondary",  #51, 52
+             "Secondary","Primary",  #61, 62
+             "Secondary","Primary",  #63, 64
+             "Secondary", #65
+             "Tertiary", "Tertiary", "Tertiary", #71, 72, 73
+             "Tertiary", "Tertiary", "Tertiary", #74, 75, 76
+             "Tertiary", "Tertiary", "Tertiary", # 77, 79, 80
+             "Tertiary") #81
+
 hh_inc_df <- personas0 %>%
   group_by(folio) %>%
   summarize(hh_lab_inc = sum(lab_monthly_inc, na.rm = T),
@@ -86,7 +101,24 @@ personas <- personas0 %>%
          hh_sp_inc_pct = sp_monthly_inc / hh_sp_inc * 100,
          hh_nonlab_inc_pct = nonlab_monthly_inc / hh_nonlab_inc * 100,
          hh_tot_inc_pct = tot_monthly_inc / hh_tot_inc * 100) %>%
-  replace_na(list(hh_lab_inc_pct = 0, hh_hr_pct = 0, hh_sp_inc_pct = 0, hh_nonlab_inc_pct = 0, hh_tot_inc_pct = 0))
+  replace_na(list(hh_lab_inc_pct = 0, hh_hr_pct = 0, hh_sp_inc_pct = 0, hh_nonlab_inc_pct = 0, hh_tot_inc_pct = 0)) %>%
+  mutate(emp_status = case_when(
+    work_last_week_1 == '1. Si' ~ "Employed", 
+    work_last_week_2 != "8.NINGUNA ACTIVIDAD" & is.na(work_last_week_2) == FALSE ~ "Employed",
+    work_last_week_3 == "1.Vacaciones o permisos?" | 
+      work_last_week_3 == "2.Licencia de maternidad?" |
+      work_last_week_3 == "8.Estar suspendido?" ~ "Employed",
+    work_last_week_3 == "5.Temporada baja?" | 
+      work_last_week_3 == "9.Problemas personales o familiares?" | 
+      work_last_week_3 == "4.Falta de materiales o insumos?" |
+      work_last_week_3 == "3.Enfermedad o accidente?" ~ "Unemployed",
+    unemployed =="1. Si" ~ "Unemployed",
+    looked_for_work  =="1. Si" ~ "Unemployed",
+    looked_for_work  =="2. No" ~ "Inactive"
+  ),
+  education = plyr::mapvalues(edu, educ_list, educ_eq),
+  is_student = case_when(in_school == "1. Si" ~ "Yes",
+                         in_school == "2. No" ~ "No"))
 
 # Segment by age groups ----------------------------------------------
 
@@ -94,17 +126,19 @@ personas <- personas0 %>%
 children <- personas %>%
   filter(age < 18) %>%
   select(folio, nro, depto, area, sex, age, language_1, marital, literate, num_literate, indigenous, indigenous_id,
-         edu, any_ed, higher_ed, in_school, why_not_in_school, current_edu, in_attendance, why_absence,
+         edu, any_ed, higher_ed, in_school, why_not_in_school, current_edu, in_attendance, why_absence, education, is_student,
          chronic_disease_1, disability_1, pregnant, num_alive_child,
          manual_labor,
          cellphone, internet_use, internet_use_where_1, internet_use_where_2,
+         emp_status,
          primary_job, work_type, primary_work_week_hr,
          primary_salary, primary_salary_freq, primary_nonsalaried_income, primary_nonsalaried_income_freq, primary_monthly_inc,
          sec_job, sec_employer_industry, sec_work_type, sec_work_week_hr,
          sec_salary, sec_salary_freq, sec_nonsalaried_income, sec_nonsalaried_income_freq, sec_monthly_inc,
          lab_monthly_inc, tot_work_week_hr, hh_lab_inc, hh_lab_inc_pct, hh_hr, hh_hr_pct, want_work_more, avail_work_more, union_member,
          sp_monthly_inc, extra_monthly_inc, dom_trans_monthly_inc, intl_remit_monthly_inc, nonlab_monthly_inc, tot_monthly_inc,
-         hh_sp_inc, hh_sp_inc_pct, hh_nonlab_inc, hh_nonlab_inc_pct, hh_tot_inc, hh_tot_inc_pct) %>%
+         hh_sp_inc, hh_sp_inc_pct, hh_nonlab_inc, hh_nonlab_inc_pct, hh_tot_inc, hh_tot_inc_pct,
+         factor) %>%
   mutate(edu_status = case_when(  # children 0-3 are all NA
     startsWith(in_school, "1") & startsWith(in_attendance, "1") ~ "enrolled,\nattending",
     startsWith(in_school, "1") & startsWith(in_attendance, "2") ~ "enrolled,\nnot attending",
@@ -173,52 +207,23 @@ hh_lab_inc_sex <- ggplot(children %>% filter(!is.na(lab_monthly_inc))) +
 
 # Youth
 # Adults
-educ_list <- sort(unique(personas$edu))
-educ_eq <- c("Less than Primary", "Less than Primary", #11, 12
-             "Less than Primary", #13
-             "Primary","Secondary", #21 22 
-             "Secondary", "Primary", "Secondary", #23, 31, 32, 
-             "Primary", "Secondary",  #41, 42
-             "Primary", "Secondary",  #51, 52
-             "Secondary","Primary",  #61, 62
-             "Secondary","Primary",  #63, 64
-             "Secondary", #65
-             "Tertiary", "Tertiary", "Tertiary", #71, 72, 73
-             "Tertiary", "Tertiary", "Tertiary", #74, 75, 76
-             "Tertiary", "Tertiary", "Tertiary", # 77, 79, 80
-             "Tertiary") #81
-
 adults <- personas %>%
   filter(age %in% 25:60) %>%
   select(folio, nro, depto, area, sex, age, language_1, marital, literate, num_literate, indigenous, indigenous_id,
-         edu, any_ed, higher_ed, in_school, why_not_in_school, current_edu, in_attendance, why_absence,
+         edu, any_ed, higher_ed, in_school, why_not_in_school, current_edu, in_attendance, why_absence, education, is_student,
          chronic_disease_1, disability_1, pregnant, num_alive_child,
          manual_labor,
          cellphone, internet_use, internet_use_where_1, internet_use_where_2,
+         emp_status,
          primary_job, work_type, primary_work_week_hr,
          primary_salary, primary_salary_freq, primary_nonsalaried_income, primary_nonsalaried_income_freq, primary_monthly_inc,
          sec_job, sec_employer_industry, sec_work_type, sec_work_week_hr,
          sec_salary, sec_salary_freq, sec_nonsalaried_income, sec_nonsalaried_income_freq, sec_monthly_inc,
          lab_monthly_inc, tot_work_week_hr, hh_lab_inc, hh_lab_inc_pct, hh_hr, hh_hr_pct, want_work_more, avail_work_more, union_member,
          sp_monthly_inc, extra_monthly_inc, dom_trans_monthly_inc, intl_remit_monthly_inc, nonlab_monthly_inc, tot_monthly_inc,
-         hh_sp_inc, hh_sp_inc_pct, hh_nonlab_inc, hh_nonlab_inc_pct, hh_tot_inc, hh_tot_inc_pct) %>%
-  mutate(emp_status = case_when(
-    work_last_week_1 == '1. Si' ~ "Employed", 
-    work_last_week_2 != "8.NINGUNA ACTIVIDAD" & is.na(work_last_week_2) == FALSE ~ "Employed",
-    work_last_week_3 == "1.Vacaciones o permisos?" | 
-      work_last_week_3 == "2.Licencia de maternidad?" |
-      work_last_week_3 == "8.Estar suspendido?" ~ "Employed",
-    work_last_week_3 == "5.Temporada baja?" | 
-      work_last_week_3 == "9.Problemas personales o familiares?" | 
-      work_last_week_3 == "4.Falta de materiales o insumos?" |
-      work_last_week_3 == "3.Enfermedad o accidente?" ~ "Unemployed",
-    unemployed =="1. Si" ~ "Unemployed",
-    looked_for_work  =="1. Si" ~ "Unemployed",
-    looked_for_work  =="2. No" ~ "Inactive"
-  ),
-  education = plyr::mapvalues(edu, educ_list, educ_eq),
-  is_student = case_when(in_school == "1. Si" ~ "Yes",
-                         in_school == "2. No" ~ "No"))
+         hh_sp_inc, hh_sp_inc_pct, hh_nonlab_inc, hh_nonlab_inc_pct, hh_tot_inc, hh_tot_inc_pct,
+         factor) %>%
+  mutate(paid = ifelse(str_detect(work_type, "^[78]"), "unpaid", "paid"))
 
 # Older adults
 
@@ -244,7 +249,7 @@ with_job <- personas %>%
 
 # Select people with at least 1 unpaid job
 unpaid_job <- with_job %>%
-  filter(startsWith(work_type, "7") | startsWith(work_type, "8") | startsWith(sec_work_type, "7") | startsWith(sec_work_type, "8"))
+  filter(str_detect(work_type, "^[78]") | str_detect(sec_work_type, "^[78]"))
 
 # Select people with only 1 job, which is unpaid
 unpaid_job1 <- unpaid_job %>%
@@ -252,11 +257,11 @@ unpaid_job1 <- unpaid_job %>%
 
 # Select people whose primary job is paid but secondary job is unpaid
 unpaid_sec_job <- with_job %>%
-  filter(!startsWith(work_type, "7") & !startsWith(work_type, "8") & (startsWith(sec_work_type, "7") | startsWith(sec_work_type, "8")))
+  filter(!str_detect(work_type, "^[78]") & str_detect(sec_work_type, "^[78]"))
 
 # Select people whose primary job is unpaid but secondary job is paid
 unpaid_pri_job <- with_job %>%
-  filter((startsWith(work_type, "7") | startsWith(work_type, "8")) & !startsWith(sec_work_type, "7") & !startsWith(sec_work_type, "8"))
+  filter(str_detect(work_type, "^[78]") & !str_detect(sec_work_type, "^[78]"))
 
 # Select child workers under 15
 child_worker <- with_job %>%
