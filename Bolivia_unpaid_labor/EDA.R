@@ -31,7 +31,7 @@ cur_conv <- function(var) {
             startsWith(var, "SOL") ~ getQuote(paste0("PEN", bob))$Last)
 }
 
-personas0 <- read_excel("../data/EH_2018/EH2018_Personas2.xlsx", guess_max = 37517) %>%
+personas0 <- read_excel("data/EH2018_Personas2.xlsx", guess_max = 37517) %>%
   mutate(higher_ed = ifelse(str_detect(edu, "^[78]"), T, F),
          any_ed = ifelse(startsWith(edu, "11"), F, T),
          primary_work_week_hr = (work_day_hr + work_day_min/60) * work_days_week,
@@ -145,67 +145,31 @@ children <- personas %>%
     startsWith(in_school, "2") ~ "not\nenrolled"
   ))
 
-hh_hr_area <- ggplot(children %>% filter(!is.na(lab_monthly_inc))) +
-  geom_jitter(aes(x = age, y = hh_hr_pct, size = lab_monthly_inc, color = area), alpha = 0.15) +
-  geom_line(data = children %>% filter(!is.na(lab_monthly_inc)) %>% group_by(age, area) %>%
-              summarize(mean_hr = mean(tot_work_week_hr), mean_inc = mean(lab_monthly_inc), mean_pct = mean(hh_hr_pct)),
-            aes(y = mean_pct, x = age, color = area), size = 1) +
-  geom_point(data = children %>% filter(!is.na(lab_monthly_inc)) %>% group_by(age, area) %>%
-               summarize(mean_hr = mean(tot_work_week_hr), mean_inc = mean(lab_monthly_inc), mean_pct = mean(hh_hr_pct)),
-             aes(y = mean_pct, x = age, size = mean_inc, color = area)) +
-  theme_minimal() +
-  theme(legend.position = "bottom", panel.grid.minor = element_blank()) +
-  scale_x_continuous(limits = c(7, 17.8)) +
-  scale_color_manual(values = c(color1, color2), labels = c("rural", "urban")) +
-  scale_size(range = c(0.1, 30)) +
-  labs(y = "share of household work hours (%)", size = "monthly income (BOB)", color = "average")
-
-hh_hr_sex <- ggplot(children %>% filter(!is.na(lab_monthly_inc))) +
-  geom_jitter(aes(x = age, y = hh_hr_pct, size = lab_monthly_inc, color = sex), alpha = 0.15) +
-  geom_line(data = children %>% filter(!is.na(lab_monthly_inc)) %>% group_by(age, sex) %>% 
-              summarize(mean_hr = mean(tot_work_week_hr), mean_inc = mean(lab_monthly_inc), mean_pct = mean(hh_hr_pct)),
-            aes(y = mean_pct, x = age, color = sex), size = 1) +
-  geom_point(data = children %>% filter(!is.na(lab_monthly_inc)) %>% group_by(age, sex) %>% 
-               summarize(mean_hr = mean(tot_work_week_hr), mean_inc = mean(lab_monthly_inc), mean_pct = mean(hh_hr_pct)),
-             aes(y = mean_pct, x = age, size = mean_inc, color = sex)) +
-  theme_minimal() +
-  theme(legend.position = "bottom", panel.grid.minor = element_blank()) +
-  scale_x_continuous(limits = c(7, 17.8)) +
-  scale_color_manual(values = c(color1, color2), labels = c("boys", "girls")) +
-  scale_size(range = c(0.1, 30)) +
-  labs(y = "share of household work hours (%)", size = "monthly income (BOB)", color = "average")
-
-hh_lab_inc_area <- ggplot(children %>% filter(!is.na(lab_monthly_inc))) +
-  geom_jitter(aes(x = age, y = hh_lab_inc_pct, size = tot_work_week_hr, color = area), alpha = 0.15) +
-  geom_line(data = children %>% filter(!is.na(lab_monthly_inc)) %>% group_by(age, area) %>% 
-              summarize(mean_hr = mean(tot_work_week_hr), mean_inc = mean(lab_monthly_inc), mean_pct = mean(hh_lab_inc_pct)),
-            aes(y = mean_pct, x = age, color = area), size = 1) +
-  geom_point(data = children %>% filter(!is.na(lab_monthly_inc)) %>% group_by(age, area) %>% 
-               summarize(mean_hr = mean(tot_work_week_hr), mean_inc = mean(lab_monthly_inc), mean_pct = mean(hh_lab_inc_pct)),
-             aes(y = mean_pct, x = age, size = mean_hr, color = area)) +
-  theme_minimal() +
-  theme(legend.position = "bottom", panel.grid.minor = element_blank()) +
-  scale_x_continuous(limits = c(7, 17.8)) +
-  scale_color_manual(values = c(color1, color2), labels = c("rural", "urban")) +
-  scale_size(range = c(0.1, 10)) +
-  labs(y = "contribution to household labor income (%)", size = "weekly work hours", color = "average")
-
-hh_lab_inc_sex <- ggplot(children %>% filter(!is.na(lab_monthly_inc))) +
-  geom_jitter(aes(x = age, y = hh_lab_inc_pct, size = tot_work_week_hr, color = sex), alpha = 0.15) +
-  geom_line(data = children %>% filter(!is.na(lab_monthly_inc)) %>% group_by(age, sex) %>% 
-              summarize(mean_hr = mean(tot_work_week_hr), mean_inc = mean(lab_monthly_inc), mean_pct = mean(hh_lab_inc_pct)),
-            aes(y = mean_pct, x = age, color = sex), size = 1) +
-  geom_point(data = children %>% filter(!is.na(lab_monthly_inc)) %>% group_by(age, sex) %>% 
-               summarize(mean_hr = mean(tot_work_week_hr), mean_inc = mean(lab_monthly_inc), mean_pct = mean(hh_lab_inc_pct)),
-             aes(y = mean_pct, x = age, size = mean_hr, color = sex)) +
-  theme_minimal() +
-  theme(legend.position = "bottom", panel.grid.minor = element_blank()) +
-  scale_x_continuous(limits = c(7, 17.8)) +
-  scale_color_manual(values = c(color1, color2), labels = c("boys", "girls")) +
-  scale_size(range = c(0.1, 10)) +
-  labs(y = "contribution to household labor income (%)", size = "weekly work hours", color = "average")
 
 # Youth
+youth <- personas %>%
+  filter(age %in% 18:24) %>%
+  select(folio, nro, depto, area, sex, age, language_1, marital, literate, num_literate, indigenous, indigenous_id,
+         edu, any_ed, higher_ed, in_school, why_not_in_school, current_edu, in_attendance, why_absence, education, is_student,
+         chronic_disease_1, disability_1, pregnant, num_alive_child,
+         manual_labor,
+         cellphone, internet_use, internet_use_where_1, internet_use_where_2,
+         emp_status,
+         primary_job, work_type, primary_work_week_hr,
+         primary_salary, primary_salary_freq, primary_nonsalaried_income, primary_nonsalaried_income_freq, primary_monthly_inc,
+         sec_job, sec_employer_industry, sec_work_type, sec_work_week_hr,
+         sec_salary, sec_salary_freq, sec_nonsalaried_income, sec_nonsalaried_income_freq, sec_monthly_inc,
+         lab_monthly_inc, tot_work_week_hr, hh_lab_inc, hh_lab_inc_pct, hh_hr, hh_hr_pct, want_work_more, avail_work_more, union_member,
+         sp_monthly_inc, extra_monthly_inc, dom_trans_monthly_inc, intl_remit_monthly_inc, nonlab_monthly_inc, tot_monthly_inc,
+         hh_sp_inc, hh_sp_inc_pct, hh_nonlab_inc, hh_nonlab_inc_pct, hh_tot_inc, hh_tot_inc_pct,
+         factor) %>%
+  mutate(edu_status = case_when(  # children 0-3 are all NA
+    startsWith(in_school, "1") & startsWith(in_attendance, "1") ~ "enrolled,\nattending",
+    startsWith(in_school, "1") & startsWith(in_attendance, "2") ~ "enrolled,\nnot attending",
+    startsWith(in_school, "2") ~ "not\nenrolled"
+  ))
+
+
 # Adults
 adults <- personas %>%
   filter(age %in% 25:60) %>%
