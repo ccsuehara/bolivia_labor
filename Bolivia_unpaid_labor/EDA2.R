@@ -1,7 +1,7 @@
 employed <- adults %>% filter(emp_status == "Employed") %>%
   select(folio, nro, area, sex, age, marital, literate, num_literate, indigenous, indigenous_id,
          edu, any_ed, higher_ed, in_school,
-         chronic_disease_1, disability_1, pregnant, num_alive_child,
+         chronic_disease_1, disability, pregnant, num_alive_child,
          manual_labor,
          cellphone, internet_use, internet_use_where_1, internet_use_where_2,
          primary_job, work_type, primary_salary, primary_salary_freq, primary_nonsalaried_income, primary_nonsalaried_income_freq,
@@ -11,7 +11,7 @@ employed <- adults %>% filter(emp_status == "Employed") %>%
 unemployed <-  adults %>% filter(emp_status == "Unemployed") %>% 
   select(folio, nro, area, sex, age, marital, literate, num_literate, indigenous, indigenous_id,
          edu, any_ed, higher_ed, in_school,
-         chronic_disease_1, disability_1, pregnant, num_alive_child,
+         chronic_disease_1, disability, pregnant, num_alive_child,
          manual_labor,
          cellphone, internet_use, internet_use_where_1, internet_use_where_2,
          primary_job, work_type, primary_salary, primary_salary_freq, primary_nonsalaried_income, primary_nonsalaried_income_freq,
@@ -21,7 +21,7 @@ unemployed <-  adults %>% filter(emp_status == "Unemployed") %>%
 inactive <- adults %>% filter(emp_status == "Inactive") %>% 
   select(folio, nro, area, sex, age, marital, literate, num_literate, indigenous, indigenous_id,
          edu, any_ed, higher_ed, in_school,
-         chronic_disease_1, disability_1, pregnant, num_alive_child,
+         chronic_disease_1, disability, pregnant, num_alive_child,
          manual_labor,
          cellphone, internet_use, internet_use_where_1, internet_use_where_2,
          primary_job, work_type, primary_salary, primary_salary_freq, primary_nonsalaried_income, primary_nonsalaried_income_freq,
@@ -31,7 +31,7 @@ inactive <- adults %>% filter(emp_status == "Inactive") %>%
 neet <- personas %>% filter(emp_status == "Inactive" & is_student == "No") %>%
   select(folio, nro, area, sex, age, marital, literate, num_literate, indigenous, indigenous_id,
          edu, any_ed, higher_ed, in_school,
-         chronic_disease_1, disability_1, pregnant, num_alive_child,
+         chronic_disease_1, disability, pregnant, num_alive_child,
          manual_labor,
          cellphone, internet_use, internet_use_where_1, internet_use_where_2,
          primary_job, work_type, primary_salary, primary_salary_freq, primary_nonsalaried_income, primary_nonsalaried_income_freq,
