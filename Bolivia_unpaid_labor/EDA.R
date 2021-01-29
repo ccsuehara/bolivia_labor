@@ -69,7 +69,8 @@ personas0 <- read_excel("data/EH2018_Personas2.xlsx", guess_max = 37517) %>%
          intl_remit_monthly_inc = ifelse(intl_remit == "2. No" | is.na(intl_remit), 0, (intl_remit_inc + intl_remit_in_kind) * intl_remit_freq),
          nonlab_monthly_inc = ifelse(is.na(sp_monthly_inc), 0, sp_monthly_inc) + ifelse(is.na(extra_monthly_inc), 0, extra_monthly_inc) +
            ifelse(is.na(dom_trans_monthly_inc), 0, dom_trans_monthly_inc) + ifelse(is.na(intl_remit_monthly_inc), 0, intl_remit_monthly_inc),
-         tot_monthly_inc = ifelse(is.na(lab_monthly_inc), 0, lab_monthly_inc) + nonlab_monthly_inc)
+         tot_monthly_inc = ifelse(is.na(lab_monthly_inc), 0, lab_monthly_inc) + nonlab_monthly_inc,
+         paid = ifelse(str_detect(work_type, "^[78]"), "unpaid", "paid"))
 
 for (i in 1:7) {
   v <- paste0("disability_", i)

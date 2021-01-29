@@ -62,8 +62,8 @@ ui <- fluidPage(
              tabPanel("Home",
                       fluidRow(width = 12,
                                imageOutput("landing",
-                                           width = "1130px",
-                                           click = clickOpts(id = "landing_cl")))),
+                                           width = "99%",
+                                           click = "landing_cl"))),
              
              # Tab panel: children under 18 --------------------
              tabPanel("Children under 18",
@@ -207,6 +207,9 @@ ui <- fluidPage(
                                hr(),
                                textOutput("youth_edu_t1"),
                                p(""),
+                               h3("Which socioeconomic characteristics affect youths' education the most?"),
+                               plotOutput("youth_edu_imp"),
+                               hr(),
                                textOutput("youth_edu_marital"),
                                p(""),
                                textOutput("youth_edu_internet"),
@@ -252,6 +255,9 @@ ui <- fluidPage(
                                
                                textOutput("youth_emp_t1"),
                                p(""),
+                               h3("Which socioeconomic characteristics affect youths' employment the most?"),
+                               plotOutput("youth_emp_imp"),
+                               hr(),
                                textOutput("youth_emp_stu"),
                                p(""),
                                textOutput("youth_emp_edu"),
@@ -505,18 +511,38 @@ ui <- fluidPage(
                                hr(),
                                
                                textOutput("older_t2"),
-                               h3("Feature importance - primary job"),
-                               imageOutput("older_p2"),
+                               h3("Which socioeconomic characteristics affect older adults' work status the most?"),
+                               plotOutput("older_p2"),
+                               hr(),
+                               h2("The impact of select socioeconomic characteristics on older adults' work status"),
+                               selectInput("older_job",
+                                           label = "",
+                                           choices = c("Non-labor income" = "nonlab",
+                                                       "Family members' income" = "rest_of_hh",
+                                                       "Area" = "area",
+                                                       "Sex" = "sex")),
+                               plotOutput("older_job_p"),
                                hr(),
                                
                                textOutput("older_t3"),
-                               h3("Feature importance - paid/unpaid work"),
+                               h3("Which socioeconomic characteristics affect whether one does paid or unpaid work?"),
                                plotOutput("older_p3"),
+                               hr(),
+                               h2("The impact of select socioeconomic characteristics on the nature of one's work"),
+                               selectInput("older_pay",
+                                           label = "",
+                                           choices = c("Sex" = "sex",
+                                                       "Family members' income" = "rest_of_hh",
+                                                       "Area" = "area",
+                                                       "Marital status" = "marital",
+                                                       "Household size" = "size")),
+                               plotOutput("older_pay_p"),
                                hr(),
                                
                                textOutput("older_t4"),
-                               h3("Feature importance - labor income"),
-                               plotOutput("older_p4"))
+                               h3("Income distribution among working older adults"),
+                               plotOutput("older_p4"),
+                               p(""))
                       ))
   )
 )
@@ -883,6 +909,17 @@ server <- function(input, output, session) {
                                     It also demonstrates little difference between the two genders.
                                     However, it is crucial to interrogate: Who has the ability to be among the more educated half? And how does young adults' education translate into and interact with their employment conditions?")
   
+  output$youth_edu_imp <- renderPlot(
+    read_csv("data/youth_ses_rf1_imp.csv") %>%
+      ggplot() +
+      geom_segment(aes(x = 0, y = reorder(name, MeanDecreaseAccuracy), xend = MeanDecreaseAccuracy, yend = reorder(name, MeanDecreaseAccuracy)), color = "grey") +
+      geom_point(aes(MeanDecreaseAccuracy, name), color = color1, size = 3) +
+      theme_minimal() +
+      theme(panel.grid.major.y = element_blank(), panel.grid.minor = element_blank(), axis.text.x = element_blank()) +
+      scale_x_continuous(position = "top", breaks = c(0)) +
+      xlab("variable importance") + ylab("")
+  )
+  
   youth_edu1_p <- function(df, var, labels) {
     df2 <- df %>%
       group_by(age, sex, .data[[var]]) %>%
@@ -905,8 +942,8 @@ server <- function(input, output, session) {
   output$youth_edu1 <- renderPlot(
     if (youth_edu1_var() == "internet") {
       youth %>% mutate(decile = cut(pc_inc, 
-                                    breaks = unique(quantile(pc_inc, probs=seq.int(0, 1, by = 0.1))), 
-                                    include.lowest=TRUE)) %>%
+                                    breaks = unique(quantile(pc_inc, probs = seq.int(0, 1, by = 0.1))), 
+                                    include.lowest = T)) %>%
         group_by(sex, decile, internet_use) %>%
         summarize(mean = mean(in_school == "1. Si") * 100, count = n()) %>%
         mutate(decile = as.numeric(decile)) %>%
@@ -970,6 +1007,7 @@ server <- function(input, output, session) {
                                           Where the differentiation truly manifests is in young adults' employment.
                                           There are almost twice as many men between the ages of 18 and 24 doing paid or unpaid work than women, a curious phenomenon that provokes further inquiries:
                                           Why does this happen? What do we know about the working youths? What is the nature of their work?")
+  # output$youth_emp_t1 <- renderText("Below is the relative importance of various socioeconomic factors that affect youths' employment.")
   output$youth_emp_stu <- renderText("Clearly, whether one is in school has a significant impact on their likelihood to work, but such effect is severely gendered.
                                      For men, non-students are about three times as likely than students to be working, with their labor force participation (LFP) rate going up as they age.
                                      For women, however, even those who are not in school have only a roughly 50% chance to be working, paid or unpaid.")
@@ -1006,6 +1044,17 @@ server <- function(input, output, session) {
       theme(legend.position = "bottom", legend.title = element_blank(), panel.grid.minor = element_blank()) +
       scale_fill_manual(values = c(color1, color2), labels = c("men", "women")) +
       ylab("proportion")
+  )
+  
+  output$youth_emp_imp <- renderPlot(
+    read_csv("data/youth_ses_rf2_imp.csv") %>%
+      ggplot() +
+      geom_segment(aes(x = 0, y = reorder(name, MeanDecreaseAccuracy), xend = MeanDecreaseAccuracy, yend = reorder(name, MeanDecreaseAccuracy)), color = "grey") +
+      geom_point(aes(MeanDecreaseAccuracy, name), color = color1, size = 3) +
+      theme_minimal() +
+      theme(panel.grid.major.y = element_blank(), panel.grid.minor = element_blank(), axis.text.x = element_blank()) +
+      scale_x_continuous(position = "top", breaks = c(0)) +
+      xlab("variable importance") + ylab("")
   )
   
   youth_emp1_p <- function(df, var, labels) {
@@ -1260,7 +1309,7 @@ server <- function(input, output, session) {
 
   
   # Tab panel: older adults -----------------------------------------
-  output$older_t1 <- renderText("In the 2000s, Bolivia instituted the Renta Dignidad program, an unconditional and non-contributory cash transfer program that guarantees a basic income for everyone over 60.
+  output$older_t1 <- renderText("In the 2000s, Bolivia instituted the Renta Dignidad program, a non-contributory cash transfer program that guarantees a basic income for everyone over 60.
                                 Unlike pensions, Renta Dignidad is not contingent on one's prior participation in the formal labor market, which entails enormous and tangible benefits for the large part of Bolivian labor force who work informally.
                                 While this program has achieved notable successes in terms of improving older adults' quality of life and reducing child labor rates, many questions remain regarding older adults' well-being.
                                 To begin with, the amount of benefits Renta Dignidad provides is low: only 250-300 bolivianos per person per month, regardless of one's location or needs.
@@ -1272,12 +1321,14 @@ server <- function(input, output, session) {
                                 Although retirement is undoubtedly a personal choice, here we use retirement status as a proxy to measure whether one has the ability to retire if so desired.
                                 In other words, which of the older adults have no choice but to continue working in order to sustain themselves financially?
                                 The random forest model indicates that one's non-labor income, which includes cash transfers, pensions, remittances, etc., has a great impact on one's likelihood to work after 60.
+                                Yet, intriguingly, the data show that people who work actually receive higher non-labor income on average than those who do not.
                                 Another important income-related factor is the household economic condition--namely, how the other household members are doing economically.
                                 Here, this is measured by what the per capita household income would have been if the older adult in question did not bring home any income, labor or non-labor.
                                 In addition, other variables to be considered are department, age, household size, and sex.")
   output$older_t3 <- renderText("Next, we zoom into the working population and ask, do they get compensated for their labor? What is the nature of their work?
                                 Similar to other age groups, older adults also face a considerable gender gap when it comes to unpaid labor.
                                 While other variables, such as age, household size, and non-labor income, remain salient, it is gender that most markedly sets paid and unpaid workers apart.")
+  # TODO: change the text below
   output$older_t4 <- renderText("The final question we interrogate is the labor income among the paid workers.
                                 What determines their earnings?
                                 It turns out that family background matters, and it matters a lot.
@@ -1287,18 +1338,169 @@ server <- function(input, output, session) {
 
   output$older_p1 <- renderPlot(
     older %>%
-      mutate(primary_job = ifelse(is.na(primary_job), F, T)) %>%
+      # mutate(primary_job = ifelse(is.na(primary_job), F, T)) %>%
       ggplot() +
-      geom_jitter(aes(age, sp_monthly_inc, color = primary_job), width = 1, alpha = 0.25) +
+      geom_jitter(aes(age, sp_monthly_inc, color = sex), width = 1, alpha = 0.25) +
+      geom_smooth(aes(age, sp_monthly_inc, color = sex), method = "loess", se = F, span = 0.1, method.args = list(degree = 1)) +
       theme_minimal() +
       theme(panel.grid.minor = element_blank(), legend.position = "bottom", legend.title = element_blank()) +
-      scale_color_manual(values = color_pal[1:2], labels = c("working", "not working")) +
-      ylab("monthly social protection income (BOB)")
+      scale_color_manual(values = color_pal[1:2], labels = c("men", "women")) +
+      ylab("monthly social protection income (BOB)") + ylim(-1, 7000)
   )
   
-  output$older_p2 <- renderImage(list(src = "www/primary_job.png", width = "100%"), deleteFile = F)
-  output$older_p3 <- renderImage(list(src = "www/paid.png", width = "100%"), deleteFile = F)
-  output$older_p4 <- renderImage(list(src = "www/labor_income.png", width = "100%"), deleteFile = F)
+  output$older_p2 <- renderPlot(
+    read_csv("data/older_ses_rf1_imp.csv") %>%
+      ggplot() +
+      geom_segment(aes(x = 0, y = reorder(name, MeanDecreaseAccuracy), xend = MeanDecreaseAccuracy, yend = reorder(name, MeanDecreaseAccuracy)), color = "grey") +
+      geom_point(aes(MeanDecreaseAccuracy, name), color = color1, size = 3) +
+      theme_minimal() +
+      theme(panel.grid.major.y = element_blank(), panel.grid.minor = element_blank(), axis.text.x = element_blank()) +
+      scale_x_continuous(position = "top", breaks = c(0)) +
+      xlab("variable importance") + ylab("")
+  )
+  
+  older_job_var <- reactive(input$older_job)
+  
+  older_f1 <- function(var, ylab) {
+    fit1 <- loess(older %>% filter(is.na(primary_job) & startsWith(sex, "1")) %>% pull(.data[[var]]) ~ age, degree = 1, span = 0.1,
+                  data = older %>% filter(is.na(primary_job) & startsWith(sex, "1")))
+    fit2 <- loess(older %>% filter(is.na(primary_job) & startsWith(sex, "2")) %>% pull(.data[[var]]) ~ age, degree = 1, span = 0.1,
+                  data = older %>% filter(is.na(primary_job) & startsWith(sex, "2")))
+    fit3 <- loess(older %>% filter(!is.na(primary_job) & startsWith(sex, "1")) %>% pull(.data[[var]]) ~ age, degree = 1, span = 0.1,
+                  data = older %>% filter(!is.na(primary_job) & startsWith(sex, "1")))
+    fit4 <- loess(older %>% filter(!is.na(primary_job) & startsWith(sex, "2")) %>% pull(.data[[var]]) ~ age, degree = 1, span = 0.1,
+                  data = older %>% filter(!is.na(primary_job) & startsWith(sex, "2")))
+    
+    older %>%
+      mutate(primary_job = !is.na(primary_job)) %>%
+      arrange(primary_job, sex) %>%
+      mutate(smooth = c(fit1$fitted, fit2$fitted, fit3$fitted, fit4$fitted)) %>%
+      ggplot() +
+      geom_jitter(aes(age, .data[[var]], color = primary_job), width = 1, alpha = 0.1) +
+      geom_line(aes(age, smooth, color = primary_job), size = 1) +
+      facet_wrap(vars(sex)) +
+      theme_minimal() +
+      theme(panel.grid.minor = element_blank(), legend.position = "bottom") +
+      scale_color_manual(values = color_pal[1:2], labels = c("working", "not working"), name = "") +
+      ylab(ylab) + ylim(-1, 5000)
+  }
+  
+  older_f2 <- function(var, labels) {
+    df <- older %>%
+      mutate(primary_job = !is.na(primary_job)) %>%
+      group_by(age, .data[[var]]) %>%
+      summarize(n = n(), mean = mean(primary_job) * 100) %>%
+      filter(n > 9)
+    
+    ggplot(df) +
+      geom_line(aes(age, mean, color = .data[[var]]), size = 1) +
+      theme_minimal() +
+      theme(panel.grid.minor = element_blank(), legend.position = "bottom") +
+      scale_color_manual(values = color_pal[1:2], labels = labels, name = "average") +
+      ylab("% working")
+  }
+  
+  output$older_job_p <- renderPlot(
+    if (older_job_var() == "nonlab") {
+      older_f1("nonlab_monthly_inc", "monthly non-labor income (BOB)")
+    } else if (older_job_var() == "rest_of_hh") {
+      older_f1("rest_of_hh", "monthly per capita income for rest of household (BOB)")
+    } else if (older_job_var() == "area") {
+      older_f2("area", c("rural", "urban"))
+    } else if (older_job_var() == "sex") {
+      older_f2("sex", c("men", "women"))
+    }
+  )
+  
+  output$older_p3 <- renderPlot(
+    read_csv("data/older_ses_rf2_imp.csv") %>%
+      ggplot() +
+      geom_segment(aes(x = 0, y = reorder(name, MeanDecreaseAccuracy), xend = MeanDecreaseAccuracy, yend = reorder(name, MeanDecreaseAccuracy)), color = "grey") +
+      geom_point(aes(MeanDecreaseAccuracy, name), color = color1, size = 3) +
+      theme_minimal() +
+      theme(panel.grid.major.y = element_blank(), panel.grid.minor = element_blank(), axis.text.x = element_blank()) +
+      scale_x_continuous(position = "top", breaks = c(0)) +
+      xlab("variable importance") + ylab("")
+  )
+  
+  older_pay_var <- reactive(input$older_pay)
+  
+  older_f3 <- function(var, labels) {
+    older %>%
+      filter(!is.na(paid)) %>%
+      mutate(marital = case_when(str_detect(marital, "^[23]") ~ "married/cohabiting",
+                                 str_detect(marital, "^[1,456]") ~ "single/separated/divorced/widowed")) %>%
+      group_by(age, sex, .data[[var]]) %>%
+      summarize(n = n(), mean = mean(paid == "paid") * 100) %>%
+      filter(n > 5) %>%
+      ggplot() +
+      geom_line(aes(age, mean, color = .data[[var]]), size = 1) +
+      facet_wrap(vars(sex), labeller = labeller(sex = c("1.Hombre" = "men", "2.Mujer" = "women"))) +
+      theme_minimal() +
+      theme(panel.grid.minor = element_blank(), legend.position = "bottom") +
+      scale_color_manual(values = color_pal[1:2], labels = labels, name = "average") +
+      ylab("% workers who are paid")
+  }
+  
+  output$older_pay_p <- renderPlot(
+    if (older_pay_var() == "sex") {
+      older %>%
+        filter(!is.na(paid)) %>%
+        mutate(marital = case_when(str_detect(marital, "^[23]") ~ "married/cohabiting",
+                                   str_detect(marital, "^[1,456]") ~ "single/separated/divorced/widowed")) %>%
+        group_by(age, sex) %>%
+        summarize(n = n(), mean = mean(paid == "paid") * 100) %>%
+        filter(n > 9) %>%
+        ggplot() +
+        geom_line(aes(age, mean, color = sex), size = 1) +
+        theme_minimal() +
+        theme(panel.grid.minor = element_blank(), legend.position = "bottom") +
+        scale_color_manual(values = color_pal[1:2], labels = c("men", "women"), name = "average") +
+        ylab("% workers who are paid")
+    } else if (older_pay_var() == "area") {
+      older_f3("area", c("rural", "urban"))
+    } else if (older_pay_var() == "marital") {
+      older_f3("marital", c("married/cohabiting", "single/separated/divorced/widowed"))
+    } else if (older_pay_var() == "rest_of_hh") {
+      older %>%
+        filter(!is.na(paid)) %>%
+        ggplot() +
+        geom_density(aes(rest_of_hh, fill = paid), color = "grey", alpha = 0.3) +
+        theme_minimal() +
+        theme(panel.grid.minor = element_blank(), legend.position = "bottom", axis.text.y = element_blank()) +
+        scale_fill_manual(values = color_pal[1:2], labels = c("paid", "unpaid"), name = "") +
+        xlab("monthly per capita income for rest of household (BOB)") + xlim(0, 4000) + ylab("density")
+    } else if (older_pay_var() == "size") {
+      older %>%
+        filter(!is.na(paid)) %>%
+        group_by(size, sex) %>%
+        summarize(n = n(), mean = mean(paid == "paid") * 100) %>%
+        filter(n > 5) %>%
+        ggplot() +
+        geom_line(aes(size, mean, color = sex), size = 1) +
+        theme_minimal() +
+        theme(panel.grid.minor = element_blank(), legend.position = "bottom") +
+        scale_color_manual(values = color_pal[1:2], labels = c("men", "women"), name = "") +
+        scale_x_continuous(breaks = seq(1, 9, 2)) +
+        ylab("% works who are paid") + ylim(0, 100)
+    }
+  )
+  
+  output$older_p4 <- renderPlot(
+    personas %>%
+      filter(paid == "paid") %>%
+      mutate(age_group = cut(age, breaks = c(7, seq(20, 100, 10)), include.lowest = T)) %>%
+      mutate(older = age > 60) %>%
+      ggplot() +
+      geom_jitter(aes(lab_monthly_inc+1, age_group, color = older), alpha = 0.1) +
+      geom_boxplot(aes(lab_monthly_inc+1, age_group, color = older), fill = "white", alpha = 0.5, outlier.shape = NA) +
+      # geom_density_ridges(aes(lab_monthly_inc+1, age_group, fill = older), alpha = 0.5, color = "grey") +
+      theme_minimal() +
+      theme(panel.grid.minor = element_blank(), legend.position = "none") +
+      scale_x_continuous(trans = 'log10') +
+      xlab("monthly labor income (BOB)") + ylab("age group") +
+      scale_color_manual(values = c("#E5E5E5", color1))
+  )
   
   
   # Page navigation ---------------------------------
