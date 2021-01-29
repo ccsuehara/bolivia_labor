@@ -1378,7 +1378,7 @@ server <- function(input, output, session) {
       ggplot() +
       geom_jitter(aes(age, .data[[var]], color = primary_job), width = 1, alpha = 0.1) +
       geom_line(aes(age, smooth, color = primary_job), size = 1) +
-      facet_wrap(vars(sex)) +
+      facet_wrap(vars(sex), labeller = labeller(sex = c("1.Hombre" = "men", "2.Mujer" = "women"))) +
       theme_minimal() +
       theme(panel.grid.minor = element_blank(), legend.position = "bottom") +
       scale_color_manual(values = color_pal[1:2], labels = c("working", "not working"), name = "") +
