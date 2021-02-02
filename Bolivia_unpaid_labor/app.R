@@ -1465,20 +1465,17 @@ server <- function(input, output, session) {
                                 Although retirement is undoubtedly a personal choice, here we use retirement status as a proxy to measure whether one has the ability to retire if so desired.
                                 In other words, which of the older adults have no choice but to continue working in order to sustain themselves financially?
                                 The random forest model indicates that one's non-labor income, which includes cash transfers, pensions, remittances, etc., has a great impact on one's likelihood to work after 60.
-                                Yet, intriguingly, the data show that people who work actually receive higher non-labor income on average than those who do not.
+                                As expected, the data show that people who work receive lower non-labor income on average than those who do not.
                                 Another important income-related factor is the household economic condition--namely, how the other household members are doing economically.
                                 Here, this is measured by what the per capita household income would have been if the older adult in question did not bring home any income, labor or non-labor.
                                 In addition, other variables to be considered are department, age, household size, and sex.")
   output$older_t3 <- renderText("Next, we zoom into the working population and ask, do they get compensated for their labor? What is the nature of their work?
                                 Similar to other age groups, older adults also face a considerable gender gap when it comes to unpaid labor.
                                 While other variables, such as age, household size, and non-labor income, remain salient, it is gender that most markedly sets paid and unpaid workers apart.")
-  # TODO: change the text below
   output$older_t4 <- renderText("The final question we interrogate is the labor income among the paid workers.
                                 What determines their earnings?
-                                It turns out that family background matters, and it matters a lot.
-                                Older adults from better-off families are more likely to be holding a well-paid job compared to those from poorer households.
-                                This correlation probably works through the hierarchies of social classes, education levels, professional skills, and other entrenched power structures that were already at play pre-retirement and continue to solidify one's standing in the labor market post-retirement age.
-                                Other factors we will dive into include educational attainment, age, non-labor income, area, department, and household size.")
+                                The data show that one's income decreases as one ages, though the numbers are tend to be wide-ranging and become less generalizable as we get to the oldest age groups, as the sample size tapers off.
+                                Overall, though, some possible reasons for the income differences include household income, educational attainment, age, non-labor income, area, department, and household size.")
 
   output$older_p1 <- renderPlot(
     older %>%
@@ -1516,9 +1513,9 @@ server <- function(input, output, session) {
                   data = older %>% filter(!is.na(primary_job) & startsWith(sex, "2")))
     
     older %>%
-      mutate(primary_job = !is.na(primary_job)) %>%
+      mutate(primary_job = ifelse(!is.na(primary_job), "1 with job", "2 without job")) %>%
       arrange(primary_job, sex) %>%
-      mutate(smooth = c(fit1$fitted, fit2$fitted, fit3$fitted, fit4$fitted)) %>%
+      mutate(smooth = c(fit3$fitted, fit4$fitted, fit1$fitted, fit2$fitted)) %>%
       ggplot() +
       geom_jitter(aes(age, .data[[var]], color = primary_job), width = 1, alpha = 0.1) +
       geom_line(aes(age, smooth, color = primary_job), size = 1) +
