@@ -33,7 +33,8 @@ cur_conv <- function(var) {
 
 # CSV was created and edited from the original excel; saving to CSV to reduce RAM usage -------------------
 # personas0 <- read_excel("data/EH2018_Personas2.xlsx", guess_max = 37517) %>%
-#   mutate(higher_ed = ifelse(str_detect(edu, "^[78]"), T, F),
+#   mutate(depto = ifelse(startsWith(depto, "Poto"), "Potosi", depto),
+#          higher_ed = ifelse(str_detect(edu, "^[78]"), T, F),
 #          any_ed = ifelse(startsWith(edu, "11"), F, T),
 #          primary_work_week_hr = (work_day_hr + work_day_min/60) * work_days_week,
 #          sec_work_week_hr = (sec_work_hr + sec_work_min/60) * sec_work_days_week,
@@ -75,7 +76,7 @@ cur_conv <- function(var) {
 # 
 # for (i in 1:7) {
 #   v <- paste0("disability_", i)
-#   
+# 
 #   personas0 <- personas0 %>%
 #     separate(.data[[v]], c(v, NA), sep = 2, convert = T)
 # }
@@ -86,8 +87,8 @@ cur_conv <- function(var) {
 # educ_list <- sort(unique(personas0$edu))
 # educ_eq <- c("Less than Primary", "Less than Primary", #11, 12
 #              "Less than Primary", #13
-#              "Primary","Secondary", #21 22 
-#              "Secondary", "Primary", "Secondary", #23, 31, 32, 
+#              "Primary","Secondary", #21 22
+#              "Secondary", "Primary", "Secondary", #23, 31, 32,
 #              "Primary", "Secondary",  #41, 42
 #              "Primary", "Secondary",  #51, 52
 #              "Secondary","Primary",  #61, 62
@@ -118,13 +119,13 @@ cur_conv <- function(var) {
 #          rest_of_hh = (hh_tot_inc - tot_monthly_inc) / size) %>%
 #   replace_na(list(hh_lab_inc_pct = 0, hh_hr_pct = 0, hh_sp_inc_pct = 0, hh_nonlab_inc_pct = 0, hh_tot_inc_pct = 0)) %>%
 #   mutate(emp_status = case_when(
-#     work_last_week_1 == '1. Si' ~ "Employed", 
+#     work_last_week_1 == '1. Si' ~ "Employed",
 #     work_last_week_2 != "8.NINGUNA ACTIVIDAD" & is.na(work_last_week_2) == FALSE ~ "Employed",
-#     work_last_week_3 == "1.Vacaciones o permisos?" | 
+#     work_last_week_3 == "1.Vacaciones o permisos?" |
 #       work_last_week_3 == "2.Licencia de maternidad?" |
 #       work_last_week_3 == "8.Estar suspendido?" ~ "Employed",
-#     work_last_week_3 == "5.Temporada baja?" | 
-#       work_last_week_3 == "9.Problemas personales o familiares?" | 
+#     work_last_week_3 == "5.Temporada baja?" |
+#       work_last_week_3 == "9.Problemas personales o familiares?" |
 #       work_last_week_3 == "4.Falta de materiales o insumos?" |
 #       work_last_week_3 == "3.Enfermedad o accidente?" ~ "Unemployed",
 #     unemployed =="1. Si" ~ "Unemployed",

@@ -51,8 +51,7 @@ ui <- fluidPage(
              "h1, h2, h3, h4 { text-align: center; }",
              "p { text-align: center; color: grey; }",
              "hr { margin-top: 2em; margin-bottom: 2em; }",
-             "#children_madlib { color: white; }",
-             "#landing { align-self: center; }"),
+             "#children_madlib { color: white; }"),
   
   navbarPage("Working while female in Bolivia",
              id = "main",
@@ -486,7 +485,8 @@ ui <- fluidPage(
                                             actionButton("to_pay", label = "< adults - paid and unpaid labor"),
                                             left = 10, bottom = 10
                                           )),
-                                   column(6),
+                                   column(6,
+                                          p("Under development. Please check back later for updates :)")),
                                    column(3,
                                           fixedPanel(
                                             actionButton("to_older", label = "older adults >"),
@@ -514,7 +514,7 @@ ui <- fluidPage(
                                h3("Which socioeconomic characteristics affect older adults' work status the most?"),
                                plotOutput("older_p2"),
                                hr(),
-                               h2("The impact of select socioeconomic characteristics on older adults' work status"),
+                               h3("The impact of select socioeconomic characteristics on older adults' work status"),
                                selectInput("older_job",
                                            label = "",
                                            choices = c("Non-labor income" = "nonlab",
@@ -528,7 +528,7 @@ ui <- fluidPage(
                                h3("Which socioeconomic characteristics affect whether one does paid or unpaid work?"),
                                plotOutput("older_p3"),
                                hr(),
-                               h2("The impact of select socioeconomic characteristics on the nature of one's work"),
+                               h3("The impact of select socioeconomic characteristics on the nature of one's work"),
                                selectInput("older_pay",
                                            label = "",
                                            choices = c("Sex" = "sex",
@@ -542,8 +542,152 @@ ui <- fluidPage(
                                textOutput("older_t4"),
                                h3("Income distribution among working older adults"),
                                plotOutput("older_p4"),
-                               p(""))
-                      ))
+                               p("")),
+                        
+                        column(3,
+                               fixedPanel(
+                                 actionButton("to_sum", label = "summary >"),
+                                 right = 10, bottom = 10
+                               ))
+                      )),
+             
+             # Tab panel: summary ----------------------
+             tabPanel("Summary",
+                      value = "sum",
+                      
+                      fluidRow(
+                        column(2,
+                               fixedPanel(
+                                 actionButton("to_older2", label = "< older adults"),
+                                 left = 10, bottom = 10
+                               )),
+                        
+                        column(8,
+                               textOutput("sum_t1"),
+                               hr(),
+                               
+                               fluidRow(
+                                 column(2,
+                                        p("pillars of oppression")),
+                                 column(10,
+                                        column(3, style = "text-align: center;",
+                                               strong("gender")),
+                                        column(3, style = "text-align: center;",
+                                               strong("geography")),
+                                        column(3, style = "text-align: center;",
+                                               strong("social class")),
+                                        column(3, style = "text-align: center;",
+                                               strong("marriage and family norms")))
+                               ),
+                               
+                               fluidRow(
+                                 column(10, offset = 2,
+                                        column(3, style = "padding-top: 2.5em;", 
+                                               p("Compared to a boy, a girl born in Bolivia has a")),
+                                        column(3, style = "padding-top: 1.5em;", 
+                                               p("Compared to a person born in urban La Paz, a person born in rural Potosi has a")),
+                                        column(3,
+                                               p("Compared to a person born in a family in the highest income decile, a person born into the lowest income decile has a")),
+                                        column(3, style = "padding-top: 2em;", 
+                                               p("Compared to a single woman, a married woman has a")))
+                               ),
+                               hr(style = "margin: 0.5em 0em;"),
+                               
+                               fluidRow(
+                                 column(2, style = "padding-top: 3em;",
+                                        p("at the age of 17")),
+                                 column(10,
+                                        column(3,
+                                               h2(textOutput("sum_m11"))),
+                                        column(3,
+                                               h2(textOutput("sum_m12"))),
+                                        column(3,
+                                               h2(textOutput("sum_m13"))),
+                                        column(3,
+                                               h2(textOutput("sum_m14"))))
+                               ),
+                               fluidRow(
+                                 column(10, offset = 2,
+                                        p("likelihood to be working"))
+                               ),
+                               hr(style = "margin: 0.5em 0em;"),
+                               
+                               fluidRow(
+                                 column(2, style = "padding-top: 3em;",
+                                        p("at the age of 23")),
+                                 column(10,
+                                        column(3,
+                                               h3(textOutput("sum_m21"))),
+                                        column(3,
+                                               h2(textOutput("sum_m22"))),
+                                        column(3,
+                                               h2(textOutput("sum_m23"))),
+                                        column(3,
+                                               h2(textOutput("sum_m24"))))
+                               ),
+                               fluidRow(
+                                 column(10, offset = 2,
+                                        p("likelihood to be in school"))
+                               ),
+                               hr(style = "margin: 0.5em 0em;"),
+                               
+                               fluidRow(
+                                 column(2, style = "padding-top: 3em;",
+                                        p("at the age of 35")),
+                                 column(10,
+                                        column(3,
+                                               h2(textOutput("sum_m31"))),
+                                        column(3,
+                                               h2(textOutput("sum_m32"))),
+                                        column(3,
+                                               h2(textOutput("sum_m33"))),
+                                        column(3,
+                                               h2(textOutput("sum_m34"))))
+                               ),
+                               fluidRow(
+                                 column(10, offset = 2,
+                                        p("likelihood to be doing paid work"))
+                               ),
+                               hr(style = "margin: 0.5em 0em;"),
+                               
+                               fluidRow(
+                                 column(2, style = "padding-top: 3em;",
+                                        p("at the age of 45")),
+                                 column(10,
+                                        column(3,
+                                               h2(textOutput("sum_m41"))),
+                                        column(3,
+                                               h2(textOutput("sum_m42"))),
+                                        column(3,
+                                               h2(textOutput("sum_m43"))),
+                                        column(3,
+                                               h2(textOutput("sum_m44"))))
+                               ),
+                               fluidRow(
+                                 column(10, offset = 2,
+                                        p("likelihood to be making at least 3,000 bolivianos per month"))
+                               ),
+                               hr(style = "margin: 0.5em 0em;"),
+                               
+                               fluidRow(
+                                 column(2, style = "padding-top: 3em;",
+                                        p("at the age of 65")),
+                                 column(10,
+                                        column(3,
+                                               h2(textOutput("sum_m51"))),
+                                        column(3,
+                                               h2(textOutput("sum_m52"))),
+                                        column(3,
+                                               h3(textOutput("sum_m53"))),
+                                        column(3,
+                                               h2(textOutput("sum_m54"))))
+                               ),
+                               fluidRow(
+                                 column(10, offset = 2,
+                                        p("likelihood to be retired"))
+                               ),
+                               hr()
+                               )))
   )
 )
 
@@ -1294,7 +1438,7 @@ server <- function(input, output, session) {
       theme_minimal() +
       theme(legend.position = "bottom", legend.title = element_blank(), panel.grid.minor = element_blank(),
             panel.grid.major.y = element_blank()) +
-      xlab("% of unpaid workers") + ylab("")
+      xlab("% unpaid workers") + ylab("")
   )
   
   output$pay_cell1 <- renderPlot(
@@ -1304,7 +1448,7 @@ server <- function(input, output, session) {
       theme_minimal() +
       theme(legend.position = "bottom", legend.title = element_blank(), panel.grid.minor = element_blank(), axis.text.y = element_blank()) +
       scale_fill_manual(values = c(color1, color2), labels = c("men", "women")) +
-      xlim(0, 40000) + xlab("Household monthly labor income (BOB)")
+      xlim(0, 40000) + xlab("household monthly labor income (BOB)")
   )
 
   
@@ -1503,6 +1647,99 @@ server <- function(input, output, session) {
   )
   
   
+  # Tab panel: summary -----------------------
+  output$sum_t1 <- renderText("Across various age groups, there are common structural factors that forcefully alter one's life trajectories.
+                              These factors create and reinforce hierarchies by compromising the chances of certain populations to live a \"good life\":
+                              to go to school and not have to work as a teenager, to receive higher education, to get compensated for one's work,
+                              to enjoy an income that affords a decent living, and to age with dignity.
+                              Here, I identify four pillars of oppression at the root of such inequalities, as demonstrated by the data:
+                              gender, geography, social class, and marriage and family norms.
+                              With a bird's eye view of these pillars at work during different life stages,
+                              it becomes palpably clear how one enormity compounds and morphs into another.
+                              These numbers not only expose the multiple vulnerabilities in the Bolivian society,
+                              but also urge the cause for policy interventions to build a resilient society by reducing inequalities.")
+  
+  # representative ages
+  a1 <- 16.5  # working
+  a2 <- 23  # in school
+  a3 <- 35  # paid work
+  a4 <- 45  # earning X bolivianos per month
+  a5 <- 65  # retired
+  
+  # nrow(personas %>% filter(between(age, 20, 24) & area == "Rural" & depto == "Potosi"))
+  
+  m1 <- function(rep_age, range, opp) {
+    df <- personas %>%
+      filter(between(age, rep_age - range, rep_age + range))
+    
+    df <- if (opp == 1) {
+      df %>%
+        group_by(sex)
+    } else if (opp == 2) {
+      df %>%
+        filter((area == "Urbana" & depto == "La Paz") | (area == "Rural" & depto == "Potosi")) %>%
+        group_by(depto)
+    } else if (opp == 3) {
+      df %>%
+        mutate(decile = cut(pc_inc, 
+                            breaks = unique(quantile(pc_inc, probs = seq.int(0, 1, by = 0.1))), 
+                            include.lowest = T)) %>%
+        mutate(decile = as.numeric(decile)) %>%
+        filter(decile %in% c(1, 10)) %>%
+        mutate(decile = ifelse(decile == 1, "low", "high")) %>%
+        group_by(decile)
+    } else if (opp == 4) {
+      df %>%
+        filter(!is.na(marital)) %>%
+        mutate(mar = ifelse(str_detect(marital, "^[1456]"), "1single", "2married")) %>%
+        group_by(mar)
+    }
+    
+    df <- if (rep_age == a1) {
+      df %>% summarize(mean = mean(!is.na(primary_job)) * 100) %>% pull(mean)
+    } else if (rep_age == a2) {
+      df %>% summarize(mean = mean(in_school == "1. Si") * 100) %>% pull(mean)
+    } else if (rep_age == a3) {
+      df %>% mutate(paid = ifelse(is.na(paid), "unpaid", paid)) %>% summarize(mean = mean(paid == "paid") * 100) %>% pull(mean)
+    } else if (rep_age == a4) {
+      df %>% summarize(mean = mean(tot_monthly_inc >= 3000) * 100) %>% pull(mean)
+    } else if (rep_age == a5) {
+      df %>% summarize(mean = mean(is.na(primary_job)) * 100) %>% pull(mean)
+    }
+    
+    diff <- df[2] - df[1]
+    
+    case_when(between(diff, -2, 2) ~ "about the same",
+              diff < -2 ~ paste0("-", abs(round(diff)), "pp"),
+              diff > 2 ~ paste0("+", round(diff), "pp"))
+  }
+  
+  output$sum_m11 <- renderText(m1(a1, 0.5, 1))
+  output$sum_m12 <- renderText(m1(a1, 0.5, 2))
+  output$sum_m13 <- renderText(m1(a1, 0.5, 3))
+  output$sum_m14 <- renderText("-")
+  
+  output$sum_m21 <- renderText(m1(a2, 1, 1))
+  output$sum_m22 <- renderText(m1(a2, 1, 2))
+  output$sum_m23 <- renderText(m1(a2, 1, 3))
+  output$sum_m24 <- renderText(m1(a2, 1, 4))
+  
+  output$sum_m31 <- renderText(m1(a3, 3, 1))
+  output$sum_m32 <- renderText(m1(a3, 3, 2))
+  output$sum_m33 <- renderText(m1(a3, 3, 3))
+  output$sum_m34 <- renderText(m1(a3, 3, 4))
+  
+  output$sum_m41 <- renderText(m1(a4, 3, 1))
+  output$sum_m42 <- renderText(m1(a4, 3, 2))
+  output$sum_m43 <- renderText(m1(a4, 3, 3))
+  output$sum_m44 <- renderText(m1(a4, 3, 4))
+  
+  output$sum_m51 <- renderText(m1(a5, 3, 1))
+  output$sum_m52 <- renderText(m1(a5, 3, 2))
+  output$sum_m53 <- renderText(m1(a5, 3, 3))
+  output$sum_m54 <- renderText(m1(a5, 3, 4))
+  
+  
   # Page navigation ---------------------------------
   # Children
   observeEvent(input$to_youth, {
@@ -1536,6 +1773,14 @@ server <- function(input, output, session) {
   # Older adults
   observeEvent(input$to_neet2, {
     updateNavbarPage(session, "main", selected = "neet")
+  })
+  observeEvent(input$to_sum, {
+    updateNavbarPage(session, "main", selected = "sum")
+  })
+  
+  # Summary
+  observeEvent(input$to_older2, {
+    updateNavbarPage(session, "main", selected = "older")
   })
 }
 
