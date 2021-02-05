@@ -175,13 +175,17 @@ ui <- fluidPage(
                                ),
                         column(3,
                                fixedPanel(
+                                 tags$a(img(src = "GitHub-Mark.png", style = "width: 32px; "), href = "https://github.com/ccsuehara/bolivia_labor/tree/rui"),
+                                 right = 25, top = 85
+                               ),
+                               fixedPanel(
                                  actionButton("to_youth", label = "youth >"),
                                  right = 10, bottom = 10
                                ))
                       )),
              
-             # Tab panel: youth 18-25 --------------------
-             tabPanel("Youth 18-25",
+             # Tab panel: youth 18-24 --------------------
+             tabPanel("Youth 18-24",
                       value = "youth",
                       
                       fluidRow(
@@ -292,6 +296,10 @@ ui <- fluidPage(
                         
                         column(3,
                                fixedPanel(
+                                 tags$a(img(src = "GitHub-Mark.png", style = "width: 32px; "), href = "https://github.com/ccsuehara/bolivia_labor/tree/rui"),
+                                 right = 25, top = 85
+                               ),
+                               fixedPanel(
                                  actionButton("to_employment", label = "adults - entering the job market >"),
                                  right = 10, bottom = 10
                                ))
@@ -303,106 +311,130 @@ ui <- fluidPage(
                         # Entering the job market -------------------------
                         tabPanel("Entering the job market",
                                  value = "employment",
-                                 box(h2("Column overview"),
-                                     fluidRow(
-                                       column(4,
-                                              p(lf1),
-                                              h1(textOutput("empl")),
-                                              p("people (est.)")),
-                                       column(4,
-                                              p(lf2),
-                                              h1(textOutput("unempl")),
-                                              p("people (est.)")),
-                                       column(4,
-                                              p(lf3),
-                                              h1(textOutput("inactiv")),
-                                              p("people (est.)"))
-                                     ),
-                                     width = 12,
-                                     collapsible = T),
-                                 box(hr(), width = 12),
                                  
-                                 box(h2("Age"),
-                                     h4(textOutput("age_t_lfp")),
-                                     fluidRow(
-                                       column(4,
-                                              p(lf1),
-                                              plotOutput("pop_emp")),
-                                       column(4,
-                                              p(lf2),
-                                              plotOutput("pop_unemp")),
-                                       column(4,
-                                              p(lf3),
-                                              plotOutput("pop_inac"))
-                                     ),
-                                     width = 12,
-                                     collapsible = T),
-                                 box(hr(), width = 12),
-                                 
-                                 box(h2("Proportions"),
-                                     h4(textOutput("proportion_exp")),
-                                     fluidRow(
-                                       column(4,
-                                              p(lf1),
-                                              plotOutput("waf_emp")),
-                                       column(4,
-                                              p(lf2),
-                                              plotOutput("waf_unemp")),
-                                       column(4,
-                                              p(lf3),
-                                              plotOutput("waf_inac"))
-                                     ),
-                                     width = 12,
-                                     collapsible = T),
-                                 box(hr(), width = 12),
-                                 box(h2("Rural/ Urban population"),
-                                     h4(textOutput("ar_lf")),
-                                     fluidRow(
-                                       column(4,
-                                              p(lf1),
-                                              plotOutput("ar_emp")),
-                                       column(4,
-                                              p(lf2),
-                                              plotOutput("ar_unemp")),
-                                       column(4,
-                                              p(lf3),
-                                              plotOutput("ar_inac"))
-                                     ),
-                                     width = 12,
-                                     collapsible = T),
-                                 box(hr(), width = 12),
-                                 box(h2("School attendance"),
-                                     h4(textOutput("sch_lf")),
-                                     fluidRow(
-                                       column(4,
-                                              p(lf1),
-                                              plotOutput("ed_emp")),
-                                       column(4,
-                                              p(lf2),
-                                              plotOutput("ed_unemp")),
-                                       column(4,
-                                              p(lf3),
-                                              plotOutput("ed_inac"))
-                                     ),
-                                     width = 12,
-                                     collapsible = T),
-                                 box(hr(), width = 12),
-                                 box(h2("Indigenous Belonging"),
-                                     h4(textOutput("ind_lf")),
-                                     fluidRow(
-                                       column(4,
-                                              p(lf1),
-                                              plotOutput("ind_emp")),
-                                       column(4,
-                                              p(lf2),
-                                              plotOutput("ind_unemp")),
-                                       column(4,
-                                              p(lf3),
-                                              plotOutput("ind_inac"))
-                                     ),
-                                     width = 12,
-                                     collapsible = T),
-                                 box(hr(), width = 12)),
+                                 fluidRow(
+                                   column(3,
+                                          fixedPanel(
+                                            actionButton("to_youth2", label = "< youth"),
+                                            left = 10, bottom = 10
+                                          )),
+                                   column(6,
+                                          p("Under development. Please check back later for updates :)")
+                                          
+                                          # TODO: for Carla (old code below)
+                                          
+                                          # box(h2("Column overview"),
+                                          #     fluidRow(
+                                          #       column(4,
+                                          #              p(lf1),
+                                          #              h1(textOutput("empl")),
+                                          #              p("people (est.)")),
+                                          #       column(4,
+                                          #              p(lf2),
+                                          #              h1(textOutput("unempl")),
+                                          #              p("people (est.)")),
+                                          #       column(4,
+                                          #              p(lf3),
+                                          #              h1(textOutput("inactiv")),
+                                          #              p("people (est.)"))
+                                          #     ),
+                                          #     width = 12,
+                                          #     collapsible = T),
+                                          # box(hr(), width = 12),
+                                          # 
+                                          # box(h2("Age"),
+                                          #     h4(textOutput("age_t_lfp")),
+                                          #     fluidRow(
+                                          #       column(4,
+                                          #              p(lf1),
+                                          #              plotOutput("pop_emp")),
+                                          #       column(4,
+                                          #              p(lf2),
+                                          #              plotOutput("pop_unemp")),
+                                          #       column(4,
+                                          #              p(lf3),
+                                          #              plotOutput("pop_inac"))
+                                          #     ),
+                                          #     width = 12,
+                                          #     collapsible = T),
+                                          # box(hr(), width = 12),
+                                          # 
+                                          # box(h2("Proportions"),
+                                          #     h4(textOutput("proportion_exp")),
+                                          #     fluidRow(
+                                          #       column(4,
+                                          #              p(lf1),
+                                          #              plotOutput("waf_emp")),
+                                          #       column(4,
+                                          #              p(lf2),
+                                          #              plotOutput("waf_unemp")),
+                                          #       column(4,
+                                          #              p(lf3),
+                                          #              plotOutput("waf_inac"))
+                                          #     ),
+                                          #     width = 12,
+                                          #     collapsible = T),
+                                          # box(hr(), width = 12),
+                                          # box(h2("Rural/ Urban population"),
+                                          #     h4(textOutput("ar_lf")),
+                                          #     fluidRow(
+                                          #       column(4,
+                                          #              p(lf1),
+                                          #              plotOutput("ar_emp")),
+                                          #       column(4,
+                                          #              p(lf2),
+                                          #              plotOutput("ar_unemp")),
+                                          #       column(4,
+                                          #              p(lf3),
+                                          #              plotOutput("ar_inac"))
+                                          #     ),
+                                          #     width = 12,
+                                          #     collapsible = T),
+                                          # box(hr(), width = 12),
+                                          # box(h2("School attendance"),
+                                          #     h4(textOutput("sch_lf")),
+                                          #     fluidRow(
+                                          #       column(4,
+                                          #              p(lf1),
+                                          #              plotOutput("ed_emp")),
+                                          #       column(4,
+                                          #              p(lf2),
+                                          #              plotOutput("ed_unemp")),
+                                          #       column(4,
+                                          #              p(lf3),
+                                          #              plotOutput("ed_inac"))
+                                          #     ),
+                                          #     width = 12,
+                                          #     collapsible = T),
+                                          # box(hr(), width = 12),
+                                          # box(h2("Indigenous Belonging"),
+                                          #     h4(textOutput("ind_lf")),
+                                          #     fluidRow(
+                                          #       column(4,
+                                          #              p(lf1),
+                                          #              plotOutput("ind_emp")),
+                                          #       column(4,
+                                          #              p(lf2),
+                                          #              plotOutput("ind_unemp")),
+                                          #       column(4,
+                                          #              p(lf3),
+                                          #              plotOutput("ind_inac"))
+                                          #     ),
+                                          #     width = 12,
+                                          #     collapsible = T),
+                                          # box(hr(), width = 12)
+                                          
+                                          ),
+                                   column(3,
+                                          fixedPanel(
+                                            tags$a(img(src = "GitHub-Mark.png", style = "width: 32px; "), href = "https://github.com/ccsuehara/bolivia_labor/tree/rui"),
+                                            right = 25, top = 85
+                                          ),
+                                          fixedPanel(
+                                            actionButton("to_pay", label = "adults - paid and unpaid labor >"),
+                                            right = 10, bottom = 10
+                                          ))
+                                 )),
                         
                         # Paid and unpaid labor ------------------------------
                         tabPanel("Paid and unpaid labor",
@@ -471,6 +503,10 @@ ui <- fluidPage(
                                    ),
                                    column(3,
                                           fixedPanel(
+                                            tags$a(img(src = "GitHub-Mark.png", style = "width: 32px; "), href = "https://github.com/ccsuehara/bolivia_labor/tree/rui"),
+                                            right = 25, top = 85
+                                          ),
+                                          fixedPanel(
                                             actionButton("to_neet", label = "adults - neet population >"),
                                             right = 10, bottom = 10
                                           )))),
@@ -482,12 +518,20 @@ ui <- fluidPage(
                                  fluidRow(
                                    column(3,
                                           fixedPanel(
-                                            actionButton("to_pay", label = "< adults - paid and unpaid labor"),
+                                            actionButton("to_pay2", label = "< adults - paid and unpaid labor"),
                                             left = 10, bottom = 10
                                           )),
                                    column(6,
-                                          p("Under development. Please check back later for updates :)")),
+                                          p("Under development. Please check back later for updates :)")
+                                          
+                                          # TODO: for Carla
+                                          
+                                          ),
                                    column(3,
+                                          fixedPanel(
+                                            tags$a(img(src = "GitHub-Mark.png", style = "width: 32px; "), href = "https://github.com/ccsuehara/bolivia_labor/tree/rui"),
+                                            right = 25, top = 85
+                                          ),
                                           fixedPanel(
                                             actionButton("to_older", label = "older adults >"),
                                             right = 10, bottom = 10
@@ -545,6 +589,10 @@ ui <- fluidPage(
                                p("")),
                         
                         column(3,
+                               fixedPanel(
+                                 tags$a(img(src = "GitHub-Mark.png", style = "width: 32px; "), href = "https://github.com/ccsuehara/bolivia_labor/tree/rui"),
+                                 right = 25, top = 85
+                               ),
                                fixedPanel(
                                  actionButton("to_sum", label = "summary >"),
                                  right = 10, bottom = 10
@@ -665,7 +713,7 @@ ui <- fluidPage(
                                ),
                                fluidRow(
                                  column(10, offset = 2,
-                                        p("likelihood to be making at least 3,000 bolivianos per month"))
+                                        p("likelihood to be making at least 3,000 bolivianos (~US$15/day) per month"))
                                ),
                                hr(style = "margin: 0.5em 0em;"),
                                
@@ -686,8 +734,16 @@ ui <- fluidPage(
                                  column(10, offset = 2,
                                         p("likelihood to be retired"))
                                ),
-                               hr()
-                               )))
+                               hr(style = "margin: 0.5em 0em;"),
+                               
+                               p("* pp = percentage point", style = "font-style: italic; font-size: 1em; text-align: right; padding-bottom: 3em; ")
+                               ),
+                        column(2,
+                               fixedPanel(
+                                 tags$a(img(src = "GitHub-Mark.png", style = "width: 32px; "), href = "https://github.com/ccsuehara/bolivia_labor/tree/rui"),
+                                 right = 25, top = 85
+                               )
+                        )))
   )
 )
 
@@ -1751,6 +1807,14 @@ server <- function(input, output, session) {
     updateNavbarPage(session, "main", selected = "employment")
   })
   
+  # Adults - entering the job market
+  observeEvent(input$to_youth2, {
+    updateNavbarPage(session, "main", selected = "youth")
+  })
+  observeEvent(input$to_pay, {
+    updateNavbarPage(session, "main", selected = "pay")
+  })
+  
   # Adults - paid and unpaid labor
   observeEvent(input$to_employment2, {
     updateNavbarPage(session, "main", selected = "employment")
@@ -1760,7 +1824,7 @@ server <- function(input, output, session) {
   })
   
   # Adults - neet
-  observeEvent(input$to_pay, {
+  observeEvent(input$to_pay2, {
     updateNavbarPage(session, "main", selected = "pay")
   })
   observeEvent(input$to_older, {
@@ -1779,6 +1843,9 @@ server <- function(input, output, session) {
   observeEvent(input$to_older2, {
     updateNavbarPage(session, "main", selected = "older")
   })
+  
+  # Link to github
+  # output$gh <- renderImage(list(src = "www/GitHub-Mark.png", width = "20px"), deleteFile = F)
 }
 
 shinyApp(ui = ui, server = server)
