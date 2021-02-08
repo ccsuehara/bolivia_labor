@@ -17,7 +17,7 @@ but also serves as an example of how complex social issues could be disentangled
 while respecting the rich lived experiences of everyday Bolivians.
 
 ## Methodology
-We use the publicly available 2018 Bolivia household survey ([Encuesta de Hogares](https://www.ine.gob.bo/index.php/publicaciones/encuesta-de-hogares-2016-2018/) )
+We use the publicly available 2018 Bolivia household survey ([Encuesta de Hogares](https://www.ine.gob.bo/index.php/publicaciones/encuesta-de-hogares-2016-2018/))
 data as a basis for our analysis.
 Operating on the belief that social policies influence people differently at different points in their lives
 (e.g. educational policies affect children and youth much more than older adults),
