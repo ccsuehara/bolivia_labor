@@ -60,7 +60,7 @@ We will continue to fill in the remaining pages in the shiny app and make small 
 In the future, we envision this type of analytics being broadly applicable to fields like social protection policy targeting,
 social inclusion, monitoring & evaluation, etc.  
 
-To take a step back, we see our work as part of the obra of a long lineage of contributions made by researchers and policymakers dedicated to equity and justice globally.
+To take a step back, we see our work as part of a long lineage of contributions made by researchers and policymakers dedicated to equity and justice globally.
 We hope our contribution, however small, serves as a demonstration of how data could be mobilized to elevate grassroots stories
 using relatively simple statistical methods and visualization techniques.
 This is our attempt to excavate data's potential as a bridge to better democracy.
