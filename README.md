@@ -1,7 +1,7 @@
 # Living a Life of Labor in Bolivia
 
 This is the repo for the Bolivia Life of Labor shiny app, created by Rui Su and Carla Cristina Solis Uehara, members of the GFDRR analytics team.
-We are indebted to our colleagues--Brian Walsh, Onimi Jademi, Bramka Jafino, and everyone on the social resilience team--for their helpful advice and continuous camaraderie.
+We are indebted to our colleagues--Brian Walsh, Onimi Jademi, Bramka Jafino, and everyone else on the social resilience team--for their helpful advice and continuous camaraderie.
 For feedback, collaborations, and questions, please contact <rsu@worldbank.org> or <csolisuehara@worldbank.org>.
 
 ## Background
@@ -16,7 +16,7 @@ but also serves as an example of how complex social issues could be disentangled
 while respecting the rich lived experiences of everyday Bolivians.
 
 ## Methodology
-We used the publicly available 2018 Bolivia household survey (Encuesta de Hogares) data as a basis for our analysis.
+We use the publicly available 2018 Bolivia household survey (Encuesta de Hogares) data as a basis for our analysis.
 Operating on the belief that social policies influence people differently at different points in their lives
 (e.g. educational policies affect children and youth much more than older adults),
 we took a lifecycle approach and segmented the population into four age groups:
@@ -55,3 +55,12 @@ We have, however briefly, inhabited Bolivia's data-land, before having listened 
 Therefore, we invite your inputs and collaboration in holding us accountable to the people whose stories we try to tell and filling our blindspots as non-Bolivians.
 
 ## Vision
+This project is currently under development.
+We will continue to fill in the remaining pages in the shiny app and make small adjustments.
+In the future, we envision this type of analytics being broadly applicable to fields like social protection policy targeting,
+social inclusion, monitoring & evaluation, etc.  
+
+To take a step back, we see our work as part of the obra of a long lineage of contributions made by researchers and policymakers dedicated to equity and justice globally.
+We hope our contribution, however small, serves as a demonstration of how data could be mobilized to elevate grassroots stories
+using relatively simple statistical methods and visualization techniques.
+This is our attempt to excavate data's potential as a bridge to better democracy.
