@@ -39,7 +39,7 @@ However, when the random forest model yields a low AUC/balanced accuracy--usuall
 avoid using the variable importance results and instead opt for simpler descriptive statistics.
 
 ## Ethics
-On the most basic level, research ethics require anonymity--the survey data are anonymous, and all names used in the shiny app are fictional.
+On the most basic level, research ethics require anonymity--the survey data are anonymous, and all names used in the shiny app are fictitious.
 However, we would be remiss if we do not move beyond this basic level of care and consider our responsibilities, as researchers and World Bank employees,
 to the people and communities to whom we owe the data.
 To be able to represent someone is to have power over someone, and in a time when increasing amounts of data as a form of capital
