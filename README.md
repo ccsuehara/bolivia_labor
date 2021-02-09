@@ -3,7 +3,7 @@
 This is the repo for the [Bolivia Life of Labor shiny app](https://rosemarysu.shinyapps.io/bolivia_unpaid_labor/),
 created by Rui Su and Carla Cristina Solis Uehara, members of the [GFDRR](https://www.gfdrr.org/en) analytics team.
 We are indebted to our colleagues--Brian Walsh, Onimi Jademi, and everyone else on the social resilience team--for their helpful advice and continuous camaraderie.
-For feedback, collaborations, and questions, please contact <rsu@worldbank.org> or <csolisuehara@worldbank.org>.
+For feedback, collaborations, or questions, or if you have inquiries about the microdata, please contact <rsu@worldbank.org> or <csolisuehara@worldbank.org>.
 
 ## Background
 The Life of Labor project germinated as an inquiry into the dynamics of gender and labor in Bolivia.
@@ -17,7 +17,7 @@ but also serves as an example of how complex social issues could be disentangled
 while respecting the rich lived experiences of everyday Bolivians.
 
 ## Methodology
-We use the publicly available 2018 Bolivia household survey ([Encuesta de Hogares](https://www.ine.gob.bo/index.php/publicaciones/encuesta-de-hogares-2016-2018/))
+We use the 2018 Bolivia household survey ([Encuesta de Hogares](https://www.ine.gob.bo/index.php/publicaciones/encuesta-de-hogares-2016-2018/))
 data as a basis for our analysis.
 Operating on the belief that social policies influence people differently at different points in their lives
 (e.g. educational policies affect children and youth much more than older adults),
