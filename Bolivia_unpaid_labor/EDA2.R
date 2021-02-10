@@ -1,3 +1,9 @@
+
+##Employment status graphs##
+
+
+##Making dataframes for working well with each one
+
 employed <- adults %>% filter(emp_status == "Employed") %>%
   select(folio, nro, area, sex, age, marital, literate, num_literate, indigenous, indigenous_id,
          edu, any_ed, higher_ed, in_school,
@@ -51,6 +57,11 @@ unemp_gender <- unemployed %>%
   group_by(sex) %>%
   summarise(total_pop = sum(factor)) 
 
+
+emp_per <- adults %>% filter(!is.na(emp_status)) %>% group_by(emp_status, sex) %>% summarize(sum_peep = sum(factor, na.rm = T)) %>%
+  mutate(sum_peep = round(sum_peep/ 20000,0))
+
+#Defining functions here!!! -------------
 
 wfl_plot <- function(df,people) {
   waffle(df$total_pop/people, rows=4, size=0.5, 
@@ -127,3 +138,40 @@ age_lfp <- function(df) {
     theme(legend.position = "bottom") +
     scale_fill_manual(values=c("#DDCC77", "#88CCEE"))
 }
+
+
+area_chart_sex <- function(df) {
+ggplot(df) +
+  geom_bar(aes(age, fill = education), position = position_fill(reverse = TRUE)) +
+  scale_fill_manual(values = c(color1, color2, color3, color4)) +
+  facet_wrap(vars(sex), labeller = labeller(sex = c("1.Hombre" = "men", "2.Mujer" = "women"))) +
+  theme_minimal() +
+  theme(legend.position = "bottom", legend.title = element_blank()) +
+  ylab("proportion")
+}
+
+
+emp_per <- adults %>% filter(!is.na(emp_status)) %>% group_by(emp_status, sex) %>% summarize(sum_peep = sum(factor, na.rm = T)) %>%
+  mutate(sum_peep = round(sum_peep/ 20000,0))
+
+
+waffl_work <- function(df) {
+  ggplot(df, aes(fill = emp_status, values = sum_peep)) +
+    geom_waffle(color = "white", size = .25, n_rows = 10, flip = TRUE) +
+    facet_wrap(~sex, nrow = 1, strip.position = "bottom") +
+    scale_x_discrete() + 
+    scale_y_continuous(labels = function(x) x * 10, # make this multiplyer the same as n_rows
+                       expand = c(0,0)) +
+    ggthemes::scale_fill_tableau(name=NULL) +
+    coord_equal() +
+    labs(
+      x = "Gender",
+      y = "Adults aged 25-60 (1 tile = 20k)"
+    ) +
+    theme_minimal() +
+    theme(panel.grid = element_blank(), axis.ticks.y = element_line()) +
+    guides(fill = guide_legend(reverse = FALSE)) 
+}
+
+
+

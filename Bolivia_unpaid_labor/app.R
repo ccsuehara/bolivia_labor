@@ -13,10 +13,12 @@ library(scales)
 library(StatMeasures)
 
 # change folder path
-# setwd("/Users/csolisu/Documents/Carla/chamba/shared_Bolivia/Bolivia_unpaid_labor")
+#setwd("/Users/csolisu/Documents/Carla/chamba/shared_Bolivia/Bolivia_unpaid_labor")
 
 source("EDA.R")
 source("EDA2.R")
+source("texts.R")
+
 
 c1 <- "General population (2018)"
 c2 <- "People with at least 1 job, paid or unpaid"
@@ -55,13 +57,14 @@ ui <- fluidPage(
   
   navbarPage("Working while female in Bolivia",
              id = "main",
-             collapsible = T,
+             collapsible = T, position = "fixed-top",
              
              # Tab panel: home -----------------
              tabPanel("Home",
-                      fluidRow(width = 12,
+                      fluidRow(width = 12, hr(),
                                imageOutput("landing",
                                            width = "99%",
+                                           height = "90%",
                                            click = "landing_cl"))),
              
              # Tab panel: children under 18 --------------------
@@ -69,7 +72,7 @@ ui <- fluidPage(
                       value = "children",
                       
                       fluidRow(style = 'background-image: url("children.jpg"); background-size: cover;',
-                               column(12, style = "padding: 80px 50px;",
+                               column(12, style = "padding: 80px 50px;", 
                                       fluidRow(
                                         column(8,
                                                offset = 2,
@@ -186,7 +189,7 @@ ui <- fluidPage(
              
              # Tab panel: youth 18-24 --------------------
              tabPanel("Youth 18-24",
-                      value = "youth",
+                      value = "youth",hr(),hr(),
                       
                       fluidRow(
                         column(3,
@@ -310,7 +313,7 @@ ui <- fluidPage(
                         
                         # Entering the job market -------------------------
                         tabPanel("Entering the job market",
-                                 value = "employment",
+                                 value = "employment",hr(),hr(),
                                  
                                  fluidRow(
                                    column(3,
@@ -319,111 +322,18 @@ ui <- fluidPage(
                                             left = 10, bottom = 10
                                           )),
                                    column(6,
-                                          p("Under development. Please check back later for updates :)")
+                                          textOutput("lmarket_intro"),
+                                          h3("Education overview of adult population"),
+                                          textOutput("labor_t_1"),
+                                          plotOutput("adult_educ"),
+                                          hr(),
                                           
-                                          # TODO: for Carla (old code below)
-                                          
-                                          # box(h2("Column overview"),
-                                          #     fluidRow(
-                                          #       column(4,
-                                          #              p(lf1),
-                                          #              h1(textOutput("empl")),
-                                          #              p("people (est.)")),
-                                          #       column(4,
-                                          #              p(lf2),
-                                          #              h1(textOutput("unempl")),
-                                          #              p("people (est.)")),
-                                          #       column(4,
-                                          #              p(lf3),
-                                          #              h1(textOutput("inactiv")),
-                                          #              p("people (est.)"))
-                                          #     ),
-                                          #     width = 12,
-                                          #     collapsible = T),
-                                          # box(hr(), width = 12),
-                                          # 
-                                          # box(h2("Age"),
-                                          #     h4(textOutput("age_t_lfp")),
-                                          #     fluidRow(
-                                          #       column(4,
-                                          #              p(lf1),
-                                          #              plotOutput("pop_emp")),
-                                          #       column(4,
-                                          #              p(lf2),
-                                          #              plotOutput("pop_unemp")),
-                                          #       column(4,
-                                          #              p(lf3),
-                                          #              plotOutput("pop_inac"))
-                                          #     ),
-                                          #     width = 12,
-                                          #     collapsible = T),
-                                          # box(hr(), width = 12),
-                                          # 
-                                          # box(h2("Proportions"),
-                                          #     h4(textOutput("proportion_exp")),
-                                          #     fluidRow(
-                                          #       column(4,
-                                          #              p(lf1),
-                                          #              plotOutput("waf_emp")),
-                                          #       column(4,
-                                          #              p(lf2),
-                                          #              plotOutput("waf_unemp")),
-                                          #       column(4,
-                                          #              p(lf3),
-                                          #              plotOutput("waf_inac"))
-                                          #     ),
-                                          #     width = 12,
-                                          #     collapsible = T),
-                                          # box(hr(), width = 12),
-                                          # box(h2("Rural/ Urban population"),
-                                          #     h4(textOutput("ar_lf")),
-                                          #     fluidRow(
-                                          #       column(4,
-                                          #              p(lf1),
-                                          #              plotOutput("ar_emp")),
-                                          #       column(4,
-                                          #              p(lf2),
-                                          #              plotOutput("ar_unemp")),
-                                          #       column(4,
-                                          #              p(lf3),
-                                          #              plotOutput("ar_inac"))
-                                          #     ),
-                                          #     width = 12,
-                                          #     collapsible = T),
-                                          # box(hr(), width = 12),
-                                          # box(h2("School attendance"),
-                                          #     h4(textOutput("sch_lf")),
-                                          #     fluidRow(
-                                          #       column(4,
-                                          #              p(lf1),
-                                          #              plotOutput("ed_emp")),
-                                          #       column(4,
-                                          #              p(lf2),
-                                          #              plotOutput("ed_unemp")),
-                                          #       column(4,
-                                          #              p(lf3),
-                                          #              plotOutput("ed_inac"))
-                                          #     ),
-                                          #     width = 12,
-                                          #     collapsible = T),
-                                          # box(hr(), width = 12),
-                                          # box(h2("Indigenous Belonging"),
-                                          #     h4(textOutput("ind_lf")),
-                                          #     fluidRow(
-                                          #       column(4,
-                                          #              p(lf1),
-                                          #              plotOutput("ind_emp")),
-                                          #       column(4,
-                                          #              p(lf2),
-                                          #              plotOutput("ind_unemp")),
-                                          #       column(4,
-                                          #              p(lf3),
-                                          #              plotOutput("ind_inac"))
-                                          #     ),
-                                          #     width = 12,
-                                          #     collapsible = T),
-                                          # box(hr(), width = 12)
-                                          
+                                          fluidRow(style = 'background-image: url("street_food_1.jpeg"); background-size: cover;',
+                                                   column(12, style = "padding: 80px 50px;",
+                                                          h3("PARTICIPATION", style = "color: white;"))),
+                                          hr(),
+                                          textOutput("labor_t_2"),
+                                          plotOutput("wfl_labor")
                                           ),
                                    column(3,
                                           fixedPanel(
@@ -438,7 +348,7 @@ ui <- fluidPage(
                         
                         # Paid and unpaid labor ------------------------------
                         tabPanel("Paid and unpaid labor",
-                                 value = "pay",
+                                 value = "pay", hr(),hr(),
                                  
                                  fluidRow(
                                    column(3,
@@ -540,7 +450,7 @@ ui <- fluidPage(
              
              # Tab panel: older adults 60+ --------------------
              tabPanel("Older adults 60+",
-                      value = "older",
+                      value = "older", hr(), hr(),
                       
                       fluidRow(
                         column(3,
@@ -601,7 +511,7 @@ ui <- fluidPage(
              
              # Tab panel: summary ----------------------
              tabPanel("Summary",
-                      value = "sum",
+                      value = "sum", hr(), hr(),
                       
                       fluidRow(
                         column(2,
@@ -798,42 +708,21 @@ server <- function(input, output, session) {
     )
   })
   
-  output$children_intro <- renderText("In this household survey, children make up about 35% of the sampled population, indicating that children are an important demographic in Bolivia.
-                                      It is also worth highlighting that Bolivia has the lowest legal minimum working age, ten, instead of the international consensus of fourteen. This labor law remains controversial today, with some arguing that it destigmatizes child workers' struggle for fair labor, while others casting doubt on the legislation's efficacy and its implications for children's long-term well-being.
-                                      Given this reality, it is even more crucial to understand the conditions in which children live and work, as well as the persistent impact of social disparities.")
-  # output$children_t1 <- renderText('Bolivia enjoys a high level of school enrollment among children.
+  output$children_intro <- renderText(children_intro1)
+                                      # output$children_t1 <- renderText('Bolivia enjoys a high level of school enrollment among children.
   #                                  Even among those in the category of "enrolled, not attending", the vast majority are simply due to school break or recess (i.e. the timing of the survey), not structural barriers.
   #                                  There is no evidence for gender disparity in receiving education.')
-  output$children_t2 <- renderText('Bolivia enjoys a high level of school enrollment among children.
-                                   However, there is still a notable minority of children who could not go to school, and the survey largely fails to capture the complex reasons.
-                                   From the available data, poverty and inaccessibility appear to remain an obstacle for many children.')
+  output$children_t2 <- renderText(children_t21)
+  
   # output$children_t3 <- renderText("TBD")
-  output$children_t4 <- renderText("When we look at children individually, there is not a significant difference between boys' and girls' work hours and incomes,
-                                   except that boys start earning more than girls on a monthly basis as they approach 18.
-                                   Interestingly, their hourly incomes do not differ, which means that teenage boys probably work more hours than girls.
-                                   Overall, a large number of boys and girls merely help out with their families' work, rather than seeking outside employment.")
-  output$children_t5 <- renderText("More intriguing patterns emerge, however, when we examine children's work as contributions to their households.
-                                   Clearly, starting from age 16, boys begin to make a larger contribution to their family's income than girls, but their share of total work hours among all family members remains equal.
-                                   This likely means that girls start doing unpaid or family-based labor during adolescence.
-                                   Puberty -> devaluation of female labor. Sexualization and devaluation go hand in hand.
-                                   In terms of DRM, the data show that men/boys are more likely to have income sources outside their homes and access an additional channel of financial stability.
-                                   Yet, in some scenarios, teenage boys are actually the main breadwinners in their families, which denotes heightened vulnerability to social and economic shocks.")
-  output$children_t6 <- renderText("Although working children only make up about 3% of the total children population, their characteristics and vulnerabilities should not be overlooked.
-                                   The vast majority of them come from lower-income households, many of whom heavily depend on the children as their source of income.")
-  output$children_t7 <- renderText("Relationship between children's contribution to household income and household total income (labor and non-labor).")
-  output$children_t8 <- renderText("An even more stark contrast exists between children in rural and urban areas.
-                                   Children in cities start contributing to their family finances at an earlier age, work more hours, and bring home more money.
-                                   Additionally, while rural children work a similar amount of hours throughout their childhood and adolescence, city kids pick up more work as they grow older, especially from age 12.")
-  output$children_t9 <- renderText("There are tremendous variations within areas that fall under the rural or urban categories.
-                                   While rural Potosi and La Paz have the largest shares of children who are working, it is in rural Tarija where children's school attendance rate severely lags behind the nation.
-                                   The impact of gender is by no means uniform, either.
-                                   For instance, in places like Pando and Potosi, girls' education is more negatively affected than boys', even though boys are more likely to be working.
-                                   Such differences also exist in cities, but the variation tends to be much smaller, since city kids are much less likely to work and more likely to stay in school compared to their rural counterparts.")
-  output$children_t10 <- renderText("Between indigenous and non-indigenous children, their work conditions on average do not differ very much, though non-indigenous teenagers tend to earn more than indigenous children of the same age.")
-  output$children_t11 <- renderText("Perhaps most surprisingly, household income does not seem to have an outright impact on how many hours children work.
-                                    Yet, this does not mean household economic conditions do not matter.
-                                    Among households of the lowest income decile, there are many more children who have to work to support their family.
-                                    In fact, some children from poorer families have even become the sole breadwinner, whereas such burden does not fall on children from better-off households.")
+  output$children_t4 <- renderText(children_t41)
+  output$children_t5 <- renderText(children_t51)
+  
+  output$children_t6 <- renderText(children_t61)
+  output$children_t8 <- renderText(children_t81)
+  output$children_t9 <- renderText(children_t91)
+  output$children_t10 <- renderText(children_t101)
+  output$children_t11 <- renderText(children_t111)
   
   
   children_1_df <- children %>%
@@ -1061,13 +950,7 @@ server <- function(input, output, session) {
   
   # Tab panel: youth ------------------------------------------------
     # Youth: intro ----------------------------------
-  output$youth_intro <- renderText("The youth period represents a pivotal moment in one's life.
-                                   Faced with life-changing decisions on education and employment, and situated within diverse familial and societal contexts, youths not only shape their own life trajectories in important ways, but also determine a society's development for decades to come.
-                                   Therefore, the well-being and opportunities of youths merit special consideration.
-                                   The analysis in this section revolves around three aspects: educational attainment, employment, and income.
-                                   We seek to highlight the socioeconomic factors that impact different youths' access to (higher) education, job opportunities, and fair pay, all through the lens of gender.
-                                   As we can see in the graph here, there is already a gap in the level of employment between women and men.
-                                   In the subsections below, we will delve further into the reasons and detailed manifestations of this disparity.")
+  output$youth_intro <- renderText(youth_intro1)
   
   youth1 <- youth %>%
     group_by(age, sex) %>%
@@ -1087,27 +970,14 @@ server <- function(input, output, session) {
   )
   
     # Youth: education -------------------------------------
-  output$youth_edu_t1 <- renderText("Further education is often the gateway to more desirable employment opportunities and better life outcomes, but access to education, especially beyond the 12 years of compulsory education, is by no means equal.")
-  output$youth_edu_marital <- renderText("One of the most crucial factors in determining educational attainment is one's marital status.
-                                         Once a young adult enters into a marriage or cohabiting relationship, their likelihood of remaining students drops precipitously.
-                                         This happens regardless of the young adult's gender.
-                                         In fact, it is observed that single women in this age group are slightly more likely to continue their education than single men.")
-  output$youth_edu_internet <- renderText("Another critical element is Internet access.
-                                          Not only do people with Internet obtain education at a much higher rate than those without, but such differential impact is also stronger among women than among men.
-                                          Of course, no simplistic causal relationship can be directed inferred from the data, and there could be other confounding factors.
-                                          But we have found that the effect of Internet access still holds after controlling for per capita household income decile.
-                                          That means even for the poorest 10% of households earning no more than 527 bolivianos per capita per month, having Internet access can dramatically change the youths' educational outcome.")
-  output$youth_edu_area <- renderText("Similar to the effect of Internet access, the rural/urban disparity also plays out differently for men and women.
-                                      In urban areas, young women seem to continue education at a slightly higher rate than their male counterparts, while in rural Bolivia, women are consistently less likely to remain students than men.")
-  output$youth_edu_depto <- renderText("There are also variations within rural and urban areas, with departments like Oruro exhibiting some of the biggest gender gaps in education among youths.")
-  output$youth_edu_indi <- renderText("Another critical social identity is indigeneity.
-                                      For both genders, non-indigenous young adults enjoy a small but noticeable advantage in educational access compared to indigenous ones.")
-  output$youth_edu_lang <- renderText("Finally, it is important to note that indigenous people are by no means a monolith.
-                                      One's primary language plays a sizeable role in their education as well.
-                                      Women and men who speak Castellano as their primary language obtain education at a much higher rate than those speaking Quechua or other languages, and this phenomenon is more pronounced among women than men.")
-  output$youth_edu_t2 <- renderText("The overall education landscape in Bolivia shows that more than half of youths finish tertiary education by the age of 22, whether it is a university or technical degree.
-                                    It also demonstrates little difference between the two genders.
-                                    However, it is crucial to interrogate: Who has the ability to be among the more educated half? And how does young adults' education translate into and interact with their employment conditions?")
+  output$youth_edu_t1 <- renderText(youth_edu_t11)
+  output$youth_edu_marital <- renderText(youth_edu_marital1)
+  output$youth_edu_internet <- renderText(youth_edu_internet1)
+  output$youth_edu_area <- renderText(youth_edu_area1)
+  output$youth_edu_indi <- renderText(youth_edu_indi1)
+  output$youth_edu_depto <- renderText(youth_edu_depto1)
+  output$youth_edu_lang <- renderText(youth_edu_lang1)
+  output$youth_edu_t2 <- renderText(youth_edu_t21)
   
   output$youth_edu_imp <- renderPlot(
     read_csv("data/youth_ses_rf1_imp.csv") %>%
@@ -1203,30 +1073,12 @@ server <- function(input, output, session) {
   
     # Youth: employment --------------------
   
-  output$youth_emp_overview <- renderText("Although gender undoubtedly influences youths' education in intricate ways, young women and men actually attend school at similar rates overall.
-                                          Where the differentiation truly manifests is in young adults' employment.
-                                          There are almost twice as many men between the ages of 18 and 24 doing paid or unpaid work than women, a curious phenomenon that provokes further inquiries:
-                                          Why does this happen? What do we know about the working youths? What is the nature of their work?")
+  output$youth_emp_overview <- renderText(youth_emp_ov)
   # output$youth_emp_t1 <- renderText("Below is the relative importance of various socioeconomic factors that affect youths' employment.")
-  output$youth_emp_stu <- renderText("Clearly, whether one is in school has a significant impact on their likelihood to work, but such effect is severely gendered.
-                                     For men, non-students are about three times as likely than students to be working, with their labor force participation (LFP) rate going up as they age.
-                                     For women, however, even those who are not in school have only a roughly 50% chance to be working, paid or unpaid.")
-  output$youth_emp_edu <- renderText("Along the same line, the data on educational attainment and LFP corroborates the above evidence.
-                                     Women and men with tertiary degrees tend not to work between the ages of 18 and 24, most likely because they are still finishing their education during this time.
-                                     However, for people who terminate their education after obtaining a primary or secondary degree, the story is drastically different.
-                                     Men falling into this category are almost guaranteed to have a job, with their LFP nearing or reaching 100% by the age of 24;
-                                     whereas for women, even after finishing their education, only around half of them end up working.
-                                     What are the other half's primary activity as they begin their adulthood, if they are neither in school nor pursuing employment?")
-  output$youth_emp_marital <- renderText("Statistics on marital status in Bolivia provides a potential answer to this question.
-                                         As the household survey shows, nearly all men in a marriage or cohabiting relationship work--even if some of them are as young as 18.
-                                         Single men, on the other hand, are much less likely to do so.
-                                         Meanwhile, for women, their marital status does not have a visible influence on their decision to work.
-                                         The average LFP hovers just below 50% for women across different marital statuses.
-                                         This shows that the traditional male breadwinner/female homemaker family model is dominant among young adults in Bolivia and underlies their employment decisions.
-                                         Together with the previous observations, we can infer that women who do not pursue higher education will probably depend on their husbands for income, which render their livelihoods potentially precarious.")
-  output$youth_emp_area <- renderText("Lastly, the rural/urban divide shows that rural residents, regardless of gender, are actually a lot more likely than their urban peers at the same age to work.
-                                      An important contributing factor is probably the fact that young adults in cities often remain students for a longer period of time before commencing their career.
-                                      This sheds light on the diverging life trajectories for rural and urban dwellers, as well as the different skills and qualifications desired by rural and urban labor markets.")
+  output$youth_emp_stu <- renderText(youth_emp_stu1)
+  output$youth_emp_edu <- renderText(youth_emp_edu1)
+  output$youth_emp_marital <- renderText(youth_emp_marital1)
+  output$youth_emp_area <- renderText(youth_emp_area1)
   
   output$youth_edu_sex <- renderPlot(
     ggplot(youth %>% filter(in_school == "1. Si")) +
@@ -1289,13 +1141,8 @@ server <- function(input, output, session) {
   )
   
     # Youth: income ------------------------
-  output$youth_inc_t1 <- renderText("Gender disparity does not only manifest in the LFP rates, but also in pay gaps between women and men, compounding women's economic vulnerability.
-                                    Women consistently perform unpaid labor at a higher rate than men of the same age.
-                                    At the same time, we also see that the percentage of unpaid workers goes down as one ages, signaling that young adulthood marks the transition from unpaid labor, mostly family-based, to more formal, paid work.")
-  output$youth_inc_t2 <- renderText("Another form of gender pay gap is the different average income received by women and men.
-                                    From age 19, women's and men's incomes start to diverge, even though their average work hours remain approximately the same.
-                                    This means that women receive less compensation for their labor, even though they obtain similar levels of education compared to men.
-                                    Thus, for women, the return on their education is undercut by gender discrimination, which potentially limits their potential in the workplace.")
+  output$youth_inc_t1 <- renderText(youth_inc_t11)
+  output$youth_inc_t2 <- renderText(youth_inc_t21)
   
   output$youth_inc_paid <- renderPlot(
     youth %>%
@@ -1331,41 +1178,25 @@ server <- function(input, output, session) {
   )
   
   # Tab panel: entering the job market --------------------------
-  output$age_t_lfp <- renderText('There are different trends in Labor Force Participation for each segment')
-  output$pop_emp <- renderPlot(age_lfp(employed))
-  output$pop_unemp <- renderPlot(age_lfp(unemployed))
-  output$pop_inac <- renderPlot(age_lfp(inactive))
   
+  output$lmarket_intro <- renderText(labor_intro)
   
-  output$proportion_exp <- renderText("Let's look at the proportions of people in each category")
-  output$waf_emp <- renderPlot(wfl_plot(employed_gender,50000))
-  output$waf_unemp <- renderPlot(wfl_plot(unemp_gender,50000))
-  output$waf_inac <- renderPlot(wfl_plot(inactive_gender,50000))
+  output$adult_educ <- renderPlot(area_chart_sex(adults))
   
-  output$sch_lf <- renderText("let's look at the distributions by education, gender, age and participation in the labor force")
-  output$ed_emp <- renderPlot(ridge_educ(employed))
-  output$ed_unemp <- renderPlot(ridge_educ(unemployed))
-  output$ed_inac <- renderPlot(ridge_educ(inactive))
+  output$labor_t_1 <- renderText(labor_txt_1)
+  output$labor_t_2 <- renderText(labor_txt_2)
   
-  output$ar_lf <- renderText("Population Distributions by gender, area, age and participation in the labor force")
-  output$ar_emp <- renderPlot(ridge_urban(employed))
-  output$ar_unemp <- renderPlot(ridge_urban(unemployed))
-  output$ar_inac <- renderPlot(ridge_urban(inactive))
-  
-  output$ind_lf <- renderText("Population Distributions by gender, indigenous belonging, age and participation in the labor force")
-  output$ind_emp <- renderPlot(ridge_indigen(employed))
-  output$ind_unemp <- renderPlot(ridge_indigen(unemployed))
-  output$ind_inac <- renderPlot(ridge_indigen(inactive))
+  output$wfl_labor <-  renderPlot(waffl_work(emp_per))
   
   # Tab panel: paid and unpaid labor --------------------------------
-  output$pay_intro <- renderText("The unpaid labor force is dominated by women, while men make up almost two thirds of the paid labor market.")
-  output$pay_t1 <- renderText("As a result, on average, women earn much less labor income than men, which contributes significantly to the gender income gap. However, unpaid labor is not the only factor at play. Even among paid workers, there is still a notable difference between women's and men's earnings.")
-  output$pay_t2 <- renderText("How much is the unpaid labor really worth? To calculate this, we assume that all workers within a household, paid or unpaid, contribute the same value to household labor income with each unit of time they spend working. Therefore, for a 2-person household where one paid and one unpaid worker each reports 50 weekly work hours, we would evenly distribute the monthly labor income across the two, for example.")
-  output$pay_t3 <- renderText("As expected, unpaid women workers contribute over 4 times the economic value to their families than unpaid men, largely due to women's overwhelming representation in unpaid work and their long work hours.")
-  output$pay_t4 <- renderText("Rural area households, in particular, rely on unpaid labor. In sectors like agriculture and mining, informal unpaid labor is crucial to family subsistence and to the overall productivity of these industries. Additionally, similar patterns emerge across rural and urban areas: in both cases, lower-income families see more incidents of unpaid labor, and women tend to bear most of the burden. In aggregate, unpaid labor constitute an important component of the economy, making up 7.9% and 3.5% of total household productivity in rural and urban areas, respectively.")
-  output$pay_t5 <- renderText("Yet, not all rural areas are equal. In departments like Potosi, a historic mining center, more than three in ten workers receive no pay, whereas the proportion in Pando or Santa Cruz is much lower: less than 10%. In contrast, urban areas across various departments do not have such variations in unpaid labor.")
-  output$pay_t6 <- renderText("Another factor influencing people's, especially women's, pay status is marriage. As single women enter into marriage or cohabiting relationships, their rate of doing unpaid labor triples, while the corresponding rate for men is cut in third. Hence, (heterosexual) marriage enhances existing gender inequalities, and such effects persist even after the end of marital relationships, as is evident in the noticeable gap between female and male divorcees and widow(er)s.")
-  output$pay_t7 <- renderText("Finally, cellphone usage emerges as a surprising factor with a significant correlation with unpaid labor, and this is true even after accounting for household labor income. Although, as expected, members of lower-income households are less likely to have access to cellphones, women without cellphones are more likely to be doing unpaid labor than those with cellphones from households of similar levels of income.")
+  output$pay_intro <- renderText(pay_intro1)
+  output$pay_t1 <- renderText(pay_t11)
+  output$pay_t2 <- renderText(pay_t21)
+  output$pay_t3 <- renderText(pay_t31)
+  output$pay_t4 <- renderText(pay_t41)
+  output$pay_t5 <- renderText(pay_t51)
+  output$pay_t6 <- renderText(pay_t61)
+  output$pay_t7 <- renderText(pay_t71)
 
   output$pay_age <- renderPlot(
     ggplot(adults %>% filter(!is.na(paid))) +
@@ -1509,29 +1340,10 @@ server <- function(input, output, session) {
 
   
   # Tab panel: older adults -----------------------------------------
-  output$older_t1 <- renderText("In the 2000s, Bolivia instituted the Renta Dignidad program, a non-contributory cash transfer program that guarantees a basic income for everyone over 60.
-                                Unlike pensions, Renta Dignidad is not contingent on one's prior participation in the formal labor market, which entails enormous and tangible benefits for the large part of Bolivian labor force who work informally.
-                                While this program has achieved notable successes in terms of improving older adults' quality of life and reducing child labor rates, many questions remain regarding older adults' well-being.
-                                To begin with, the amount of benefits Renta Dignidad provides is low: only 250-300 bolivianos per person per month, regardless of one's location or needs.
-                                Therefore, it is not always sufficient to cover one's cost of living.
-                                Furthermore, older adults rely on not only a universal basic income, but also a strong support network.
-                                How well their family members are faring often has a direct influence on whether the older adults can maintain a stable livelihood as well.
-                                With these considerations in mind, we seek to disentangle older adults' well-being by delving into three questions concerning their social and economic lives.")
-  output$older_t2 <- renderText("When examining older adults' well-being, the first question we look at is whether they continue to work after the official retirement age of 60.
-                                Although retirement is undoubtedly a personal choice, here we use retirement status as a proxy to measure whether one has the ability to retire if so desired.
-                                In other words, which of the older adults have no choice but to continue working in order to sustain themselves financially?
-                                The random forest model indicates that one's non-labor income, which includes cash transfers, pensions, remittances, etc., has a great impact on one's likelihood to work after 60.
-                                As expected, the data show that people who work receive lower non-labor income on average than those who do not.
-                                Another important income-related factor is the household economic condition--namely, how the other household members are doing economically.
-                                Here, this is measured by what the per capita household income would have been if the older adult in question did not bring home any income, labor or non-labor.
-                                In addition, other variables to be considered are department, age, household size, and sex.")
-  output$older_t3 <- renderText("Next, we zoom into the working population and ask, do they get compensated for their labor? What is the nature of their work?
-                                Similar to other age groups, older adults also face a considerable gender gap when it comes to unpaid labor.
-                                While other variables, such as age, household size, and non-labor income, remain salient, it is gender that most markedly sets paid and unpaid workers apart.")
-  output$older_t4 <- renderText("The final question we interrogate is the labor income among the paid workers.
-                                What determines their earnings?
-                                The data show that one's income decreases as one ages, though the numbers are tend to be wide-ranging and become less generalizable as we get to the oldest age groups, as the sample size tapers off.
-                                Overall, though, some possible reasons for the income differences include household income, educational attainment, age, non-labor income, area, department, and household size.")
+  output$older_t1 <- renderText(older_t11)
+  output$older_t2 <- renderText(older_t21)
+  output$older_t3 <- renderText(older_t31)
+  output$older_t4 <- renderText(older_t41)
 
   output$older_p1 <- renderPlot(
     older %>%
@@ -1701,16 +1513,7 @@ server <- function(input, output, session) {
   
   
   # Tab panel: summary -----------------------
-  output$sum_t1 <- renderText("Across various age groups, there are common structural factors that forcefully alter one's life trajectories.
-                              These factors create and reinforce hierarchies by compromising the chances of certain populations to live a \"good life\":
-                              to go to school and not have to work as a teenager, to receive higher education, to get compensated for one's work,
-                              to enjoy an income that affords a decent living, and to age with dignity.
-                              Here, I identify four pillars of oppression at the root of such inequalities, as demonstrated by the data:
-                              gender, geography, social class, and marriage and family norms.
-                              With a bird's eye view of these pillars at work during different life stages,
-                              it becomes palpably clear how one enormity compounds and morphs into another.
-                              These numbers not only expose the multiple vulnerabilities in the Bolivian society,
-                              but also urge the cause for policy interventions to build a resilient society by reducing inequalities.")
+  output$sum_t1 <- renderText(summ1)
   
   # representative ages
   a1 <- 16.5  # working
