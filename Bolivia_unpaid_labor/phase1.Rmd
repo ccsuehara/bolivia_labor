@@ -121,14 +121,16 @@ ggplot(data.frame(area = c("rural", "rural", "urban", "urban"),
 
 Households receiving domestic remittances are poorer and not that much smaller.
 
-```{r remit_r, echo = F, results = 'asis'}
+```{r remit_r, echo = F, results = 'asis', message = F}
 remit_r <- adults %>%
   filter(area == "Rural") %>%
   group_by(folio) %>%
-  summarize(hhsize = dplyr::first(size), remit = sum(dom_trans_monthly_inc), inc = dplyr::first(hh_tot_inc), pc_inc = dplyr::first(pc_inc)) %>%
+  summarize(hhsize = dplyr::first(size), remit = sum(dom_trans_monthly_inc), inc = dplyr::first(hh_tot_inc), pc_inc = dplyr::first(pc_inc),
+            lfp = mean(!is.na(primary_job)) * 100, lfp_paid = mean(!is.na(lab_monthly_inc) & lab_monthly_inc > 0) * 100) %>%
   mutate(has_remit = remit != 0) %>%
   group_by(has_remit) %>%
-  summarize(n = n(), hhsize = mean(hhsize) %>% round(2), remit = mean(remit) %>% round(), inc = mean(inc) %>% round(), pc_inc = mean(pc_inc) %>% round())
+  summarize(n = n(), hhsize = mean(hhsize) %>% round(2), remit = mean(remit) %>% round(), inc = mean(inc) %>% round(), pc_inc = mean(pc_inc) %>% round(),
+            lfp = mean(lfp) %>% round(1), lfp_paid = mean(lfp_paid) %>% round(1))
 
 knitr::kable(remit_r, caption = "Rural households by remittance")
 
@@ -140,10 +142,12 @@ knitr::kable(remit_r, caption = "Rural households by remittance")
 remit_u <- adults %>%
   filter(area == "Urbana") %>%
   group_by(folio) %>%
-  summarize(hhsize = dplyr::first(size), remit = sum(dom_trans_monthly_inc), inc = dplyr::first(hh_tot_inc), pc_inc = dplyr::first(pc_inc)) %>%
+  summarize(hhsize = dplyr::first(size), remit = sum(dom_trans_monthly_inc), inc = dplyr::first(hh_tot_inc), pc_inc = dplyr::first(pc_inc),
+            lfp = mean(!is.na(primary_job)) * 100, lfp_paid = mean(!is.na(lab_monthly_inc) & lab_monthly_inc > 0) * 100) %>%
   mutate(has_remit = remit != 0) %>%
   group_by(has_remit) %>%
-  summarize(n = n(), hhsize = mean(hhsize) %>% round(2), remit = mean(remit) %>% round(), inc = mean(inc) %>% round(), pc_inc = mean(pc_inc) %>% round())
+  summarize(n = n(), hhsize = mean(hhsize) %>% round(2), remit = mean(remit) %>% round(), inc = mean(inc) %>% round(), pc_inc = mean(pc_inc) %>% round(),
+            lfp = mean(lfp) %>% round(1), lfp_paid = mean(lfp_paid) %>% round(1))
 
 knitr::kable(remit_r, caption = "Rural households by remittance")
 knitr::kable(remit_u, caption = "Urban households by remittance")
@@ -162,7 +166,6 @@ knitr::kable(remit_u, caption = "Urban households by remittance")
 ```{r ru_def, echo = F, fig.show = "hold", out.width = "48%", fig.align = "default"}
 knitr::include_graphics("www/el_alto.jpg")
 knitr::include_graphics("www/ichoka.jpg")
-
 ```
 
 ## Examine a deeper assumption: what is rural, what is urban?
@@ -198,6 +201,21 @@ ggplot(adults_he) +
 ```
 
 People without higher ed come from poorer families, aka families that are more likely to have remittances
+
+## Who are the migrants?
+
+```{r migrant1, echo = F, message = F, warning = F}
+adults %>%
+  group_by(folio) %>%
+  summarize(area = dplyr::first(area), remit = sum(dom_trans_monthly_inc), pc_inc = dplyr::first(pc_inc)) %>%
+  mutate(has_remit = ifelse(remit != 0, "w/remits", "w/o remits")) %>%
+  ggplot() +
+  geom_boxplot(aes(has_remit, pc_inc, fill = has_remit), alpha = 0.5) +
+  facet_wrap("area") +
+  theme_minimal() +
+  ylim(0, 10000) + xlab("") + ylab("per capita monthly income (BOB)") +
+  theme(panel.grid.minor = element_blank(), legend.position = "none")
+```
 
 ## Who are the migrants?
 
@@ -240,5 +258,12 @@ Think: women and girls also tend to be the ones doing unpaid labor
 - Make it in the city? How does he stack up against other migrants from (smaller) urban areas, who are more likely to be college educated?  
   
 - Migration flow: rural villages --> small cities --> large cities
+
+## The bottom line
+
+- The (first) inflection point comes earlier in life, in higher education attainment
+- While the premium for higher ed is high in rural areas, the educational opportunities are low: only <10% go to university
+- The disadvantage in education is manifested later on whether one migrates to cities or stays in the countryside and takes on low-paid jobs
+- But the educational discrepancy is also a structural issue, where university is reserved for the rich
 
 <!-- # Generational cycle of poverty -->
