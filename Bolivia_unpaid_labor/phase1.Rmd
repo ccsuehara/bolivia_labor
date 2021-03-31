@@ -11,6 +11,7 @@ output:
 ```{r setup, include = F}
 library(knitr)
 library(stargazer)
+library(kableExtra)
 
 source("EDA.R")
 
@@ -74,7 +75,7 @@ ggplot(data.frame(area = c("rural", "urban"), pct = c(pct_se_r, pct_se_u))) +
 ```{r lfp, echo = F}
 pct_lfp <- function(df) {
   tot <- nrow(df)
-  lfp <- sum(!is.na(df$primary_job))
+  lfp <- sum(!is.na(df$primary_job)) + sum(df$looked_for_work == "1. Si", na.rm = T)
   lfp / tot * 100
 }
 pct_lfp_he_r <- pct_lfp(adults_r %>% filter(education == "Tertiary"))   #0.932
@@ -119,38 +120,37 @@ ggplot(data.frame(area = c("rural", "rural", "urban", "urban"),
 
 ## Rural households with and without domestic remittances
 
-Households receiving domestic remittances are poorer and not that much smaller.
+- Households receiving domestic remittances are poorer and not that much smaller
+- The per capita income gap is orders of magnitude greater than the gaps in percentage of working adults and per capita weekly work hours
 
 ```{r remit_r, echo = F, results = 'asis', message = F}
-remit_r <- adults %>%
-  filter(area == "Rural") %>%
+remit_subset <- function(df) {
+  df %>%
   group_by(folio) %>%
-  summarize(hhsize = dplyr::first(size), remit = sum(dom_trans_monthly_inc), inc = dplyr::first(hh_tot_inc), pc_inc = dplyr::first(pc_inc),
-            lfp = mean(!is.na(primary_job)) * 100, lfp_paid = mean(!is.na(lab_monthly_inc) & lab_monthly_inc > 0) * 100) %>%
+  summarize(n = n(), hhsize = dplyr::first(size), remit = sum(dom_trans_monthly_inc), inc = dplyr::first(hh_tot_inc), pc_inc = dplyr::first(pc_inc),
+            lfp = sum(!is.na(primary_job) | looked_for_work == "1. Si"), lfp_paid = sum(!is.na(lab_monthly_inc) & lab_monthly_inc > 0),
+            working = sum(!is.na(primary_job)), work_hr = sum(tot_work_week_hr, na.rm = T)) %>%
   mutate(has_remit = remit != 0) %>%
   group_by(has_remit) %>%
-  summarize(n = n(), hhsize = mean(hhsize) %>% round(2), remit = mean(remit) %>% round(), inc = mean(inc) %>% round(), pc_inc = mean(pc_inc) %>% round(),
-            lfp = mean(lfp) %>% round(1), lfp_paid = mean(lfp_paid) %>% round(1))
+  summarize(nhh = n(), hhsize = mean(hhsize) %>% round(2), remit = mean(remit) %>% round(), inc = mean(inc) %>% round(), pc_inc = mean(pc_inc) %>% round(),
+            n = sum(n), lfp = sum(lfp), lfp_paid = sum(lfp_paid), working = sum(working), work_hr = sum(work_hr)) %>%
+  mutate(work_hr = round(work_hr / working, 1), lfp = round(lfp / n * 100, 1), lfp_paid = round(lfp_paid / n * 100, 1)) %>%
+  select(-n, -working)
+}
 
-knitr::kable(remit_r, caption = "Rural households by remittance")
+remit_r <- remit_subset(adults %>% filter(area == "Rural"))
+
+knitr::kable(remit_r, caption = "Rural households by remittance", align = "c") %>% kable_styling(font_size = 8)
 
 ```
 
 ## Examine the assumption: which way do remittances flow?
 
 ```{r remit_ru, echo = F, results = 'asis'}
-remit_u <- adults %>%
-  filter(area == "Urbana") %>%
-  group_by(folio) %>%
-  summarize(hhsize = dplyr::first(size), remit = sum(dom_trans_monthly_inc), inc = dplyr::first(hh_tot_inc), pc_inc = dplyr::first(pc_inc),
-            lfp = mean(!is.na(primary_job)) * 100, lfp_paid = mean(!is.na(lab_monthly_inc) & lab_monthly_inc > 0) * 100) %>%
-  mutate(has_remit = remit != 0) %>%
-  group_by(has_remit) %>%
-  summarize(n = n(), hhsize = mean(hhsize) %>% round(2), remit = mean(remit) %>% round(), inc = mean(inc) %>% round(), pc_inc = mean(pc_inc) %>% round(),
-            lfp = mean(lfp) %>% round(1), lfp_paid = mean(lfp_paid) %>% round(1))
+remit_u <- remit_subset(adults %>% filter(area == "Urbana"))
 
-knitr::kable(remit_r, caption = "Rural households by remittance")
-knitr::kable(remit_u, caption = "Urban households by remittance")
+knitr::kable(remit_r, caption = "Rural households by remittance") %>% kable_styling(font_size = 8)
+knitr::kable(remit_u, caption = "Urban households by remittance") %>% kable_styling(font_size = 8)
 ```
 
 16% of rural households and 12% of urban households receive domestic remittances
@@ -177,8 +177,8 @@ knitr::include_graphics("www/ichoka.jpg")
 ## Another look: there are still differences
 
 ```{r remit_ru2, echo = F, results = 'asis'}
-knitr::kable(remit_r, caption = "Rural households by remittance")
-knitr::kable(remit_u, caption = "Urban households by remittance")
+knitr::kable(remit_r, caption = "Rural households by remittance") %>% kable_styling(font_size = 8)
+knitr::kable(remit_u, caption = "Urban households by remittance") %>% kable_styling(font_size = 8)
 ```
 
 - Remittances are higher among urban households

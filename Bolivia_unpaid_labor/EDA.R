@@ -206,7 +206,7 @@ adults <- personas %>%
          lab_monthly_inc, tot_work_week_hr, hh_lab_inc, hh_lab_inc_pct, hh_hr, hh_hr_pct, want_work_more, avail_work_more, union_member,
          sp_monthly_inc, extra_monthly_inc, dom_trans_monthly_inc, intl_remit_monthly_inc, nonlab_monthly_inc, tot_monthly_inc,
          hh_sp_inc, hh_sp_inc_pct, hh_nonlab_inc, hh_nonlab_inc_pct, hh_tot_inc, hh_tot_inc_pct, pc_inc, size, rest_of_hh,
-         factor) %>%
+         factor, looked_for_work) %>%
   mutate(paid = ifelse(str_detect(work_type, "^[78]"), "unpaid", "paid"))
 
 
