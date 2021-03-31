@@ -121,24 +121,25 @@ ggplot(data.frame(area = c("rural", "rural", "urban", "urban"),
 ## Rural households with and without domestic remittances
 
 - Households receiving domestic remittances are poorer and not that much smaller
-- The per capita income gap is orders of magnitude greater than the gaps in percentage of working adults and per capita weekly work hours
+- The per capita income gap is much greater than the gap in per capita weekly work hours
 
 ```{r remit_r, echo = F, results = 'asis', message = F}
 remit_subset <- function(df) {
   df %>%
   group_by(folio) %>%
-  summarize(n = n(), hhsize = dplyr::first(size), remit = sum(dom_trans_monthly_inc), inc = dplyr::first(hh_tot_inc), pc_inc = dplyr::first(pc_inc),
+  summarize(nadults = n(), hhsize0 = dplyr::first(size), remit = sum(dom_trans_monthly_inc), inc = dplyr::first(hh_tot_inc), 
             lfp = sum(!is.na(primary_job) | looked_for_work == "1. Si"), lfp_paid = sum(!is.na(lab_monthly_inc) & lab_monthly_inc > 0),
             working = sum(!is.na(primary_job)), work_hr = sum(tot_work_week_hr, na.rm = T)) %>%
   mutate(has_remit = remit != 0) %>%
   group_by(has_remit) %>%
-  summarize(nhh = n(), hhsize = mean(hhsize) %>% round(2), remit = mean(remit) %>% round(), inc = mean(inc) %>% round(), pc_inc = mean(pc_inc) %>% round(),
-            n = sum(n), lfp = sum(lfp), lfp_paid = sum(lfp_paid), working = sum(working), work_hr = sum(work_hr)) %>%
-  mutate(work_hr = round(work_hr / working, 1), lfp = round(lfp / n * 100, 1), lfp_paid = round(lfp_paid / n * 100, 1)) %>%
-  select(-n, -working)
+  summarize(nhh = n(), n = sum(hhsize0), hhsize = mean(hhsize0) %>% round(2), nadults = sum(nadults), remit = mean(remit) %>% round(), pc_inc = sum(inc),
+            inc = mean(inc) %>% round(), lfp = sum(lfp), lfp_paid = sum(lfp_paid), working = sum(working), work_hr = sum(work_hr)) %>%
+  mutate(work_hr = round(work_hr / working, 1), lfp = round(lfp / nadults * 100, 1), lfp_paid = round(lfp_paid / nadults * 100, 1),
+         pc_inc = round(pc_inc / n)) %>%
+  select(-nadults, -n, -working)
 }
 
-remit_r <- remit_subset(adults %>% filter(area == "Rural"))
+remit_r <- remit_subset(adults_r)
 
 knitr::kable(remit_r, caption = "Rural households by remittance", align = "c") %>% kable_styling(font_size = 8)
 
@@ -147,7 +148,7 @@ knitr::kable(remit_r, caption = "Rural households by remittance", align = "c") %
 ## Examine the assumption: which way do remittances flow?
 
 ```{r remit_ru, echo = F, results = 'asis'}
-remit_u <- remit_subset(adults %>% filter(area == "Urbana"))
+remit_u <- remit_subset(adults_u)
 
 knitr::kable(remit_r, caption = "Rural households by remittance") %>% kable_styling(font_size = 8)
 knitr::kable(remit_u, caption = "Urban households by remittance") %>% kable_styling(font_size = 8)
