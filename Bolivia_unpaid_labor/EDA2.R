@@ -213,18 +213,20 @@ waffl_work <- function(df) {
 
 ## graph for hours of work
 
-ggplot(adults %>% filter(emp_status == "paid")) +
-  geom_jitter(aes(x = age, y = lab_monthly_inc, color = sex), alpha = 0.05) +
-  geom_line(data = adults %>% filter(paid == "paid") %>% group_by(age, sex) %>% summarize(mean = mean(lab_monthly_inc, na.rm = T)),
+ggplot(adults %>% filter(emp_status == "Employed")) +
+  geom_jitter(aes(x = age, y = tot_work_week_hr, color = sex), alpha = 0.05) +
+  geom_line(data = adults %>% filter(emp_status == "Employed") %>% group_by(age, sex) %>% summarize(mean = mean(tot_work_week_hr, na.rm = T)),
             aes(x = age, y = mean, color = sex), size = 1) +
-  geom_point(data = adults %>% filter(paid == "paid") %>% group_by(age, sex) %>% summarize(mean = mean(lab_monthly_inc, na.rm = T)),
+  geom_point(data = adults %>% filter(emp_status == "Employed") %>% group_by(age, sex) %>% summarize(mean = mean(tot_work_week_hr, na.rm = T)),
              aes(x = age, y = mean, color = sex), size = 2.5) +
   theme_minimal() +
   theme(legend.position = "bottom", legend.title = element_blank(), panel.grid.minor = element_blank()) +
   scale_color_manual(values = c(color1, color2), labels = c("men", "women")) +
-  ylab("monthly labor income (BOB)") +
-  ylim(0, 20000)
-)
+  ylab("average hours worked") +
+  ylim(5, 60)
+
+
+
 
 
 ###### NEET POPULATION STATISTICS ########
