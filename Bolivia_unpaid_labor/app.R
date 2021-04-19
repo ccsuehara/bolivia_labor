@@ -7,7 +7,7 @@ library(plotly)
 library(waffle)
 library(ggridges)
 library(treemap)
-library(d3treeR)
+# library(d3treeR)
 library(wordcloud2)
 library(scales)
 library(StatMeasures)
@@ -16,8 +16,8 @@ library(StatMeasures)
 #setwd("/Users/csolisu/Documents/Carla/chamba/shared_Bolivia/Bolivia_unpaid_labor")
 
 source("EDA.R")
-source("EDA2.R")
 source("texts.R")
+source("EDA2.R")
 
 
 c1 <- "General population (2018)"
@@ -42,6 +42,7 @@ names_w <- c("Maria", "Juana", "Ana", "Martha", "Carmen", "Rosa", "Julia", "Eliz
 lf1 <- "Employed Population"
 lf2 <- "Unemployed Population"
 lf3 <- "Inactive Population"
+
 
 wgt <- 258.651824951171
 # wgt <- 1
@@ -106,7 +107,7 @@ ui <- fluidPage(
                                hr(),
                                textOutput("children_t2"),
                                h3("Reasons for not enrolling in school"),
-                               d3tree2Output("children_edu3"),
+                               # d3tree2Output("children_edu3"),
                                plotOutput("children_edu4"),
                                hr(),
                                
@@ -759,21 +760,21 @@ server <- function(input, output, session) {
     group_by(why_not_in_school, sex) %>%
     summarize(sum = n())
   
-  output$children_edu3 <- renderD3tree2(d3tree2(treemap(why_not_in_school_df,
-                                                        index = c("why_not_in_school", "sex"),
-                                                        vSize = "sum",
-                                                        type = "index",
-                                                        palette = color_pal,
-                                                        title = "",
-                                                        fontsize.labels = c(13, 10),
-                                                        fontcolor.labels = c("white"),
-                                                        fontface.labels = c(2, 3),
-                                                        bg.labels = c("transparent"),
-                                                        align.labels = list(c("center", "center"),
-                                                                            c("left", "bottom")),
-                                                        overlap.labels = 0.5,
-                                                        border.col = c("white")),
-                                                rootname = "Reasons for not enrolling in school: "))
+  # output$children_edu3 <- renderD3tree2(d3tree2(treemap(why_not_in_school_df,
+  #                                                       index = c("why_not_in_school", "sex"),
+  #                                                       vSize = "sum",
+  #                                                       type = "index",
+  #                                                       palette = color_pal,
+  #                                                       title = "",
+  #                                                       fontsize.labels = c(13, 10),
+  #                                                       fontcolor.labels = c("white"),
+  #                                                       fontface.labels = c(2, 3),
+  #                                                       bg.labels = c("transparent"),
+  #                                                       align.labels = list(c("center", "center"),
+  #                                                                           c("left", "bottom")),
+  #                                                       overlap.labels = 0.5,
+  #                                                       border.col = c("white")),
+  #                                               rootname = "Reasons for not enrolling in school: "))
   
   output$children_edu4 <- renderPlot(
     ggplot(why_not_in_school_df) +

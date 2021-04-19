@@ -1,8 +1,43 @@
 
 ##Employment status graphs##
-
+color1 <- "#DDCC77"
+color2 <- "#88CCEE"
+color3 <- "#44AA99"
+color4 <- "#117733"
+color5 <- "#332288"
+color6 <- "#CC6677"
+color7 <- "#AA4499"
+color8 <- "#882255"
+color9 <- "#e6e6e6" # grey10
+color_pal <- c(color1, color2, color3, color4, color5, color6, color7, color8, color9)
 
 ##Making dataframes for working well with each one
+
+
+educ_yrs <- c(0, 0, #11, 12
+             0, #13
+             6,11, #21 22
+             11, 6, 11, #23, 31, 32,
+             6, 11,  #41, 42
+             6, 11,  #51, 52
+             11,6,  #61, 62
+             11,6,  #63, 64
+             11, #65
+             16, 16, 16, #71, 72, 73
+             16, 16, 16, #74, 75, 76
+             16, 16, 16, # 77, 79, 80
+             16) #81
+
+educ_list <- sort(unique(personas$edu))
+
+
+personas <- personas %>% mutate(yrs_educ = plyr::mapvalues(edu, educ_list, educ_yrs)) %>% 
+  mutate(why_not_work = s06a_10)
+  
+
+adults <- adults %>% mutate(yrs_educ = plyr::mapvalues(edu, educ_list, educ_yrs)) %>% 
+  mutate(why_not_work = s06a_10)
+
 
 employed <- adults %>% filter(emp_status == "Employed") %>%
   select(folio, nro, area, sex, age, marital, literate, num_literate, indigenous, indigenous_id,
@@ -42,7 +77,7 @@ neet <- personas %>% filter(emp_status == "Inactive" & is_student == "No") %>%
          cellphone, internet_use, internet_use_where_1, internet_use_where_2,
          primary_job, work_type, primary_salary, primary_salary_freq, primary_nonsalaried_income, primary_nonsalaried_income_freq,
          sec_job, sec_employer_industry, sec_work_type, sec_salary, sec_salary_freq, sec_nonsalaried_income, sec_nonsalaried_income_freq,
-         want_work_more, avail_work_more, union_member)  %>% filter(age %in% 18:45)
+         want_work_more, avail_work_more, union_member, why_not_in_school, why_not_work)  %>% filter(age %in% 14:30)
 
 
 employed_gender <- employed %>%
@@ -172,6 +207,57 @@ waffl_work <- function(df) {
     theme(panel.grid = element_blank(), axis.ticks.y = element_line()) +
     guides(fill = guide_legend(reverse = FALSE)) 
 }
+
+
+######## WOrking population statistics ########
+
+## graph for hours of work
+
+ggplot(adults %>% filter(emp_status == "paid")) +
+  geom_jitter(aes(x = age, y = lab_monthly_inc, color = sex), alpha = 0.05) +
+  geom_line(data = adults %>% filter(paid == "paid") %>% group_by(age, sex) %>% summarize(mean = mean(lab_monthly_inc, na.rm = T)),
+            aes(x = age, y = mean, color = sex), size = 1) +
+  geom_point(data = adults %>% filter(paid == "paid") %>% group_by(age, sex) %>% summarize(mean = mean(lab_monthly_inc, na.rm = T)),
+             aes(x = age, y = mean, color = sex), size = 2.5) +
+  theme_minimal() +
+  theme(legend.position = "bottom", legend.title = element_blank(), panel.grid.minor = element_blank()) +
+  scale_color_manual(values = c(color1, color2), labels = c("men", "women")) +
+  ylab("monthly labor income (BOB)") +
+  ylim(0, 20000)
+)
+
+
+###### NEET POPULATION STATISTICS ########
+
+why_neet_no_study <- neet %>%
+  filter(!is.na(why_not_in_school)) %>%
+  mutate(why_not_in_school = case_when(startsWith(why_not_in_school, "14") ~ "reasons not\nlisted in survey",
+                                       startsWith(why_not_in_school, "11") ~ "work",
+                                       startsWith(why_not_in_school, "2") ~ "illness,\naccident,\ndisability",
+                                       startsWith(why_not_in_school, "3") ~ "pregnancy",
+                                       startsWith(why_not_in_school, "4") ~ "lack of money",
+                                       startsWith(why_not_in_school, "5") ~ "school is\ntoo far",
+                                       startsWith(why_not_in_school, "8") ~ "lack of\ninterest",
+                                       startsWith(why_not_in_school, "9") ~ "household chores/\nchildcare",
+                                       !is.na(why_not_in_school) ~ "everything\nelse"),
+         sex = case_when(startsWith(sex, "1") ~ "Men",
+                         startsWith(sex, "2") ~ "Women")) %>%
+  group_by(why_not_in_school, sex) %>%
+  summarize(sum = n())
+
+
+why_neet_no_work <- neet %>%
+  filter(!is.na(why_not_work)) %>%
+  mutate(why_not_work = case_when(startsWith(why_not_in_school, "10") ~ "doesn't neet to work",
+                                       startsWith(why_not_in_school, "11") ~ "household chores/\nchildcare",
+                                       startsWith(why_not_in_school, "9") ~ "illness,\naccident,\ndisability",
+                                       startsWith(why_not_in_school, "13") ~ "reasons not\nlisted in survey",
+                                       !is.na(why_not_in_school) ~ "everything\nelse"),
+         sex = case_when(startsWith(sex, "1") ~ "Men",
+                         startsWith(sex, "2") ~ "Women")) %>%
+  group_by(why_not_work, sex) %>%
+  summarize(sum = n())
+
 
 
 
