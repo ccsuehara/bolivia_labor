@@ -6,30 +6,30 @@ library(quantmod)
 color1 <- "#DDCC77"
 color2 <- "#88CCEE"
 
-income_freq <- function(var) {
-  case_when(
-    startsWith(var, "1") ~ 30,
-    startsWith(var, "2") ~ 30/7,
-    startsWith(var, "3") ~ 2,
-    startsWith(var, "4") ~ 1,
-    startsWith(var, "5") ~ 1/2,
-    startsWith(var, "6") ~ 1/3,
-    startsWith(var, "7") ~ 1/6,
-    startsWith(var, "8") ~ 1/12
-  ) 
-}
-
-cur_conv <- function(var) {
-  bob <- "BOB=X"
-  case_when(startsWith(var, "1") ~ 1,
-            startsWith(var, "2") ~ getQuote(paste0("EUR", bob))$Last,
-            startsWith(var, "3") ~ getQuote(paste0("USD", bob))$Last,
-            startsWith(var, "4") ~ getQuote(paste0("ARS", bob))$Last,
-            startsWith(var, "5") ~ getQuote(paste0("BRL", bob))$Last,
-            startsWith(var, "6") ~ getQuote(paste0("CLP", bob))$Last,
-            startsWith(var, "PESOS") ~ getQuote(paste0("MXN", bob))$Last,
-            startsWith(var, "SOL") ~ getQuote(paste0("PEN", bob))$Last)
-}
+# income_freq <- function(var) {
+#   case_when(
+#     startsWith(var, "1") ~ 30,
+#     startsWith(var, "2") ~ 30/7,
+#     startsWith(var, "3") ~ 2,
+#     startsWith(var, "4") ~ 1,
+#     startsWith(var, "5") ~ 1/2,
+#     startsWith(var, "6") ~ 1/3,
+#     startsWith(var, "7") ~ 1/6,
+#     startsWith(var, "8") ~ 1/12
+#   ) 
+# }
+# 
+# cur_conv <- function(var) {
+#   bob <- "BOB=X"
+#   case_when(startsWith(var, "1") ~ 1,
+#             startsWith(var, "2") ~ getQuote(paste0("EUR", bob))$Last,
+#             startsWith(var, "3") ~ getQuote(paste0("USD", bob))$Last,
+#             startsWith(var, "4") ~ getQuote(paste0("ARS", bob))$Last,
+#             startsWith(var, "5") ~ getQuote(paste0("BRL", bob))$Last,
+#             startsWith(var, "6") ~ getQuote(paste0("CLP", bob))$Last,
+#             startsWith(var, "PESOS") ~ getQuote(paste0("MXN", bob))$Last,
+#             startsWith(var, "SOL") ~ getQuote(paste0("PEN", bob))$Last)
+# }
 
 # CSV was created and edited from the original excel; saving to CSV to reduce RAM usage -------------------
 # personas0 <- read_excel("data/EH2018_Personas2.xlsx", guess_max = 37517) %>%

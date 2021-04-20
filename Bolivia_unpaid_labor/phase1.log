@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020/W32TeX) (preloaded format=pdflatex 2021.3.29)  31 MAR 2021 12:46
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020/W32TeX) (preloaded format=pdflatex 2021.3.29)  16 APR 2021 18:49
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1081,13 +1081,13 @@ LaTeX Font Info:    Font shape `T1/lmss/m/it' in size <5> not available
 ] [4
 
 ]
-<phase1_files/figure-beamer/he-1.pdf, id=49, 722.7pt x 794.97pt>
+<phase1_files/figure-beamer/he-1.pdf, id=57, 722.7pt x 794.97pt>
 File: phase1_files/figure-beamer/he-1.pdf Graphic file (type pdf)
 <use phase1_files/figure-beamer/he-1.pdf>
 Package pdftex.def Info: phase1_files/figure-beamer/he-1.pdf  used on input lin
 e 166.
 (pdftex.def)             Requested size: 147.4928pt x 162.24208pt.
-<phase1_files/figure-beamer/he-2.pdf, id=50, 722.7pt x 794.97pt>
+<phase1_files/figure-beamer/he-2.pdf, id=58, 722.7pt x 794.97pt>
 File: phase1_files/figure-beamer/he-2.pdf Graphic file (type pdf)
 <use phase1_files/figure-beamer/he-2.pdf>
 Package pdftex.def Info: phase1_files/figure-beamer/he-2.pdf  used on input lin
@@ -1097,7 +1097,7 @@ e 166.
 
  <./phase1_files/figure-beamer/he-1.pdf> <./phase1_files/figure-beamer/he-2.pdf
 >]
-<phase1_files/figure-beamer/lfp-1.pdf, id=67, 722.7pt x 505.89pt>
+<phase1_files/figure-beamer/lfp-1.pdf, id=75, 722.7pt x 505.89pt>
 File: phase1_files/figure-beamer/lfp-1.pdf Graphic file (type pdf)
 <use phase1_files/figure-beamer/lfp-1.pdf>
 Package pdftex.def Info: phase1_files/figure-beamer/lfp-1.pdf  used on input li
@@ -1106,7 +1106,7 @@ ne 173.
 [6
 
  <./phase1_files/figure-beamer/lfp-1.pdf>]
-<phase1_files/figure-beamer/lab_inc-1.pdf, id=79, 722.7pt x 505.89pt>
+<phase1_files/figure-beamer/lab_inc-1.pdf, id=87, 722.7pt x 505.89pt>
 File: phase1_files/figure-beamer/lab_inc-1.pdf Graphic file (type pdf)
 <use phase1_files/figure-beamer/lab_inc-1.pdf>
 Package pdftex.def Info: phase1_files/figure-beamer/lab_inc-1.pdf  used on inpu
@@ -1117,19 +1117,19 @@ t line 180.
  <./phase1_files/figure-beamer/lab_inc-1.pdf>] [8
 
 ]
-Overfull \hbox (9.24515pt too wide) in paragraph at lines 215--215
+Overfull \hbox (9.24515pt too wide) in paragraph at lines 216--216
  [] 
  []
 
 [9
 
 ]
-Overfull \hbox (9.24515pt too wide) in paragraph at lines 255--255
+Overfull \hbox (9.24515pt too wide) in paragraph at lines 256--256
  [] 
  []
 
 
-Overfull \hbox (9.24515pt too wide) in paragraph at lines 255--255
+Overfull \hbox (9.24515pt too wide) in paragraph at lines 256--256
  [] 
  []
 
@@ -1139,20 +1139,20 @@ pdfTeX warning (ext4): destination with the same identifier (name{tab:remit_ru}
 ) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   
-l.255 \end{frame}
+l.256 \end{frame}
                  ]
-<www/el_alto.jpg, id=114, 212.02391pt x 145.01862pt>
+<www/el_alto.jpg, id=122, 212.02391pt x 145.01862pt>
 File: www/el_alto.jpg Graphic file (type jpg)
 <use www/el_alto.jpg>
-Package pdftex.def Info: www/el_alto.jpg  used on input line 283.
+Package pdftex.def Info: www/el_alto.jpg  used on input line 284.
 (pdftex.def)             Requested size: 147.50015pt x 100.88611pt.
-<www/ichoka.jpg, id=115, 212.02391pt x 121.56676pt>
+<www/ichoka.jpg, id=123, 212.02391pt x 121.56676pt>
 File: www/ichoka.jpg Graphic file (type jpg)
 <use www/ichoka.jpg>
-Package pdftex.def Info: www/ichoka.jpg  used on input line 283.
+Package pdftex.def Info: www/ichoka.jpg  used on input line 284.
 (pdftex.def)             Requested size: 147.50015pt x 84.57118pt.
 
-Overfull \vbox (1.15048pt too high) detected at line 283
+Overfull \vbox (1.15048pt too high) detected at line 284
  []
 
 [11
@@ -1160,12 +1160,12 @@ Overfull \vbox (1.15048pt too high) detected at line 283
  <./www/el_alto.jpg> <./www/ichoka.jpg>] [12
 
 ]
-Overfull \hbox (9.24515pt too wide) in paragraph at lines 345--345
+Overfull \hbox (9.24515pt too wide) in paragraph at lines 346--346
  [] 
  []
 
 
-Overfull \hbox (9.24515pt too wide) in paragraph at lines 345--345
+Overfull \hbox (9.24515pt too wide) in paragraph at lines 346--346
  [] 
  []
 
@@ -1175,51 +1175,51 @@ pdfTeX warning (ext4): destination with the same identifier (name{tab:remit_ru2
 }) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   
-l.345 \end{frame}
+l.346 \end{frame}
                  ]
-<phase1_files/figure-beamer/migrant-1.pdf, id=137, 722.7pt x 505.89pt>
+<phase1_files/figure-beamer/migrant-1.pdf, id=145, 722.7pt x 505.89pt>
 File: phase1_files/figure-beamer/migrant-1.pdf Graphic file (type pdf)
 <use phase1_files/figure-beamer/migrant-1.pdf>
 Package pdftex.def Info: phase1_files/figure-beamer/migrant-1.pdf  used on inpu
-t line 355.
+t line 356.
 (pdftex.def)             Requested size: 307.2923pt x 215.1046pt.
 
-Overfull \vbox (3.76059pt too high) detected at line 355
+Overfull \vbox (3.76059pt too high) detected at line 356
  []
 
 [14
 
  <./phase1_files/figure-beamer/migrant-1.pdf>]
-<phase1_files/figure-beamer/migrant1-1.pdf, id=150, 722.7pt x 505.89pt>
+<phase1_files/figure-beamer/migrant1-1.pdf, id=158, 722.7pt x 505.89pt>
 File: phase1_files/figure-beamer/migrant1-1.pdf Graphic file (type pdf)
 <use phase1_files/figure-beamer/migrant1-1.pdf>
 Package pdftex.def Info: phase1_files/figure-beamer/migrant1-1.pdf  used on inp
-ut line 362.
+ut line 363.
 (pdftex.def)             Requested size: 307.2923pt x 215.1046pt.
 [15
 
  <./phase1_files/figure-beamer/migrant1-1.pdf>]
-<phase1_files/figure-beamer/migrant2-1.pdf, id=166, 722.7pt x 505.89pt>
+<phase1_files/figure-beamer/migrant2-1.pdf, id=174, 722.7pt x 505.89pt>
 File: phase1_files/figure-beamer/migrant2-1.pdf Graphic file (type pdf)
 <use phase1_files/figure-beamer/migrant2-1.pdf>
 Package pdftex.def Info: phase1_files/figure-beamer/migrant2-1.pdf  used on inp
-ut line 372.
+ut line 373.
 (pdftex.def)             Requested size: 307.2923pt x 215.1046pt.
 
-Overfull \vbox (3.76059pt too high) detected at line 372
+Overfull \vbox (3.76059pt too high) detected at line 373
  []
 
 [16
 
  <./phase1_files/figure-beamer/migrant2-1.pdf>]
-<phase1_files/figure-beamer/migrant3-1.pdf, id=178, 722.7pt x 505.89pt>
+<phase1_files/figure-beamer/migrant3-1.pdf, id=186, 722.7pt x 505.89pt>
 File: phase1_files/figure-beamer/migrant3-1.pdf Graphic file (type pdf)
 <use phase1_files/figure-beamer/migrant3-1.pdf>
 Package pdftex.def Info: phase1_files/figure-beamer/migrant3-1.pdf  used on inp
-ut line 381.
+ut line 382.
 (pdftex.def)             Requested size: 307.2923pt x 215.1046pt.
 
-Overfull \vbox (1.63145pt too high) detected at line 381
+Overfull \vbox (1.63145pt too high) detected at line 382
  []
 
 [17
@@ -1228,7 +1228,93 @@ Overfull \vbox (1.63145pt too high) detected at line 381
 
 ] [19
 
+] [20
+
+] [21
+
 ]
+<phase1_files/figure-beamer/gen_ed-1.pdf, id=223, 722.7pt x 505.89pt>
+File: phase1_files/figure-beamer/gen_ed-1.pdf Graphic file (type pdf)
+<use phase1_files/figure-beamer/gen_ed-1.pdf>
+Package pdftex.def Info: phase1_files/figure-beamer/gen_ed-1.pdf  used on input
+ line 465.
+(pdftex.def)             Requested size: 307.2923pt x 215.1046pt.
+
+Overfull \vbox (3.76059pt too high) detected at line 465
+ []
+
+[22
+
+ <./phase1_files/figure-beamer/gen_ed-1.pdf>]
+<phase1_files/figure-beamer/gen_emp-1.pdf, id=236, 722.7pt x 289.08pt>
+File: phase1_files/figure-beamer/gen_emp-1.pdf Graphic file (type pdf)
+<use phase1_files/figure-beamer/gen_emp-1.pdf>
+Package pdftex.def Info: phase1_files/figure-beamer/gen_emp-1.pdf  used on inpu
+t line 491.
+(pdftex.def)             Requested size: 307.2923pt x 122.91692pt.
+
+Overfull \vbox (0.24376pt too high) detected at line 491
+ []
+
+[23
+
+ <./phase1_files/figure-beamer/gen_emp-1.pdf>] [24
+
+]
+<phase1_files/figure-beamer/unnamed-chunk-1-1.pdf, id=260, 722.7pt x 505.89pt>
+File: phase1_files/figure-beamer/unnamed-chunk-1-1.pdf Graphic file (type pdf)
+<use phase1_files/figure-beamer/unnamed-chunk-1-1.pdf>
+Package pdftex.def Info: phase1_files/figure-beamer/unnamed-chunk-1-1.pdf  used
+ on input line 501.
+(pdftex.def)             Requested size: 307.2923pt x 215.1046pt.
+[25
+
+ <./phase1_files/figure-beamer/unnamed-chunk-1-1.pdf>]
+<phase1_files/figure-beamer/unnamed-chunk-2-1.pdf, id=273, 722.7pt x 505.89pt>
+File: phase1_files/figure-beamer/unnamed-chunk-2-1.pdf Graphic file (type pdf)
+<use phase1_files/figure-beamer/unnamed-chunk-2-1.pdf>
+Package pdftex.def Info: phase1_files/figure-beamer/unnamed-chunk-2-1.pdf  used
+ on input line 508.
+(pdftex.def)             Requested size: 307.2923pt x 215.1046pt.
+[26
+
+ <./phase1_files/figure-beamer/unnamed-chunk-2-1.pdf>]
+<phase1_files/figure-beamer/unnamed-chunk-3-1.pdf, id=286, 722.7pt x 505.89pt>
+File: phase1_files/figure-beamer/unnamed-chunk-3-1.pdf Graphic file (type pdf)
+<use phase1_files/figure-beamer/unnamed-chunk-3-1.pdf>
+Package pdftex.def Info: phase1_files/figure-beamer/unnamed-chunk-3-1.pdf  used
+ on input line 515.
+(pdftex.def)             Requested size: 307.2923pt x 215.1046pt.
+[27
+
+ <./phase1_files/figure-beamer/unnamed-chunk-3-1.pdf>]
+<phase1_files/figure-beamer/unnamed-chunk-4-1.pdf, id=298, 722.7pt x 505.89pt>
+File: phase1_files/figure-beamer/unnamed-chunk-4-1.pdf Graphic file (type pdf)
+<use phase1_files/figure-beamer/unnamed-chunk-4-1.pdf>
+Package pdftex.def Info: phase1_files/figure-beamer/unnamed-chunk-4-1.pdf  used
+ on input line 522.
+(pdftex.def)             Requested size: 307.2923pt x 215.1046pt.
+[28
+
+ <./phase1_files/figure-beamer/unnamed-chunk-4-1.pdf>]
+<phase1_files/figure-beamer/unnamed-chunk-5-1.pdf, id=313, 722.7pt x 505.89pt>
+File: phase1_files/figure-beamer/unnamed-chunk-5-1.pdf Graphic file (type pdf)
+<use phase1_files/figure-beamer/unnamed-chunk-5-1.pdf>
+Package pdftex.def Info: phase1_files/figure-beamer/unnamed-chunk-5-1.pdf  used
+ on input line 529.
+(pdftex.def)             Requested size: 307.2923pt x 215.1046pt.
+[29
+
+ <./phase1_files/figure-beamer/unnamed-chunk-5-1.pdf>]
+<phase1_files/figure-beamer/unnamed-chunk-6-1.pdf, id=325, 722.7pt x 505.89pt>
+File: phase1_files/figure-beamer/unnamed-chunk-6-1.pdf Graphic file (type pdf)
+<use phase1_files/figure-beamer/unnamed-chunk-6-1.pdf>
+Package pdftex.def Info: phase1_files/figure-beamer/unnamed-chunk-6-1.pdf  used
+ on input line 536.
+(pdftex.def)             Requested size: 307.2923pt x 215.1046pt.
+[30
+
+ <./phase1_files/figure-beamer/unnamed-chunk-6-1.pdf>]
 \tf@nav=\write6
 \openout6 = `phase1.nav'.
 
@@ -1243,13 +1329,13 @@ Overfull \vbox (1.63145pt too high) detected at line 381
 LaTeX Warning: There were multiply-defined labels.
 
 Package rerunfilecheck Info: File `phase1.out' has not changed.
-(rerunfilecheck)             Checksum: F26C6BC784BFE4111EA997040F393639;729.
+(rerunfilecheck)             Checksum: C03D47DBEE6119E0E88B8657C02900E5;1090.
  ) 
 Here is how much of TeX's memory you used:
- 20774 strings out of 480962
- 391165 string characters out of 5905990
- 680843 words of memory out of 5000000
- 37453 multiletter control sequences out of 15000+600000
+ 20888 strings out of 480962
+ 394168 string characters out of 5905990
+ 680897 words of memory out of 5000000
+ 37525 multiletter control sequences out of 15000+600000
  477074 words of font info for 78 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
  112i,11n,116p,431b,458s stack positions out of 5000i,500n,10000p,200000b,80000s
@@ -1260,10 +1346,10 @@ m/lmss8.pfb><c:/Users/Rosem/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/publ
 ic/lm/lmssbx10.pfb><c:/Users/Rosem/AppData/Roaming/TinyTeX/texmf-dist/fonts/typ
 e1/public/lm/lmsso10.pfb><c:/Users/Rosem/AppData/Roaming/TinyTeX/texmf-dist/fon
 ts/type1/public/amsfonts/symbols/msam10.pfb>
-Output written on phase1.pdf (19 pages, 216361 bytes).
+Output written on phase1.pdf (30 pages, 341412 bytes).
 PDF statistics:
- 237 PDF objects out of 1000 (max. 8388607)
- 185 compressed objects within 2 object streams
- 60 named destinations out of 1000 (max. 500000)
- 109 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 378 PDF objects out of 1000 (max. 8388607)
+ 297 compressed objects within 3 object streams
+ 94 named destinations out of 1000 (max. 500000)
+ 165 words of extra memory for PDF output out of 10000 (max. 10000000)
 

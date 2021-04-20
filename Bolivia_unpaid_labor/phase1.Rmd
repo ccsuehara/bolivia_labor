@@ -9,11 +9,32 @@ output:
 ---
 
 ```{r setup, include = F}
+library(tidyverse)
 library(knitr)
 library(stargazer)
 library(kableExtra)
+library(ggridges)
+# library(DescTools)
 
-source("EDA.R")
+# source("EDA.R")
+personas <- read.csv("data/personas.csv")
+adults <- personas %>%
+  filter(age %in% 25:60) %>%
+  select(folio, nro, relation, depto, area, sex, age, language_1, marital, literate, num_literate, indigenous, indigenous_id,
+         edu, any_ed, higher_ed, in_school, why_not_in_school, current_edu, in_attendance, why_absence, education, is_student,
+         chronic_disease_1, disability, pregnant, num_alive_child,
+         manual_labor,
+         cellphone, internet_use, internet_use_where_1, internet_use_where_2,
+         emp_status,
+         primary_job, work_type, primary_work_week_hr,
+         primary_salary, primary_salary_freq, primary_nonsalaried_income, primary_nonsalaried_income_freq, primary_monthly_inc,
+         sec_job, sec_employer_industry, sec_work_type, sec_work_week_hr,
+         sec_salary, sec_salary_freq, sec_nonsalaried_income, sec_nonsalaried_income_freq, sec_monthly_inc,
+         lab_monthly_inc, tot_work_week_hr, hh_lab_inc, hh_lab_inc_pct, hh_hr, hh_hr_pct, want_work_more, avail_work_more, union_member,
+         sp_monthly_inc, extra_monthly_inc, dom_trans_monthly_inc, intl_remit_monthly_inc, nonlab_monthly_inc, tot_monthly_inc,
+         hh_sp_inc, hh_sp_inc_pct, hh_nonlab_inc, hh_nonlab_inc_pct, hh_tot_inc, hh_tot_inc_pct, pc_inc, size, rest_of_hh,
+         factor, looked_for_work) %>%
+  mutate(paid = ifelse(str_detect(work_type, "^[78]"), "unpaid", "paid"))
 
 adults_r <- adults %>% filter(area == "Rural")
 adults_u <- adults %>% filter(area == "Urbana")
@@ -121,7 +142,7 @@ ggplot(data.frame(area = c("rural", "rural", "urban", "urban"),
 ## Rural households with and without domestic remittances
 
 - Households receiving domestic remittances are poorer and not that much smaller
-- The per capita income gap is much greater than the gap in per capita weekly work hours
+- The recipients do not work much less because of the remittances, as there is no difference in LFP rates and only a small gap in average work hours
 
 ```{r remit_r, echo = F, results = 'asis', message = F}
 remit_subset <- function(df) {
@@ -211,7 +232,7 @@ adults %>%
   summarize(area = dplyr::first(area), remit = sum(dom_trans_monthly_inc), pc_inc = dplyr::first(pc_inc)) %>%
   mutate(has_remit = ifelse(remit != 0, "w/remits", "w/o remits")) %>%
   ggplot() +
-  geom_boxplot(aes(has_remit, pc_inc, fill = has_remit), alpha = 0.5) +
+  geom_boxplot(aes(has_remit, pc_inc, fill = has_remit), width = 0.5, alpha = 0.5) +
   facet_wrap("area") +
   theme_minimal() +
   ylim(0, 10000) + xlab("") + ylab("per capita monthly income (BOB)") +
@@ -267,4 +288,187 @@ Think: women and girls also tend to be the ones doing unpaid labor
 - The disadvantage in education is manifested later on whether one migrates to cities or stays in the countryside and takes on low-paid jobs
 - But the educational discrepancy is also a structural issue, where university is reserved for the rich
 
-<!-- # Generational cycle of poverty -->
+# Generational cycle of poverty
+
+## Sample
+
+- To investigate inter-generational effects, I filtered for multigenerational households, defined as households with at least two generations of **adults between 25 and 60**
+- This subset includes 3462 adults from 1523 households, representing 21.8% of all adults sampled in the household survey
+
+## Overall social mobility: education
+
+Educational attainment has improved significantly between generations
+
+```{r gen_ed, echo = F, message = F}
+# Filter for households with adult children (non-HoH)
+hh_adult_child <- adults %>%
+  filter(str_detect(relation, "^3")) %>%
+  pull(folio) %>% unique()
+
+adults_2gen1 <- adults %>%
+  filter(folio %in% hh_adult_child) %>%
+  filter(!str_detect(relation, "10") & !str_detect(relation, "11") & !str_detect(relation, "^[589]")) %>%
+  mutate(gen = ifelse(str_detect(relation, "^[34]"), "younger", "older"))
+
+# Filter for households with adult head of household and adult parents
+hh_adult_parent1 <- adults %>%
+  filter(str_detect(relation, "^1") & !str_detect(relation, "^10") & !str_detect(relation, "^11")) %>%
+  pull(folio) %>% unique()
+
+hh_adult_parent2 <- adults %>%
+  filter(str_detect(relation, "^6")) %>%
+  pull(folio) %>% unique()
+
+hh_adult_parent <- intersect(hh_adult_parent1, hh_adult_parent2)
+
+adults_2gen2 <- adults %>%
+  filter(folio %in% hh_adult_parent) %>%
+  filter(!str_detect(relation, "10") & !str_detect(relation, "11") & !str_detect(relation, "^[589]")) %>%
+  mutate(gen = ifelse(str_detect(relation, "^[12]"), "younger", "older"))
+
+# Combine the two types of 2-generational households
+adults_2gen <- rbind(adults_2gen1, adults_2gen2)
+
+adults_2gen %>%
+  group_by(folio, gen) %>%
+  summarize(area = first(area), edu2 = names(sort(-table(education)))[1]) %>%
+  pivot_wider(names_from = gen, values_from = edu2) %>%
+  na.omit() %>%
+  group_by(older, area) %>%
+  summarize(less_than_primary = sum(younger == "Less than Primary"),
+            primary = sum(younger == "Primary"),
+            secondary = sum(younger == "Secondary"),
+            tertiary = sum(younger == "Tertiary")) %>%
+  pivot_longer(cols = 3:6, names_to = "younger", values_to = "count") %>%
+  ggplot(aes(older, younger)) +
+  geom_tile(aes(fill = count)) +
+  geom_text(aes(label = count)) +
+  facet_wrap("area") +
+  theme_minimal() +
+  scale_fill_distiller(direction = 1) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+# ggplot(adults_2gen) +
+#   geom_bar(aes(education, fill = gen), position = "dodge", width = 0.5) +
+#   # facet_wrap("sex") +
+#   theme_minimal() +
+#   theme(panel.grid.minor = element_blank(), legend.position = "bottom") +
+#   labs(y = "", fill = "generation")
+
+```
+
+## Overall social mobility: employment
+
+While educational attainment has improved, this has not resulted in a systematic increase in labor earnings
+
+```{r gen_emp, echo = F, message = F, warning = T, fig.show = "hold", fig.align = "center", fig.height = 4}
+adults_2gen %>%
+  group_by(gen) %>%
+  summarize(lfp = round(mean(!is.na(primary_job) | looked_for_work == "1. Si") * 100, 1),
+            lfp_paid = round(mean(!is.na(lab_monthly_inc) & lab_monthly_inc > 0) * 100, 1),
+            n_paid = sum(!is.na(lab_monthly_inc) & lab_monthly_inc > 0), sum_lab_inc = sum(lab_monthly_inc, na.rm = T)) %>%
+  mutate(avg_lab_inc = round(sum_lab_inc / n_paid)) %>%
+  select(-n_paid, -sum_lab_inc) %>%
+  knitr::kable(caption = "Employment conditions by generation") %>% kable_styling(font_size = 8)
+
+adults_2gen_inc <- adults_2gen %>%
+  filter(!is.na(lab_monthly_inc)) %>%
+  group_by(folio, gen) %>%
+  summarize(avg_lab_inc = mean(lab_monthly_inc) + 1, area = first(area)) %>%
+  pivot_wider(names_from = gen, values_from = avg_lab_inc) %>%
+  na.omit() %>%
+  mutate(older = log10(older), younger = log10(younger)) %>%
+  filter(older > 0 & younger > 0)
+
+fit <- lm(younger ~ older, data = adults_2gen_inc) # R-squared 0.09
+fit_r <- lm(younger ~ older, data = adults_2gen_inc %>% filter(area == "Rural")) # R-squared 0.42
+fit_u <- lm(younger ~ older, data = adults_2gen_inc %>% filter(area == "Urbana")) # R-squared 0.05
+
+adults_2gen_inc %>%
+  ggplot(aes(older, younger)) +
+  geom_point(alpha = 0.3) +
+  geom_smooth(method = "lm") +
+  facet_wrap("area", labeller = labeller(area = c("Rural" = "rural (r-squared 0.42)", "Urbana" = "urban (r-squared 0.05)"))) +
+  theme_minimal() +
+  theme(panel.grid.minor = element_blank()) +
+  labs(x = "older generation income (BOB) (log10)", y = "younger generation income (BOB) (log10)") +
+  coord_fixed() +
+  scale_y_continuous(breaks = c(2, 3, 4))
+
+```
+
+# Other exploratory stuff
+
+## Indigenous
+
+```{r, echo = F, message = F}
+adults %>%
+  filter(!startsWith(indigenous, "3")) %>%
+  ggplot() +
+  geom_bar(aes(education, fill = indigenous), width = 0.5, position = "fill") +
+  facet_wrap("area") +
+  theme_minimal() +
+  theme(panel.grid.minor = element_blank())
+
+```
+
+## Formality
+```{r, echo = F, message = F}
+adults_formal <- adults %>%
+  filter(!is.na(work_type) & !str_detect(work_type, "^[78]")) %>%
+  mutate(formal = ifelse(str_detect(work_type, "^[12456]"), T, F))
+
+adults_formal %>%
+  ggplot() +
+  geom_bar(aes(education, fill = formal), position = "fill", width = 0.5) +
+  theme_minimal() +
+  theme(panel.grid.minor = element_blank())
+```
+
+## Formality
+```{r, echo = F, message = F}
+adults_formal %>%
+  group_by(area, sex, education) %>%
+  summarize(n = n(), inc = mean(lab_monthly_inc, na.rm = T)) %>%
+  ggplot(aes(education, inc)) +
+  geom_col(aes(fill = sex), width = 0.5, position = "dodge") +
+  # geom_text(aes(label = n)) +
+  facet_wrap("area") +
+  theme_minimal()
+```
+
+## Formality
+```{r, echo = F, message = F, warning = F}
+adults_formal %>%
+  # group_by(area, sex, education) %>%
+  # summarize(n = n(), inc = mean(lab_monthly_inc, na.rm = T)) %>%
+  ggplot(aes(x = lab_monthly_inc, y = education)) +
+  geom_density_ridges(aes(fill = formal, height = ..density..), stat = "density", alpha = 0.5, color = "white", scale = 1) +
+  facet_wrap("area") +
+  theme_minimal() +
+  theme(panel.grid.minor = element_blank()) +
+  xlim(0, 15000)
+```
+
+## Formality
+```{r, echo = F, message = F}
+adults_formal %>%
+  group_by(area, formal, education) %>%
+  summarize(n = n(), inc = mean(lab_monthly_inc, na.rm = T)) %>%
+  ggplot() +
+  geom_col(aes(education, inc, fill = formal), position = "dodge", width = 0.5) +
+  facet_wrap("area") +
+  theme_minimal()
+```
+
+## Formality
+```{r, echo = F, message = F}
+adults %>%
+  filter(!is.na(work_type) & !str_detect(work_type, "^[78]")) %>%
+  group_by(work_type, area) %>%
+  summarize(n = n(), inc = mean(lab_monthly_inc, na.rm = T)) %>%
+  ggplot() +
+  geom_col(aes(inc, work_type, fill = area), width = 0.5, position = "dodge") +
+  theme_minimal()
+```
+
