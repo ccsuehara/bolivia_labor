@@ -136,6 +136,25 @@ Nevertheless, we observe a wider gap for adults aged 40 or older, were lesser le
 labor_txt_2 <- "The structure of the labor market looks different for women with respect to men. Women have a stronger likelihood to be employed, and a higher likelihood of being part of the 
 inactive or unemployed population."
 
+labor_txt_3 <- "Here we look at the importance of the following set of characteristics, which are deeply correlated with being employed.
+Out of the most important ones, "
+
+labor_txt_4 <- "The gender disadvantage in the labor market comes along with other characteristics as well. For example, the number of hours worked for men and women are significantly different."
+
+# Tab panel: NEET section --------------------------------
+neet_txt_1 <- "The youth conform a great pool of  human capital assets. In particular for countries in the LAC region where the demographic bonus is currently on its peak. 
+The fact that a significant proportion of young adults aged 15 to 30, means a heavy weight for development."
+
+neet_txt_2 <- "The majority of NEET population are women, and "
+
+neet_txt_3 <- "The NEET phenomenon has 2 sides: neither studying nor working. When looking at the reasons why these young adults are not working, they list the following: "
+
+neet_txt_4 <- "There is great concidence between the reasons for not studying and not working: household chores and childcare. 
+Families in Latin America are a patriarchal institution which extracts free labor out of women."
+
+neet_txt_5 <- "There is great concidence between the reasons for not studying and not working: household chores and childcare. 
+Families in Latin America are a patriarchal institution which extracts free labor out of women."
+
 # Tab panel: paid and unpaid labor --------------------------------
 pay_intro1 <- "The unpaid labor force is dominated by women, while men make up almost two thirds of the paid labor market."
 pay_t11 <- "As a result, on average, women earn much less labor income than men, which contributes significantly to the gender income gap. However, unpaid labor is not the only factor at play. Even among paid workers, there is still a notable difference between women's and men's earnings."
