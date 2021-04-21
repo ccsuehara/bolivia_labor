@@ -11,6 +11,7 @@ library(treemap)
 library(wordcloud2)
 library(scales)
 library(StatMeasures)
+library(ggpubr)
 
 # change folder path
 #setwd("/Users/csolisu/Documents/Carla/chamba/shared_Bolivia/Bolivia_unpaid_labor")
@@ -56,7 +57,7 @@ ui <- fluidPage(
              "hr { margin-top: 2em; margin-bottom: 2em; }",
              "#children_madlib { color: white; }"),
   
-  navbarPage("Working while female in Bolivia",
+  navbarPage("Living a life of labor in Bolivia",
              id = "main",
              collapsible = T, position = "fixed-top",
              
@@ -334,7 +335,15 @@ ui <- fluidPage(
                                                           h3("PARTICIPATION", style = "color: white;"))),
                                           hr(),
                                           textOutput("labor_t_2"),
-                                          plotOutput("wfl_labor")
+                                          plotOutput("wfl_labor"),
+                                          hr(),
+                                          
+                                          textOutput("labor_t_4"),
+                                          plotOutput("labor_hrs"),
+                                          hr(),
+                                          
+                                          textOutput("labor_t_3"),
+                                          plotOutput("labor_rf")
                                           ),
                                    column(3,
                                           fixedPanel(
@@ -342,7 +351,7 @@ ui <- fluidPage(
                                             right = 25, top = 85
                                           ),
                                           fixedPanel(
-                                            actionButton("to_pay", label = "adults - paid and unpaid labor >"),
+                                            actionButton("to_pay", label = "paid/unpaid labor >"),
                                             right = 10, bottom = 10
                                           ))
                                  )),
@@ -354,7 +363,7 @@ ui <- fluidPage(
                                  fluidRow(
                                    column(3,
                                           fixedPanel(
-                                            actionButton("to_employment2", label = "< adults - entering the job market"),
+                                            actionButton("to_employment2", label = "< entering the job market"),
                                             left = 10, bottom = 10
                                           )),
                                    
@@ -418,24 +427,40 @@ ui <- fluidPage(
                                             right = 25, top = 85
                                           ),
                                           fixedPanel(
-                                            actionButton("to_neet", label = "adults - neet population >"),
+                                            actionButton("to_neet", label = "neet population >"),
                                             right = 10, bottom = 10
                                           )))),
                         
                         # NEET -------------------------
                         tabPanel("NEET population",
-                                 value = "neet",
+                                 value = "neet",hr(),hr(),
                                  
                                  fluidRow(
                                    column(3,
                                           fixedPanel(
-                                            actionButton("to_pay2", label = "< adults - paid and unpaid labor"),
+                                            actionButton("to_pay2", label = "< paid/unpaid labor"),
                                             left = 10, bottom = 10
                                           )),
                                    column(6,
-                                          p("Under development. Please check back later for updates :)")
-                                          
-                                          # TODO: for Carla
+                                          textOutput("neet_t1"),
+                                          h3("Distribution of study-labor activities by age and gender"),
+                                          plotOutput("neet_p1"),
+                                          hr(),
+                                          textOutput("neet_t2"),
+                                          h3("Neet population aged 14-30, by gender"),
+                                          plotOutput("neet_p2"),
+                                          hr(),
+                                          textOutput("neet_t3"),
+                                          h3("Why the NEETs won't work"),
+                                          plotOutput("neet_p3"),
+                                          hr(),
+                                          textOutput("neet_t4"),
+                                          h3("Why the NEETs won't study"),
+                                          plotOutput("neet_p4"),
+                                         
+                                          textOutput("neet_t5"),
+                                          h3("Which socioeconomic characteristics are related to NEET?"),
+                                          plotOutput("neet_p5"),
                                           
                                           ),
                                    column(3,
@@ -1183,11 +1208,36 @@ server <- function(input, output, session) {
   output$lmarket_intro <- renderText(labor_intro)
   
   output$adult_educ <- renderPlot(area_chart_sex(adults))
+  output$wfl_labor <-  renderPlot(waffl_work(emp_per))
+  
+  output$labor_rf <-  renderPlot(emp_rfplot)
+  
+  output$labor_hrs <-  renderPlot(hours_worked_graph(adults))
   
   output$labor_t_1 <- renderText(labor_txt_1)
   output$labor_t_2 <- renderText(labor_txt_2)
+  output$labor_t_3 <- renderText(labor_txt_3)
+  output$labor_t_4 <- renderText(labor_txt_4)
   
-  output$wfl_labor <-  renderPlot(waffl_work(emp_per))
+  
+  
+
+  
+  # Tab panel: neets  --------------------------------
+  
+  output$neet_t1 <- renderText(neet_txt_1)
+  output$neet_t2 <- renderText(neet_txt_2)
+  output$neet_t3 <- renderText(neet_txt_3)
+  output$neet_t4 <- renderText(neet_txt_4)
+  output$neet_t5 <- renderText(neet_txt_5)
+  
+  
+  output$neet_p1 <-  renderPlot(area_neet_cat_sex(ages_neet))
+  output$neet_p2 <-  renderPlot(waffl_neet(neets_waff))
+  output$neet_p3 <-  renderPlot(plot_bars_neet(why_neet_no_work))
+  output$neet_p4 <-  renderPlot(plot_bars_neet_study(why_neet_no_study))
+  
+  output$neet_p5 <-  renderPlot(neets_rfplot)
   
   # Tab panel: paid and unpaid labor --------------------------------
   output$pay_intro <- renderText(pay_intro1)

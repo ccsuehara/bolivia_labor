@@ -62,3 +62,30 @@ adults_rf <- convert_types(adults_rf)
 make_forest_importance(adults_rf, "adults_rf", adults_rf_n)
 
 
+neets_rf <- ages_neet %>% select(
+  area, sex, age, language_1, literate, indigenous, chronic_disease_1,disability, cellphone,
+  internet_use, yrs_educ,  marital, neet_cat,
+  pc_inc)  %>%
+  mutate(chronic_disease_1 = ifelse(startsWith(chronic_disease_1, "12"), F, T),
+         indigenous = ifelse(indigenous == "3. No soy boliviana o boliviano", "2. No pertenece", indigenous),
+         language_1 = ifelse(language_1 %in% c("CASTELLANO", "QUECHUA"), language_1, "other"),
+         marital = case_when(str_detect(marital, "^1") ~ "single", str_detect(marital, "^[23]") ~ "married/cohabiting",
+                             str_detect(marital, "^[456]") ~ "separated/divorced/widowed"),
+         target_var = ifelse(neet_cat == "NEET", "neet", "not neet")) %>%
+  select(-neet_cat)
+
+
+
+
+neets_rf_n <- data.frame(var = names(neets_rf),
+                          name = c("area", "sex", "age", "primary language", "literacy", 
+                                   "indigenous identity", "chronic disease", "disability", "cellphone  access", 
+                                   "internet access", "years of education", "marital status", "income per capita", "neet"))
+
+
+neets_rf <- convert_types(neets_rf)    
+
+make_forest_importance(neets_rf, "neets_rf", neets_rf_n)
+
+
+

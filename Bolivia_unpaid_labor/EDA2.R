@@ -77,7 +77,15 @@ neet <- personas %>% filter(emp_status == "Inactive" & is_student == "No") %>%
          cellphone, internet_use, internet_use_where_1, internet_use_where_2,
          primary_job, work_type, primary_salary, primary_salary_freq, primary_nonsalaried_income, primary_nonsalaried_income_freq,
          sec_job, sec_employer_industry, sec_work_type, sec_salary, sec_salary_freq, sec_nonsalaried_income, sec_nonsalaried_income_freq,
-         want_work_more, avail_work_more, union_member, why_not_in_school, why_not_work)  %>% filter(age %in% 14:30)
+         want_work_more, avail_work_more, union_member, why_not_in_school, why_not_work, factor)  %>% filter(age %in% 14:30)
+
+
+ages_neet <- personas %>% filter(age %in% 14:30) %>%
+  mutate(neet_cat = case_when(emp_status == "Inactive" & is_student == "No" ~ "NEET",
+                                 emp_status == "Inactive" & is_student == "Yes" ~ "Only studies",
+                                 emp_status != "Inactive" & is_student == "Yes" ~ "Works and studies",
+                                 emp_status != "Inactive" & is_student == "No" ~ "Only works",
+                                 ))
 
 
 employed_gender <- employed %>%
@@ -197,7 +205,10 @@ waffl_work <- function(df) {
     scale_x_discrete() + 
     scale_y_continuous(labels = function(x) x * 10, # make this multiplyer the same as n_rows
                        expand = c(0,0)) +
-    ggthemes::scale_fill_tableau(name=NULL) +
+    scale_fill_manual(
+      name = NULL,
+      values = c(color3, color7, color4)
+    ) +
     coord_equal() +
     labs(
       x = "Gender",
@@ -209,23 +220,23 @@ waffl_work <- function(df) {
 }
 
 
-######## WOrking population statistics ########
+######## Working population statistics ########
 
 ## graph for hours of work
 
-ggplot(adults %>% filter(emp_status == "Employed")) +
+hours_worked_graph <- function(df) {
+ggplot(df %>% filter(emp_status == "Employed")) +
   geom_jitter(aes(x = age, y = tot_work_week_hr, color = sex), alpha = 0.05) +
-  geom_line(data = adults %>% filter(emp_status == "Employed") %>% group_by(age, sex) %>% summarize(mean = mean(tot_work_week_hr, na.rm = T)),
+  geom_line(data = df %>% filter(emp_status == "Employed") %>% group_by(age, sex) %>% summarize(mean = mean(tot_work_week_hr, na.rm = T)),
             aes(x = age, y = mean, color = sex), size = 1) +
-  geom_point(data = adults %>% filter(emp_status == "Employed") %>% group_by(age, sex) %>% summarize(mean = mean(tot_work_week_hr, na.rm = T)),
+  geom_point(data = df %>% filter(emp_status == "Employed") %>% group_by(age, sex) %>% summarize(mean = mean(tot_work_week_hr, na.rm = T)),
              aes(x = age, y = mean, color = sex), size = 2.5) +
   theme_minimal() +
   theme(legend.position = "bottom", legend.title = element_blank(), panel.grid.minor = element_blank()) +
   scale_color_manual(values = c(color1, color2), labels = c("men", "women")) +
   ylab("average hours worked") +
   ylim(5, 60)
-
-
+}
 
 
 
@@ -250,15 +261,101 @@ why_neet_no_study <- neet %>%
 
 why_neet_no_work <- neet %>%
   filter(!is.na(why_not_work)) %>%
-  mutate(why_not_work = case_when(startsWith(why_not_in_school, "10") ~ "doesn't neet to work",
-                                       startsWith(why_not_in_school, "11") ~ "household chores/\nchildcare",
-                                       startsWith(why_not_in_school, "9") ~ "illness,\naccident,\ndisability",
-                                       startsWith(why_not_in_school, "13") ~ "reasons not\nlisted in survey",
-                                       !is.na(why_not_in_school) ~ "everything\nelse"),
+  mutate(why_not_work = case_when(startsWith(why_not_work, "10") ~ "doesn't neet to work",
+                                       startsWith(why_not_work, "11") ~ "household chores/\nchildcare",
+                                       startsWith(why_not_work, "9") ~ "illness,\naccident,\ndisability",
+                                       startsWith(why_not_work, "13") ~ "reasons not\nlisted in survey",
+                                       !is.na(why_not_work) ~ "everything\nelse"),
          sex = case_when(startsWith(sex, "1") ~ "Men",
                          startsWith(sex, "2") ~ "Women")) %>%
   group_by(why_not_work, sex) %>%
   summarize(sum = n())
+
+
+plot_bars_neet <- function(df) {
+ggplot(df) +
+  geom_col(aes(x = sum, y = why_not_work, fill = sex), position = "dodge", width = 0.5) +
+  theme_minimal() +
+  theme(legend.position = "bottom", legend.title = element_blank(), panel.grid.minor = element_blank()) +
+  scale_fill_manual(values = c(color1, color2), labels = c("Men", "Women")) +
+  ylab("") + xlab("population")
+
+}
+
+#plot_bars_neet(why_neet_no_work)
+
+
+plot_bars_neet_study <- function(df) {
+  ggplot(df) +
+    geom_col(aes(x = sum, y = why_not_in_school, fill = sex), position = "dodge", width = 0.5) +
+    theme_minimal() +
+    theme(legend.position = "bottom", legend.title = element_blank(), panel.grid.minor = element_blank()) +
+    scale_fill_manual(values = c(color1, color2), labels = c("Men", "Women")) +
+    ylab("") + xlab("population")
+  
+}
+
+#plot_bars_neet_study(why_neet_no_study)
+
+#together_g <- ggarrange(plot_bars_neet(why_neet_no_work), plot_bars_neet_study(why_neet_no_study))
+
+area_neet_cat_sex <- function(df) {
+  ggplot(df) +
+    geom_bar(aes(age, fill = neet_cat), position = position_fill(reverse = TRUE)) +
+    scale_fill_manual(values = c(color1, color2, color3, color4)) +
+    facet_wrap(vars(sex), labeller = labeller(sex = c("1.Hombre" = "men", "2.Mujer" = "women"))) +
+    theme_minimal() +
+    theme(legend.position = "bottom", legend.title = element_blank()) +
+    ylab("proportion")
+}
+
+
+#area_neet_cat_sex(ages_neet)
+
+
+
+neets_rfplot <- read_csv("data/neets_rf.csv") %>%
+  ggplot() +
+  geom_segment(aes(x = 0, y = reorder(name, MeanDecreaseAccuracy), xend = MeanDecreaseAccuracy, yend = reorder(name, MeanDecreaseAccuracy)), color = "grey") +
+  geom_point(aes(MeanDecreaseAccuracy, name), color = color1, size = 3) +
+  theme_minimal() +
+  theme(panel.grid.major.y = element_blank(), panel.grid.minor = element_blank(), axis.text.x = element_blank()) +
+  scale_x_continuous(position = "top", breaks = c(0)) +
+  xlab("variable importance") + ylab("")
+
+emp_rfplot <- read_csv("data/adults_rf.csv") %>%
+  ggplot() +
+  geom_segment(aes(x = 0, y = reorder(name, MeanDecreaseAccuracy), xend = MeanDecreaseAccuracy, yend = reorder(name, MeanDecreaseAccuracy)), color = "grey") +
+  geom_point(aes(MeanDecreaseAccuracy, name), color = color1, size = 3) +
+  theme_minimal() +
+  theme(panel.grid.major.y = element_blank(), panel.grid.minor = element_blank(), axis.text.x = element_blank()) +
+  scale_x_continuous(position = "top", breaks = c(0)) +
+  xlab("variable importance") + ylab("")
+
+
+neets_waff <- neet  %>% group_by(sex) %>% summarize(sum_peep = sum(factor, na.rm = T)) %>%
+  mutate(sum_peep = round(sum_peep/ 1000,0))
+
+
+
+waffl_neet <- function(df) {
+  ggplot(df, aes(fill = sex, values = sum_peep)) +
+    geom_waffle(color = "white", size = .25, n_rows = 20) +
+    scale_x_discrete() + 
+    scale_y_continuous(labels = function(x) x * 20, # make this multiplyer the same as n_rows
+                       expand = c(0,0)) +
+    scale_fill_manual(values = c(color1, color2), labels = c("Men", "Women")) +
+    #coord_equal() +
+    labs(
+      y = "Aged 14-30 (1 tile = 1k)"
+    ) +
+    theme_minimal() 
+  # +
+  #   theme(panel.grid = element_blank(), axis.ticks.y = element_line()) +
+  #   guides(fill = guide_legend(reverse = TRUE)) 
+}
+
+#waffl_neet(neets_waff)
 
 
 
