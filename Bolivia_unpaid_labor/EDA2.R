@@ -256,7 +256,8 @@ why_neet_no_study <- neet %>%
          sex = case_when(startsWith(sex, "1") ~ "Men",
                          startsWith(sex, "2") ~ "Women")) %>%
   group_by(why_not_in_school, sex) %>%
-  summarize(sum = n())
+  summarize(sum = sum(factor))
+
 
 
 why_neet_no_work <- neet %>%
@@ -269,16 +270,16 @@ why_neet_no_work <- neet %>%
          sex = case_when(startsWith(sex, "1") ~ "Men",
                          startsWith(sex, "2") ~ "Women")) %>%
   group_by(why_not_work, sex) %>%
-  summarize(sum = n())
+  summarize(sum = sum(factor))
 
 
 plot_bars_neet <- function(df) {
 ggplot(df) +
-  geom_col(aes(x = sum, y = why_not_work, fill = sex), position = "dodge", width = 0.5) +
+  geom_col(aes(x = sum/1000, y = why_not_work, fill = sex), position = "dodge", width = 0.5) +
   theme_minimal() +
   theme(legend.position = "bottom", legend.title = element_blank(), panel.grid.minor = element_blank()) +
   scale_fill_manual(values = c(color1, color2), labels = c("Men", "Women")) +
-  ylab("") + xlab("population")
+  ylab("") + xlab("population (thousands)") + scale_x_continuous( limits = c(0,300))
 
 }
 
@@ -287,11 +288,11 @@ ggplot(df) +
 
 plot_bars_neet_study <- function(df) {
   ggplot(df) +
-    geom_col(aes(x = sum, y = why_not_in_school, fill = sex), position = "dodge", width = 0.5) +
+    geom_col(aes(x = sum/1000, y = why_not_in_school, fill = sex), position = "dodge", width = 0.5) +
     theme_minimal() +
     theme(legend.position = "bottom", legend.title = element_blank(), panel.grid.minor = element_blank()) +
     scale_fill_manual(values = c(color1, color2), labels = c("Men", "Women")) +
-    ylab("") + xlab("population")
+    ylab("") + xlab("population(thousands)")  + scale_x_continuous( limits = c(0,300))
   
 }
 
@@ -306,9 +307,11 @@ area_neet_cat_sex <- function(df) {
     facet_wrap(vars(sex), labeller = labeller(sex = c("1.Hombre" = "men", "2.Mujer" = "women"))) +
     theme_minimal() +
     theme(legend.position = "bottom", legend.title = element_blank()) +
-    ylab("proportion")
+    ylab("proportion") 
 }
 
+
+scale_x_continuous( limits = c(0,200000))
 
 #area_neet_cat_sex(ages_neet)
 
