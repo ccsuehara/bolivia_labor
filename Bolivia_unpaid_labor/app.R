@@ -1,18 +1,25 @@
-packages.list <- c("shiny", "shinydashboard","shinythemes",
-                   "tidyverse", "shinyWidgets", "plotly", "waffle", "ggridges")
-for (p in packages.list) {
-  if (!p %in% installed.packages()[, "Package"]) install.packages(p)
-  library(p, character.only = TRUE)
-}
-
+library(shiny)
+library(shinydashboard)
+library(shinythemes)
+library(tidyverse)
+library(shinyWidgets)
+library(plotly)
+library(waffle)
+library(ggridges)
 library(treemap)
-library(d3treeR)
+# library(d3treeR)
+library(wordcloud2)
+library(scales)
+library(StatMeasures)
+library(ggpubr)
 
 # change folder path
-# setwd("/Users/csolisu/Documents/Carla/chamba/shared_Bolivia/Bolivia_unpaid_labor")
+#setwd("/Users/csolisu/Documents/Carla/chamba/shared_Bolivia/Bolivia_unpaid_labor")
 
 source("EDA.R")
+source("texts.R")
 source("EDA2.R")
+
 
 c1 <- "General population (2018)"
 c2 <- "People with at least 1 job, paid or unpaid"
@@ -27,7 +34,7 @@ color5 <- "#332288"
 color6 <- "#CC6677"
 color7 <- "#AA4499"
 color8 <- "#882255"
-color9 <- "#e6e6e6" # grey 10
+color9 <- "#e6e6e6" # grey10
 color_pal <- c(color1, color2, color3, color4, color5, color6, color7, color8, color9)
 filler <- "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Eget felis eget nunc lobortis. Viverra nam libero justo laoreet sit amet cursus sit amet. Gravida quis blandit turpis cursus in hac habitasse platea. Id interdum velit laoreet id donec ultrices tincidunt. Diam ut venenatis tellus in metus. Donec adipiscing tristique risus nec feugiat in fermentum posuere urna. Penatibus et magnis dis parturient montes nascetur. Orci a scelerisque purus semper. Nisi vitae suscipit tellus mauris a diam maecenas sed enim. Leo vel fringilla est ullamcorper eget nulla facilisi etiam. Sed arcu non odio euismod. Turpis egestas maecenas pharetra convallis posuere morbi. At volutpat diam ut venenatis tellus in metus vulputate. Morbi tincidunt ornare massa eget. Enim sit amet venenatis urna cursus eget nunc."
 names_m <- c("Juan", "Jose", "Luis", "Carlos", "Mario", "Jorge", "Victor", "Miguel", "Pedro", "Antonio", "Fernando", "Roberto", "Felix", "Julio")
@@ -37,8 +44,10 @@ lf1 <- "Employed Population"
 lf2 <- "Unemployed Population"
 lf3 <- "Inactive Population"
 
+
 wgt <- 258.651824951171
 # wgt <- 1
+
 # UI -------------------------------
 ui <- fluidPage(
   theme = shinytheme("sandstone"),
@@ -46,25 +55,26 @@ ui <- fluidPage(
              "h1, h2, h3, h4 { text-align: center; }",
              "p { text-align: center; color: grey; }",
              "hr { margin-top: 2em; margin-bottom: 2em; }",
-             "#children_madlib { color: white; }",
-             "#landing { align-self: center; }"),
+             "#children_madlib { color: white; }"),
   
-  navbarPage("Working while female in Bolivia",
+  navbarPage("Living a life of labor in Bolivia",
              id = "main",
-             collapsible = T,
+             collapsible = T, position = "fixed-top",
              
              # Tab panel: home -----------------
              tabPanel("Home",
-                      fluidRow(width = 12,
+                      fluidRow(width = 12, hr(),
                                imageOutput("landing",
-                                           width = "1130px",
-                                           click = clickOpts(id = "landing_cl")))),
+                                           width = "99%",
+                                           height = "90%",
+                                           click = "landing_cl"))),
              
              # Tab panel: children under 18 --------------------
              tabPanel("Children under 18",
                       value = "children",
                       
-                      fluidRow(column(12, style = "background-color: #3e3f3a; padding: 80px 50px;",
+                      fluidRow(style = 'background-image: url("children.jpg"); background-size: cover;',
+                               column(12, style = "padding: 80px 50px;", 
                                       fluidRow(
                                         column(8,
                                                offset = 2,
@@ -74,789 +84,626 @@ ui <- fluidPage(
                         column(6,
                                offset = 3,
                                textOutput("children_intro"),
-                               h3("Children population overview"),
-                               fluidRow(
-                                 column(6,
-                                        plotOutput("children_overview1")),
-                                 column(6,
-                                        plotOutput("children_overview2"))
-                               ),
-                               hr(),
-                               textOutput("children_t1"),
-                               h3("School enrollment and attendance"),
-                               fluidRow(
-                                 column(6,
-                                        plotOutput("children_edu1")),
-                                 column(6,
-                                        plotOutput("children_edu2"))
-                               ),
+                               h3("Overview: children in school and at work"),
+                               plotOutput("children_1"),
+                               
+                               # h3("Children population overview"),
+                               # fluidRow(
+                               #   column(6,
+                               #          plotOutput("children_overview1")),
+                               #   column(6,
+                               #          plotOutput("children_overview2"))
+                               # ),
+                               
+                               # hr(),
+                               # textOutput("children_t1"),
+                               # h3("School enrollment and attendance"),
+                               # fluidRow(
+                               #   column(6,
+                               #          plotOutput("children_edu1")),
+                               #   column(6,
+                               #          plotOutput("children_edu2"))
+                               # ),
+                               
                                hr(),
                                textOutput("children_t2"),
                                h3("Reasons for not enrolling in school"),
-                               d3tree2Output("children_edu3"),
+                               # d3tree2Output("children_edu3"),
                                plotOutput("children_edu4"),
                                hr(),
-                               textOutput("children_t3"),
-                               h3("Educational attainment"),
-                               fluidRow(
-                                 column(6,
-                                        plotOutput("children_edu5")),
-                                 column(6,
-                                        plotOutput("children_edu6"))
-                               ),
-                               hr(),
-                               textOutput("children_t4"),
-                               h3("Work hours and income"),
-                               plotOutput("children_lfp1"),
-                               plotOutput("children_lfp2"),
-                               hr(),
+                               
+                               # textOutput("children_t3"),
+                               # h3("Educational attainment"),
+                               # fluidRow(
+                               #   column(6,
+                               #          plotOutput("children_edu5")),
+                               #   column(6,
+                               #          plotOutput("children_edu6"))
+                               # ),
+                               # hr(),
+                               
                                textOutput("children_t5"),
-                               h3("Work hours and income in relation to the household"),
-                               plotOutput("children_lfp3"),
-                               plotOutput("children_lfp4"),
+                               p(""),
+                               textOutput("children_t8"),
+                               p(""),
+                               textOutput("children_t9"),
+                               p(""),
+                               textOutput("children_t10"),
+                               p(""),
+                               textOutput("children_t11"),
+                               h3("Socioeconomic determinants of children's work in relation to the household"),
+                               selectInput("ses",
+                                           label = "",
+                                           choices = c("Sex" = "sex",
+                                                       "Area (rural/urban)" = "area",
+                                                       "Department" = "depto",
+                                                       "Indigenous identity" = "indi",
+                                                       "Household income" = "inc")),
+                               plotOutput("children_ses1"),
+                               plotOutput("children_ses2"),
                                hr(),
-                               textOutput("children_t6"),
-                               h3("Children in rural and urban areas"),
-                               plotOutput("children_ru1"),
-                               plotOutput("children_ru2"),
-                               hr(),
-                               textOutput("children_t7"),
-                               h3("Children and indigeneity"),
-                               fluidRow(
-                                 column(6,
-                                        plotOutput("children_indi1")),
-                                 column(6,
-                                        plotOutput("children_indi2"))
+                               
+                               textOutput("children_t4"),
+                               h3("Average work hours and income"),
+                               plotOutput("children_lfp1"),
+                               plotOutput("children_lfp2")
+                               # hr(),
+                               # textOutput("children_t5"),
+                               # h3("Work hours and income in relation to the household"),
+                               # plotOutput("children_lfp3"),
+                               # plotOutput("children_lfp4"),
+                               # hr(),
+                               # textOutput("children_t6"),
+                               # plotOutput("children_lfp5"),
+                               # plotOutput("children_lfp6"),
+                               # hr(),
+                               # textOutput("children_t7"),
+                               # plotOutput("children_lfp7"),
+                               # plotOutput("children_lfp8")
+                               
+                               # hr(),
+                               # textOutput("children_t9"),
+                               # h3("Children and indigeneity"),
+                               # fluidRow(
+                               #   column(6,
+                               #          plotOutput("children_indi1")),
+                               #   column(6,
+                               #          plotOutput("children_indi2"))
+                               # ),
+                               # hr(),
+                               # fluidRow(
+                               #   column(6,
+                               #          plotOutput("children_indi3")),
+                               #   column(6,
+                               #          plotOutput("children_indi4"))
+                               # )
                                ),
-                               hr(),
-                               fluidRow(
-                                 column(6,
-                                        plotOutput("children_indi3")),
-                                 column(6,
-                                        plotOutput("children_indi4"))
+                        column(3,
+                               fixedPanel(
+                                 tags$a(img(src = "GitHub-Mark.png", style = "width: 32px; "), href = "https://github.com/ccsuehara/bolivia_labor/tree/rui"),
+                                 right = 25, top = 85
+                               ),
+                               fixedPanel(
+                                 actionButton("to_youth", label = "youth >"),
+                                 right = 10, bottom = 10
                                ))
                       )),
              
-             # Tab panel: youth 18-25 --------------------
-             tabPanel("Youth 18-25",
-                      value = "youth"),
+             # Tab panel: youth 18-24 --------------------
+             tabPanel("Youth 18-24",
+                      value = "youth",hr(),hr(),
+                      
+                      fluidRow(
+                        column(3,
+                               fixedPanel(
+                                 actionButton("to_children", label = "< children"),
+                                 left = 10, bottom = 10
+                               )),
+                        
+                        column(6,
+                               
+                               # Youth: intro ----------------------
+                               textOutput("youth_intro"),
+                               h3("Youth overview"),
+                               plotOutput("youth_overview"),
+                               hr(),
+                               
+                               # Youth: education ------------------
+                               fluidRow(style = 'background-image: url("education_bw.jpg"); background-size: cover;',
+                                        column(12, style = "padding: 80px 50px;",
+                                               h3("EDUCATION", style = "color: white;"))),
+                               hr(),
+                               textOutput("youth_edu_t1"),
+                               p(""),
+                               h3("Which socioeconomic characteristics affect youths' education the most?"),
+                               plotOutput("youth_edu_imp"),
+                               hr(),
+                               textOutput("youth_edu_marital"),
+                               p(""),
+                               textOutput("youth_edu_internet"),
+                               p(""),
+                               textOutput("youth_edu_area"),
+                               p(""),
+                               textOutput("youth_edu_depto"),
+                               p(""),
+                               textOutput("youth_edu_indi"),
+                               p(""),
+                               textOutput("youth_edu_lang"),
+                               p(""),
+                               selectInput("youth_edu_ses",
+                                           label = "What affects youths' education?",
+                                           choices = c("Marital status" = "marital",
+                                                       "Internet access" = "internet",
+                                                       "Area (rural/urban)" = "area",
+                                                       "Department" = "depto",
+                                                       "Indigenous identity" = "indi",
+                                                       "Primary language" = "lang")),
+                               plotOutput("youth_edu1"),
+                               hr(),
+                               textOutput("youth_edu_t2"),
+                               h3("Educational attainment"),
+                               plotOutput("youth_edu2"),
+                               hr(),
+                               
+                               # Youth: employment -------------------------
+                               fluidRow(style = 'background-image: url("employment_bw.jpg"); background-size: cover;',
+                                        column(12, style = "padding: 80px 50px;",
+                                               h3("EMPLOYMENT", style = "color: white;"))),
+                               hr(),
+                               textOutput("youth_emp_overview"),
+                               fluidRow(
+                                 column(6,
+                                        h4("Gender ratio of youths who are students"),
+                                        plotOutput("youth_edu_sex")),
+                                 column(6,
+                                        h4("Gender ratio of youths doing paid or unpaid work"),
+                                        plotOutput("youth_emp_sex"))
+                               ),
+                               hr(),
+                               
+                               textOutput("youth_emp_t1"),
+                               p(""),
+                               h3("Which socioeconomic characteristics affect youths' employment the most?"),
+                               plotOutput("youth_emp_imp"),
+                               hr(),
+                               textOutput("youth_emp_stu"),
+                               p(""),
+                               textOutput("youth_emp_edu"),
+                               p(""),
+                               textOutput("youth_emp_marital"),
+                               p(""),
+                               textOutput("youth_emp_area"),
+                               p(""),
+                               selectInput("youth_emp_ses",
+                                           label = "What affects youths' employment?",
+                                           choices = c("Student status" = "stu",
+                                                       "Education" = "edu",
+                                                       "Marital status" = "marital",
+                                                       "Area (rural/urban)" = "area")),
+                               plotOutput("youth_emp1"),
+                               hr(),
+                               
+                               # Youth: income -------------------------------
+                               fluidRow(style = 'background-image: url("income_bw.jpg"); background-size: cover;',
+                                        column(12, style = "padding: 80px 50px;",
+                                               h3("INCOME", style = "color: white; text-shadow: 0px 0px 6px black;"))),
+                               hr(),
+                               
+                               textOutput("youth_inc_t1"),
+                               h3("Proportion of unpaid workers among all workers"),
+                               plotOutput("youth_inc_paid"),
+                               hr(),
+                               
+                               textOutput("youth_inc_t2"),
+                               h3("Average monthly labor income by sex and age"),
+                               plotOutput("youth_inc_inc"),
+                               p("")),
+                        
+                        column(3,
+                               fixedPanel(
+                                 tags$a(img(src = "GitHub-Mark.png", style = "width: 32px; "), href = "https://github.com/ccsuehara/bolivia_labor/tree/rui"),
+                                 right = 25, top = 85
+                               ),
+                               fixedPanel(
+                                 actionButton("to_employment", label = "adults - entering the job market >"),
+                                 right = 10, bottom = 10
+                               ))
+                      )),
              
              # Tab panel: adults 25-60 --------------------
              navbarMenu("Adults 25-60",
+                        
+                        # Entering the job market -------------------------
                         tabPanel("Entering the job market",
-                                 box(h2("Column overview"),
-                                     fluidRow(
-                                       column(4,
-                                              p(lf1),
-                                              h1(textOutput("empl")),
-                                              p("people (est.)")),
-                                       column(4,
-                                              p(lf2),
-                                              h1(textOutput("unempl")),
-                                              p("people (est.)")),
-                                       column(4,
-                                              p(lf3),
-                                              h1(textOutput("inactiv")),
-                                              p("people (est.)"))
-                                     ),
-                                     width = 12,
-                                     collapsible = T),
-                                 box(hr(), width = 12),
+                                 value = "employment",hr(),hr(),
                                  
-                                 box(h2("Age"),
-                                     h4(textOutput("age_t_lfp")),
-                                     fluidRow(
-                                       column(4,
-                                              p(lf1),
-                                              plotOutput("pop_emp")),
-                                       column(4,
-                                              p(lf2),
-                                              plotOutput("pop_unemp")),
-                                       column(4,
-                                              p(lf3),
-                                              plotOutput("pop_inac"))
-                                     ),
-                                     width = 12,
-                                     collapsible = T),
-                                 box(hr(), width = 12),
+                                 fluidRow(
+                                   column(3,
+                                          fixedPanel(
+                                            actionButton("to_youth2", label = "< youth"),
+                                            left = 10, bottom = 10
+                                          )),
+                                   column(6,
+                                          textOutput("lmarket_intro"),
+                                          h3("Education overview of adult population"),
+                                          textOutput("labor_t_1"),
+                                          plotOutput("adult_educ"),
+                                          hr(),
+                                          
+                                          fluidRow(style = 'background-image: url("street_food_1.jpeg"); background-size: cover;',
+                                                   column(12, style = "padding: 80px 50px;",
+                                                          h3("PARTICIPATION", style = "color: white;"))),
+                                          hr(),
+                                          h3("Adult population by employment status"),
+                                          textOutput("labor_t_2"),
+                                          plotOutput("wfl_labor"),
+                                          hr(),
+                                          
+                                          textOutput("labor_t_4"),
+                                          plotOutput("labor_hrs"),
+                                          hr(),
+                                          
+                                          textOutput("labor_t_3"),
+                                          plotOutput("labor_rf")
+                                          ),
+                                   column(3,
+                                          fixedPanel(
+                                            tags$a(img(src = "GitHub-Mark.png", style = "width: 32px; "), href = "https://github.com/ccsuehara/bolivia_labor/tree/rui"),
+                                            right = 25, top = 85
+                                          ),
+                                          fixedPanel(
+                                            actionButton("to_pay", label = "paid/unpaid labor >"),
+                                            right = 10, bottom = 10
+                                          ))
+                                 )),
+                        
+                        # Paid and unpaid labor ------------------------------
+                        tabPanel("Paid and unpaid labor",
+                                 value = "pay", hr(),hr(),
                                  
-                                 box(h2("Proportions"),
-                                     h4(textOutput("proportion_exp")),
-                                     fluidRow(
-                                       column(4,
-                                              p(lf1),
-                                              plotOutput("waf_emp")),
-                                       column(4,
-                                              p(lf2),
-                                              plotOutput("waf_unemp")),
-                                       column(4,
-                                              p(lf3),
-                                              plotOutput("waf_inac"))
-                                     ),
-                                     width = 12,
-                                     collapsible = T),
-                                 box(hr(), width = 12),
-                                 box(h2("Rural/ Urban population"),
-                                     h4(textOutput("ar_lf")),
-                                     fluidRow(
-                                       column(4,
-                                              p(lf1),
-                                              plotOutput("ar_emp")),
-                                       column(4,
-                                              p(lf2),
-                                              plotOutput("ar_unemp")),
-                                       column(4,
-                                              p(lf3),
-                                              plotOutput("ar_inac"))
-                                     ),
-                                     width = 12,
-                                     collapsible = T),
-                                 box(hr(), width = 12),
-                                 box(h2("School attendance"),
-                                     h4(textOutput("sch_lf")),
-                                     fluidRow(
-                                       column(4,
-                                              p(lf1),
-                                              plotOutput("ed_emp")),
-                                       column(4,
-                                              p(lf2),
-                                              plotOutput("ed_unemp")),
-                                       column(4,
-                                              p(lf3),
-                                              plotOutput("ed_inac"))
-                                     ),
-                                     width = 12,
-                                     collapsible = T),
-                                 box(hr(), width = 12),
-                                 box(h2("Indigenous Belonging"),
-                                     h4(textOutput("ind_lf")),
-                                     fluidRow(
-                                       column(4,
-                                              p(lf1),
-                                              plotOutput("ind_emp")),
-                                       column(4,
-                                              p(lf2),
-                                              plotOutput("ind_unemp")),
-                                       column(4,
-                                              p(lf3),
-                                              plotOutput("ind_inac"))
-                                     ),
-                                     width = 12,
-                                     collapsible = T),
-                                 box(hr(), width = 12)),
-                        tabPanel("Paid and unpaid labor"),
-                        tabPanel("NEET population")),
+                                 fluidRow(
+                                   column(3,
+                                          fixedPanel(
+                                            actionButton("to_employment2", label = "< entering the job market"),
+                                            left = 10, bottom = 10
+                                          )),
+                                   
+                                   column(6,
+                                          
+                                          textOutput("pay_intro"),
+                                          h3("Paid and unpaid labor throughout the lifetime"),
+                                          plotOutput("pay_age"),
+                                          hr(),
+                                          textOutput("pay_t1"),
+                                          h3("Average income by age and sex"),
+                                          plotOutput("pay_lab_inc1"),
+                                          h3("Average income among paid workers by age and sex"),
+                                          plotOutput("pay_lab_inc2"),
+                                          hr(),
+                                          textOutput("pay_t2"),
+                                          h3("Economic contribution of unpaid labor on household level"),
+                                          plotOutput("pay_worth"),
+                                          hr(),
+                                          textOutput("pay_t3"),
+                                          h3("Aggregate contribution of unpaid labor per month"),
+                                          fluidRow(
+                                            column(6,
+                                                   p("men"),
+                                                   h2(textOutput("pay_worth_tot1")),
+                                                   p("bolivianos")),
+                                            column(6,
+                                                   p("women"),
+                                                   h2(textOutput("pay_worth_tot2")),
+                                                   p("bolivianos"))
+                                          ),
+                                          hr(),
+                                          textOutput("pay_t4"),
+                                          h3("Presence of unpaid workers by household labor income"),
+                                          plotOutput("pay_ru1"),
+                                          h3("Aggregate contribution of unpaid labor"),
+                                          fluidRow(
+                                            column(6,
+                                                   h2(textOutput("pay_ru2")),
+                                                   p("of total rural household productivity")),
+                                            column(6,
+                                                   h2(textOutput("pay_ru3")),
+                                                   p("of total urban household productivity"))
+                                          ),
+                                          hr(),
+                                          textOutput("pay_t5"),
+                                          h3("Unpaid workers by department and rural/urban area"),
+                                          plotOutput("pay_depto1"),
+                                          hr(),
+                                          textOutput("pay_t6"),
+                                          h3("Unpaid workers by marital status and sex"),
+                                          plotOutput("pay_marital1"),
+                                          hr(),
+                                          textOutput("pay_t7"),
+                                          h3("Unpaid labor by cellphone access and household income"),
+                                          plotOutput("pay_cell1")
+                                   ),
+                                   column(3,
+                                          fixedPanel(
+                                            tags$a(img(src = "GitHub-Mark.png", style = "width: 32px; "), href = "https://github.com/ccsuehara/bolivia_labor/tree/rui"),
+                                            right = 25, top = 85
+                                          ),
+                                          fixedPanel(
+                                            actionButton("to_neet", label = "neet population >"),
+                                            right = 10, bottom = 10
+                                          )))),
+                        
+                        # NEET -------------------------
+                        tabPanel("NEET population",
+                                 value = "neet",hr(),hr(),
+                                 
+                                 fluidRow(
+                                   column(3,
+                                          fixedPanel(
+                                            actionButton("to_pay2", label = "< paid/unpaid labor"),
+                                            left = 10, bottom = 10
+                                          )),
+                                   column(6,
+                                          textOutput("neet_t1"),
+                                          h3("Distribution of study-labor activities by age and gender"),
+                                          plotOutput("neet_p1"),
+                                          hr(),
+                                          textOutput("neet_t2"),
+                                          h3("Neet population aged 14-30, by gender"),
+                                          plotOutput("neet_p2"),
+                                          hr(),
+                                          textOutput("neet_t3"),
+                                          h3("Why the NEETs won't work"),
+                                          plotOutput("neet_p3"),
+                                          hr(),
+                                          textOutput("neet_t4"),
+                                          h3("Why the NEETs won't study"),
+                                          plotOutput("neet_p4"),
+                                         
+                                          textOutput("neet_t5"),
+                                          h3("Which socioeconomic characteristics are related to NEET?"),
+                                          plotOutput("neet_p5"),
+                                          
+                                          selectInput("neet_vars",
+                                                      label = "What affects the chances of NEET?",
+                                                      choices = c("Marital status" = "marital",
+                                                                  "Internet access" = "internet",
+                                                                  "Area (rural/urban)" = "area",
+                                                                  "Department" = "depto",
+                                                                  "Indigenous identity" = "indi",
+                                                                  "Primary language" = "lang")),
+                                          plotOutput("neets_dec_graph")
+                                          
+                                          ),
+                                   column(3,
+                                          fixedPanel(
+                                            tags$a(img(src = "GitHub-Mark.png", style = "width: 32px; "), href = "https://github.com/ccsuehara/bolivia_labor/tree/rui"),
+                                            right = 25, top = 85
+                                          ),
+                                          fixedPanel(
+                                            actionButton("to_older", label = "older adults >"),
+                                            right = 10, bottom = 10
+                                          ))
+                                 ))),
              
              # Tab panel: older adults 60+ --------------------
              tabPanel("Older adults 60+",
-                      value = "older"),
-             
-             # Tab panel: Indigenous --------------------
-             tabPanel("Indigenous identity",
-                      value = "indigenous",
+                      value = "older", hr(), hr(),
                       
-                      h2("Overall indigenous population"),
-                      fluidRow(column(10, offset = 1,
-                                      h4(textOutput("indi_all_t")))),
                       fluidRow(
-                        column(4,
-                               p("All"),
-                               plotOutput("indi_all")),
-                        column(4,
-                               p("Women"),
-                               plotOutput("indi_w")),
-                        column(4,
-                               p("Men"),
-                               plotOutput("indi_m"))
-                      ),
-                      hr(),
-                      
-                      h2("Indigenous people and labor"),
-                      fluidRow(column(10, offset = 1,
-                                      h4(textOutput("indi_work_t")))),
-                      fluidRow(
-                        column(4,
-                               p(c1),
-                               plotOutput("pop_indi_work")),
-                        column(4,
-                               p(c2),
-                               plotOutput("with_job_indi_work")),
-                        column(4,
-                               p(c3),
-                               plotOutput("unpaid_indi_work"))
-                      ),
-                      hr(),
-                      
-                      h2("Indigenous people in rural areas"),
-                      fluidRow(column(10, offset = 1,
-                                      h4(textOutput("indi_r_t1")))),
-                      fluidRow(
-                        column(4,
-                               p("All"),
-                               plotOutput("indi_r_all")),
-                        column(4,
-                               p("Women"),
-                               plotOutput("indi_r_w")),
-                        column(4,
-                               p("Men"),
-                               plotOutput("indi_r_m"))
-                      ),
-                      hr(),
-                      fluidRow(column(10, offset = 1,
-                                      h4(textOutput("indi_r_t2")))),
-                      fluidRow(
-                        column(4,
-                               p(c1),
-                               plotOutput("pop_indi_r")),
-                        column(4,
-                               p(c2),
-                               plotOutput("with_job_indi_r")),
-                        column(4,
-                               p(c3),
-                               plotOutput("unpaid_indi_r"))
-                      ),
-                      hr(),
-                      
-                      h2("Indigenous people in urban areas"),
-                      fluidRow(column(10, offset = 1,
-                                      h4(textOutput("indi_u_t1")))),
-                      fluidRow(
-                        column(4,
-                               p("All"),
-                               plotOutput("indi_u_all")),
-                        column(4,
-                               p("Women"),
-                               plotOutput("indi_u_w")),
-                        column(4,
-                               p("Men"),
-                               plotOutput("indi_u_m"))
-                      ),
-                      hr(),
-                      fluidRow(column(10, offset = 1,
-                                      h4(textOutput("indi_u_t2")))),
-                      fluidRow(
-                        column(4,
-                               p(c1),
-                               plotOutput("pop_indi_u")),
-                        column(4,
-                               p(c2),
-                               plotOutput("with_job_indi_u")),
-                        column(4,
-                               p(c3),
-                               plotOutput("unpaid_indi_u"))
+                        column(3,
+                               fixedPanel(
+                                 actionButton("to_neet2", label = "< adults - neet population"),
+                                 left = 10, bottom = 10
+                               )),
+                        column(6,
+                               textOutput("older_t1"),
+                               h3("Social protection income among older adults"),
+                               plotOutput("older_p1"),
+                               hr(),
+                               
+                               textOutput("older_t2"),
+                               h3("Which socioeconomic characteristics affect older adults' work status the most?"),
+                               plotOutput("older_p2"),
+                               hr(),
+                               h3("The impact of select socioeconomic characteristics on older adults' work status"),
+                               selectInput("older_job",
+                                           label = "",
+                                           choices = c("Non-labor income" = "nonlab",
+                                                       "Family members' income" = "rest_of_hh",
+                                                       "Area" = "area",
+                                                       "Sex" = "sex")),
+                               plotOutput("older_job_p"),
+                               hr(),
+                               
+                               textOutput("older_t3"),
+                               h3("Which socioeconomic characteristics affect whether one does paid or unpaid work?"),
+                               plotOutput("older_p3"),
+                               hr(),
+                               h3("The impact of select socioeconomic characteristics on the nature of one's work"),
+                               selectInput("older_pay",
+                                           label = "",
+                                           choices = c("Sex" = "sex",
+                                                       "Family members' income" = "rest_of_hh",
+                                                       "Area" = "area",
+                                                       "Marital status" = "marital",
+                                                       "Household size" = "size")),
+                               plotOutput("older_pay_p"),
+                               hr(),
+                               
+                               textOutput("older_t4"),
+                               h3("Income distribution among working older adults"),
+                               plotOutput("older_p4"),
+                               p("")),
+                        
+                        column(3,
+                               fixedPanel(
+                                 tags$a(img(src = "GitHub-Mark.png", style = "width: 32px; "), href = "https://github.com/ccsuehara/bolivia_labor/tree/rui"),
+                                 right = 25, top = 85
+                               ),
+                               fixedPanel(
+                                 actionButton("to_sum", label = "summary >"),
+                                 right = 10, bottom = 10
+                               ))
                       )),
-
-             # Tab panel: Figures --------------------
-             tabPanel("Figures",
-                      box(h2("Column overview"),
-                          fluidRow(
-                            column(3,
-                                   p(paste(c1, "(2018)")),
-                                   h1(textOutput("pop")),
-                                   p("people (est.)")),
-                            column(3,
-                                   p(c2),
-                                   h1(textOutput("with_job")),
-                                   p("people (est.)")),
-                            column(3,
-                                   p(c3),
-                                   h1(textOutput("unpaid")),
-                                   p("people (est.)")),
-                            column(3,
-                                   p(c4),
-                                   h1(textOutput("unpaid_sec")),
-                                   p("people (est.)"))
-                          ),
-                          width = 12,
-                          collapsible = T),
-                      box(hr(), width = 12),
-                      
-                      box(h2("Age"),
-                          h4(textOutput("age_t")),
-                          fluidRow(
-                            column(3,
-                                   p(c1),
-                                   plotOutput("pop_age")),
-                            column(3,
-                                   p(c2),
-                                   plotOutput("with_job_age")),
-                            column(3,
-                                   p(c3),
-                                   plotOutput("unpaid_age")),
-                            column(3,
-                                   p(c4),
-                                   plotOutput("unpaid_sec_age"))
-                          ),
-                          width = 12,
-                          collapsible = T),
-                      box(hr(), width = 12),
-                      
-                      box(h2("School attendance"),
-                          h4(textOutput("sch_t")),
-                          fluidRow(
-                            column(3,
-                                   p(c1),
-                                   plotOutput("pop_sch")),
-                            column(3,
-                                   p(c2),
-                                   plotOutput("with_job_sch")),
-                            column(3,
-                                   p(c3),
-                                   plotOutput("unpaid_sch")),
-                            column(3,
-                                   p(c4),
-                                   plotOutput("unpaid_sec_sch"))
-                          ),
-                          width = 12,
-                          collapsible = T),
-                      box(hr(), width = 12),
-                      
-                      box(h2("Urban/rural area"),
-                          h4(textOutput("ur_t")),
-                          fluidRow(
-                            column(3,
-                                   p(c1),
-                                   plotOutput("pop_ur")),
-                            column(3,
-                                   p(c2),
-                                   plotOutput("with_job_ur")),
-                            column(3,
-                                   p(c3),
-                                   plotOutput("unpaid_ur")),
-                            column(3,
-                                   p(c4),
-                                   plotOutput("unpaid_sec_ur"))
-                          ),
-                          width = 12,
-                          collapsible = T),
-                      box(hr(), width = 12),
-                      
-                      box(h2("Indigenous identity"),
-                          fluidRow(
-                            column(3,
-                                   p(c1),
-                                   plotOutput("pop_indi"),
-                                   plotOutput("pop_indi_p"),
-                                   plotOutput("pop_indi_id")),
-                            column(3,
-                                   p(c2),
-                                   plotOutput("with_job_indi"),
-                                   plotOutput("with_job_indi_p"),
-                                   plotOutput("with_job_indi_id")),
-                            column(3,
-                                   p(c3),
-                                   plotOutput("unpaid_indi"),
-                                   plotOutput("unpaid_indi_p"),
-                                   plotOutput("unpaid_indi_id")),
-                            column(3,
-                                   p(c4),
-                                   plotOutput("unpaid_sec_indi"),
-                                   plotOutput("unpaid_sec_indi_p"),
-                                   plotOutput("unpaid_sec_indi_id"))
-                          ),
-                          width = 12,
-                          collapsible = T),
-                      box(hr(), width = 12),
-                      
-                      box(h2("Marital status"),
-                          h4(textOutput("mari_t")),
-                          fluidRow(
-                            column(3,
-                                   p(c1),
-                                   plotOutput("pop_mari")),
-                            column(3,
-                                   p(c2),
-                                   plotOutput("with_job_mari")),
-                            column(3,
-                                   p(c3),
-                                   plotOutput("unpaid_mari")),
-                            column(3,
-                                   p(c4),
-                                   plotOutput("unpaid_sec_mari"))
-                          ),
-                          fluidRow(
-                            column(3,
-                                   p(c1),
-                                   plotOutput("pop_mari_age")),
-                            column(3,
-                                   p(c2),
-                                   plotOutput("with_job_mari_age")),
-                            column(3,
-                                   p(c3),
-                                   plotOutput("unpaid_mari_age")),
-                            column(3,
-                                   p(c4),
-                                   plotOutput("unpaid_sec_mari_age"))
-                          ),
-                          width = 12,
-                          collapsible = T),
-                      box(hr(), width = 12),
-                      
-                      box(h2("Number of children"),
-                          h4(textOutput("kid_t")),
-                          fluidRow(
-                            column(3,
-                                   p(c1),
-                                   plotOutput("pop_kid")),
-                            column(3,
-                                   p(c2),
-                                   plotOutput("with_job_kid")),
-                            column(3,
-                                   p(c3),
-                                   plotOutput("unpaid_kid")),
-                            column(3,
-                                   p(c4),
-                                   plotOutput("unpaid_sec_kid"))
-                          ),
-                          width = 12,
-                          collapsible = T),
-                      box(hr(), width = 12),
-                      
-                      box(h2("Literacy"),
-                          h4(textOutput("lit_t")),
-                          fluidRow(
-                            column(3,
-                                   p(c1),
-                                   plotOutput("pop_lit")),
-                            column(3,
-                                   p(c2),
-                                   plotOutput("with_job_lit")),
-                            column(3,
-                                   p(c3),
-                                   plotOutput("unpaid_lit")),
-                            column(3,
-                                   p(c4),
-                                   plotOutput("unpaid_sec_lit"))
-                          ),
-                          width = 12,
-                          collapsible = T),
-                      box(hr(), width = 12),
-                      
-                      box(h2("Education"),
-                          h4(textOutput("edu_t")),
-                          fluidRow(
-                            column(3,
-                                   p(c1),
-                                   plotOutput("pop_edu")),
-                            column(3,
-                                   p(c2),
-                                   plotOutput("with_job_edu")),
-                            column(3,
-                                   p(c3),
-                                   plotOutput("unpaid_edu")),
-                            column(3,
-                                   p(c4),
-                                   plotOutput("unpaid_sec_edu"))
-                          ),
-                          h4(textOutput("any_ed_t")),
-                          fluidRow(
-                            column(3,
-                                   p(c1),
-                                   plotOutput("pop_any_ed")),
-                            column(3,
-                                   p(c2),
-                                   plotOutput("with_job_any_ed")),
-                            column(3,
-                                   p(c3),
-                                   plotOutput("unpaid_any_ed")),
-                            column(3,
-                                   p(c4),
-                                   plotOutput("unpaid_sec_any_ed"))
-                          ),
-                          fluidRow(
-                            column(3,
-                                   p(c1),
-                                   plotOutput("pop_higher_ed")),
-                            column(3,
-                                   p(c2),
-                                   plotOutput("with_job_higher_ed")),
-                            column(3,
-                                   p(c3),
-                                   plotOutput("unpaid_higher_ed")),
-                            column(3,
-                                   p(c4),
-                                   plotOutput("unpaid_sec_higher_ed"))
-                          ),
-                          h4(textOutput("any_ed2_t")),
-                          fluidRow(
-                            column(3,
-                                   p(c1),
-                                   plotOutput("pop_any_ed2")),
-                            column(3,
-                                   p(c2),
-                                   plotOutput("with_job_any_ed2")),
-                            column(3,
-                                   p(c3),
-                                   plotOutput("unpaid_any_ed2")),
-                            column(3,
-                                   p(c4),
-                                   plotOutput("unpaid_sec_any_ed2"))
-                          ),
-                          fluidRow(
-                            column(3,
-                                   p(c1),
-                                   plotOutput("pop_higher_ed2")),
-                            column(3,
-                                   p(c2),
-                                   plotOutput("with_job_higher_ed2")),
-                            column(3,
-                                   p(c3),
-                                   plotOutput("unpaid_higher_ed2")),
-                            column(3,
-                                   p(c4),
-                                   plotOutput("unpaid_sec_higher_ed2"))
-                          ),
-                          width = 12,
-                          collapsible = T),
-                      box(hr(), width = 12),
-                      
-                      box(h2("Chronic disease"),
-                          fluidRow(
-                            column(3,
-                                   p(c1),
-                                   plotOutput("pop_disease")),
-                            column(3,
-                                   p(c2),
-                                   plotOutput("with_job_disease")),
-                            column(3,
-                                   p(c3),
-                                   plotOutput("unpaid_disease")),
-                            column(3,
-                                   p(c4),
-                                   plotOutput("unpaid_sec_disease"))
-                          ),
-                          width = 12,
-                          collapsible = T),
-                      box(hr(), width = 12),
-                      
-                      box(h2("Technology"),
-                          h4(textOutput("tech1")),
-                          fluidRow(
-                            column(3,
-                                   p(c1),
-                                   plotOutput("pop_cell1")),
-                            column(3,
-                                   p(c2),
-                                   plotOutput("with_job_cell1")),
-                            column(3,
-                                   p(c3),
-                                   plotOutput("unpaid_cell1")),
-                            column(3,
-                                   p(c4),
-                                   plotOutput("unpaid_sec_cell1"))
-                          ),
-                          fluidRow(
-                            column(3,
-                                   p(c1),
-                                   plotOutput("pop_cell2")),
-                            column(3,
-                                   p(c2),
-                                   plotOutput("with_job_cell2")),
-                            column(3,
-                                   p(c3),
-                                   plotOutput("unpaid_cell2")),
-                            column(3,
-                                   p(c4),
-                                   plotOutput("unpaid_sec_cell2"))
-                          ),
-                          h4(textOutput("tech2")),
-                          fluidRow(
-                            column(3,
-                                   p(c1),
-                                   plotOutput("pop_internet1")),
-                            column(3,
-                                   p(c2),
-                                   plotOutput("with_job_internet1")),
-                            column(3,
-                                   p(c3),
-                                   plotOutput("unpaid_internet1")),
-                            column(3,
-                                   p(c4),
-                                   plotOutput("unpaid_sec_internet1"))
-                          ),
-                          fluidRow(
-                            column(3,
-                                   p(c1),
-                                   plotOutput("pop_internet2")),
-                            column(3,
-                                   p(c2),
-                                   plotOutput("with_job_internet2")),
-                            column(3,
-                                   p(c3),
-                                   plotOutput("unpaid_internet2")),
-                            column(3,
-                                   p(c4),
-                                   plotOutput("unpaid_sec_internet2"))
-                          ),
-                          h4(textOutput("tech3")),
-                          fluidRow(
-                            column(3,
-                                   p(c1),
-                                   plotOutput("pop_inter_home1")),
-                            column(3,
-                                   p(c2),
-                                   plotOutput("with_job_inter_home1")),
-                            column(3,
-                                   p(c3),
-                                   plotOutput("unpaid_inter_home1")),
-                            column(3,
-                                   p(c4),
-                                   plotOutput("unpaid_sec_inter_home1"))
-                          ),
-                          fluidRow(
-                            column(3,
-                                   p(c1),
-                                   plotOutput("pop_inter_home2")),
-                            column(3,
-                                   p(c2),
-                                   plotOutput("with_job_inter_home2")),
-                            column(3,
-                                   p(c3),
-                                   plotOutput("unpaid_inter_home2")),
-                            column(3,
-                                   p(c4),
-                                   plotOutput("unpaid_sec_inter_home2"))
-                          ),
-                          width = 12,
-                          collapsible = T),
-                      box(hr(), width = 12),
-                      
-                      box(h2("Union member"),
-                          fluidRow(
-                            column(3,
-                                   p(c1),
-                                   plotOutput("pop_union1")),
-                            column(3,
-                                   p(c2),
-                                   plotOutput("with_job_union1")),
-                            column(3,
-                                   p(c3),
-                                   plotOutput("unpaid_union1")),
-                            column(3,
-                                   p(c4),
-                                   plotOutput("unpaid_sec_union1"))
-                          ),
-                          fluidRow(
-                            column(3,
-                                   p(c1),
-                                   plotOutput("pop_union2")),
-                            column(3,
-                                   p(c2),
-                                   plotOutput("with_job_union2")),
-                            column(3,
-                                   p(c3),
-                                   plotOutput("unpaid_union2")),
-                            column(3,
-                                   p(c4),
-                                   plotOutput("unpaid_sec_union2"))
-                          ),
-                          width = 12,
-                          collapsible = T),
-                      box(hr(), width = 12),
-                      
-                      box(h2("Income"),
-                          h4(textOutput("salary_t")),
-                          fluidRow(
-                            column(3,
-                                   p(c1),
-                                   plotOutput("pop_salary")),
-                            column(3,
-                                   p(c2),
-                                   plotOutput("with_job_salary")),
-                            column(3,
-                                   p(c3),
-                                   plotOutput("unpaid_salary")),
-                            column(3,
-                                   p(c4),
-                                   plotOutput("unpaid_sec_salary"))
-                          ),
-                          h4(textOutput("irr_t")),
-                          fluidRow(
-                            column(3,
-                                   p(c1),
-                                   plotOutput("pop_irr")),
-                            column(3,
-                                   p(c2),
-                                   plotOutput("with_job_irr")),
-                            column(3,
-                                   p(c3),
-                                   plotOutput("unpaid_irr")),
-                            column(3,
-                                   p(c4),
-                                   plotOutput("unpaid_sec_irr"))
-                          ),
-                          width = 12,
-                          collapsible = T),
-                      box(hr(), width = 12),
-                      
-                      box(h2("Want to work more?"),
-                          h4(textOutput("want1_t")),
-                          fluidRow(
-                            column(3,
-                                   p(c1),
-                                   plotOutput("pop_want1")),
-                            column(3,
-                                   p(c2),
-                                   plotOutput("with_job_want1")),
-                            column(3,
-                                   p(c3),
-                                   plotOutput("unpaid_want1")),
-                            column(3,
-                                   p(c4),
-                                   plotOutput("unpaid_sec_want1"))
-                          ),
-                          fluidRow(
-                            column(3,
-                                   p(c1),
-                                   plotOutput("pop_want2")),
-                            column(3,
-                                   p(c2),
-                                   plotOutput("with_job_want2")),
-                            column(3,
-                                   p(c3),
-                                   plotOutput("unpaid_want2")),
-                            column(3,
-                                   p(c4),
-                                   plotOutput("unpaid_sec_want2"))
-                          ),
-                          width = 12,
-                          collapsible = T)),
              
-             # Tab panel: stories -----------------------------
-             tabPanel("Stories",
-                      h3(textOutput("t1")),
-                      actionButton("b1", label = "Tell me a story", icon = icon("redo")),
-                      tableOutput("c1"),
-                      hr(),
-                      h3(textOutput("t2")),
-                      actionButton("b2", label = "Tell me a story", icon = icon("redo")),
-                      tableOutput("c2"),
-                      hr(),
-                      h3(textOutput("t3")),
-                      actionButton("b3", label = "Tell me a story", icon = icon("redo")),
-                      tableOutput("c3"),
-                      hr(),
-                      h3(textOutput("t4")),
-                      actionButton("b4", label = "Tell me a story", icon = icon("redo")),
-                      tableOutput("c4"),
-                      hr(),
-                      h3(textOutput("t5")),
-                      actionButton("b5", label = "Tell me a story", icon = icon("redo")),
-                      tableOutput("c5"))
+             # Tab panel: summary ----------------------
+             tabPanel("Summary",
+                      value = "sum", hr(), hr(),
+                      
+                      fluidRow(
+                        column(2,
+                               fixedPanel(
+                                 actionButton("to_older2", label = "< older adults"),
+                                 left = 10, bottom = 10
+                               )),
+                        
+                        column(8,
+                               textOutput("sum_t1"),
+                               hr(),
+                               
+                               fluidRow(
+                                 column(2,
+                                        p("pillars of oppression")),
+                                 column(10,
+                                        column(3, style = "text-align: center;",
+                                               strong("gender")),
+                                        column(3, style = "text-align: center;",
+                                               strong("geography")),
+                                        column(3, style = "text-align: center;",
+                                               strong("social class")),
+                                        column(3, style = "text-align: center;",
+                                               strong("marriage and family norms")))
+                               ),
+                               
+                               fluidRow(
+                                 column(10, offset = 2,
+                                        column(3, style = "padding-top: 2.5em;", 
+                                               p("Compared to a boy, a girl born in Bolivia has a")),
+                                        column(3, style = "padding-top: 1.5em;", 
+                                               p("Compared to a person born in urban La Paz, a person born in rural Potosi has a")),
+                                        column(3,
+                                               p("Compared to a person born in a family in the highest income decile, a person born into the lowest income decile has a")),
+                                        column(3, style = "padding-top: 2em;", 
+                                               p("Compared to a single woman, a married woman has a")))
+                               ),
+                               hr(style = "margin: 0.5em 0em;"),
+                               
+                               fluidRow(
+                                 column(2, style = "padding-top: 3em;",
+                                        p("at the age of 17")),
+                                 column(10,
+                                        column(3,
+                                               h2(textOutput("sum_m11"))),
+                                        column(3,
+                                               h2(textOutput("sum_m12"))),
+                                        column(3,
+                                               h2(textOutput("sum_m13"))),
+                                        column(3,
+                                               h2(textOutput("sum_m14"))))
+                               ),
+                               fluidRow(
+                                 column(10, offset = 2,
+                                        p("likelihood to be working"))
+                               ),
+                               hr(style = "margin: 0.5em 0em;"),
+                               
+                               fluidRow(
+                                 column(2, style = "padding-top: 3em;",
+                                        p("at the age of 23")),
+                                 column(10,
+                                        column(3,
+                                               h3(textOutput("sum_m21"))),
+                                        column(3,
+                                               h2(textOutput("sum_m22"))),
+                                        column(3,
+                                               h2(textOutput("sum_m23"))),
+                                        column(3,
+                                               h2(textOutput("sum_m24"))))
+                               ),
+                               fluidRow(
+                                 column(10, offset = 2,
+                                        p("likelihood to be in school"))
+                               ),
+                               hr(style = "margin: 0.5em 0em;"),
+                               
+                               fluidRow(
+                                 column(2, style = "padding-top: 3em;",
+                                        p("at the age of 35")),
+                                 column(10,
+                                        column(3,
+                                               h2(textOutput("sum_m31"))),
+                                        column(3,
+                                               h2(textOutput("sum_m32"))),
+                                        column(3,
+                                               h2(textOutput("sum_m33"))),
+                                        column(3,
+                                               h2(textOutput("sum_m34"))))
+                               ),
+                               fluidRow(
+                                 column(10, offset = 2,
+                                        p("likelihood to be doing paid work"))
+                               ),
+                               hr(style = "margin: 0.5em 0em;"),
+                               
+                               fluidRow(
+                                 column(2, style = "padding-top: 3em;",
+                                        p("at the age of 45")),
+                                 column(10,
+                                        column(3,
+                                               h2(textOutput("sum_m41"))),
+                                        column(3,
+                                               h2(textOutput("sum_m42"))),
+                                        column(3,
+                                               h2(textOutput("sum_m43"))),
+                                        column(3,
+                                               h2(textOutput("sum_m44"))))
+                               ),
+                               fluidRow(
+                                 column(10, offset = 2,
+                                        p("likelihood to be making at least 3,000 bolivianos (~US$15/day) per month"))
+                               ),
+                               hr(style = "margin: 0.5em 0em;"),
+                               
+                               fluidRow(
+                                 column(2, style = "padding-top: 3em;",
+                                        p("at the age of 65")),
+                                 column(10,
+                                        column(3,
+                                               h2(textOutput("sum_m51"))),
+                                        column(3,
+                                               h2(textOutput("sum_m52"))),
+                                        column(3,
+                                               h3(textOutput("sum_m53"))),
+                                        column(3,
+                                               h2(textOutput("sum_m54"))))
+                               ),
+                               fluidRow(
+                                 column(10, offset = 2,
+                                        p("likelihood to be retired"))
+                               ),
+                               hr(style = "margin: 0.5em 0em;"),
+                               
+                               p("* pp = percentage point", style = "font-style: italic; font-size: 1em; text-align: right; padding-bottom: 3em; ")
+                               ),
+                        column(2,
+                               fixedPanel(
+                                 tags$a(img(src = "GitHub-Mark.png", style = "width: 32px; "), href = "https://github.com/ccsuehara/bolivia_labor/tree/rui"),
+                                 right = 25, top = 85
+                               )
+                        )))
   )
 )
 
 # Server -----------------------------
 server <- function(input, output, session) {
   # Tab panel: home --------------------------
-  output$landing <- renderImage(list(src = "www/landing_page.png", width = "100%"), deleteFile = F)
+  output$landing <- renderImage(list(src = "www/landing_page1.png", width = "100%"), deleteFile = F)
   observeEvent(input$landing_cl, {
     updateNavbarPage(session, "main", selected = {
-      if (between(input$landing_cl$x, 95, 280) & between(input$landing_cl$y, 19, 129)) {"age"}
-      else if (between(input$landing_cl$x, 23, 233) & between(input$landing_cl$y, 189, 311)) {"lfp"}
-      else if (between(input$landing_cl$x, 877, 1091) & between(input$landing_cl$y, 77, 209)) {"edu"}
-      else if (between(input$landing_cl$x, 347, 507) & between(input$landing_cl$y, 324, 495)) {"ru"}
-      else if (between(input$landing_cl$x, 890, 1053) & between(input$landing_cl$y, 266, 445)) {"indigenous"}
+      if (between(input$landing_cl$x, 161, 421) & between(input$landing_cl$y, 19, 277)) {"children"}
+      else if (between(input$landing_cl$x, 380, 647) & between(input$landing_cl$y, 214, 490)) {"youth"}
+      else if (between(input$landing_cl$x, 603, 870) & between(input$landing_cl$y, 14, 271)) {"pay"}
+      else if (between(input$landing_cl$x, 843, 1118) & between(input$landing_cl$y, 200, 472)) {"older"}
     })
   })
   
@@ -892,128 +739,45 @@ server <- function(input, output, session) {
       case_when(!is.na(madlib_df$primary_job) & startsWith(madlib_df$sec_job, "2") ~ paste(madlib_pron1, "works as a", tolower(madlib_df$primary_job), "for", madlib_df$tot_work_week_hr, "hours per week."),
                       !is.na(madlib_df$primary_job) & startsWith(madlib_df$sec_job, "1") ~ paste(madlib_pron1, "mainly works as a", madlib_df$primary_job, "for", madlib_df$primary_work_week_hr, "hours per week, but", madlib_pron2, "also has a second job for another", madlib_df$sec_work_week_hr, "weekly hours."),
                       is.na(madlib_df$primary_job) ~ paste(madlib_pron1, "does not have a job.")),
-      ifelse(round(madlib_df$tot_monthly_inc, 0) == 0,
+      ifelse(round(madlib_df$lab_monthly_inc, 0) == 0,
                    paste(madlib_pron1, "does not earn any income from", madlib_pron3, "work."),
-                   paste("In total,", madlib_pron2, "makes", round(madlib_df$tot_monthly_inc, 0), "Bolivianos every month."))
+                   paste("In total,", madlib_pron2, "makes", round(madlib_df$lab_monthly_inc, 0), "Bolivianos every month."))
     )
   })
   
-  output$children_intro <- renderText("In this household survey, children make up about 35% of the sampled population, indicating that children are an important demographic in Bolivia.
-                                      It is also worth highlighting that Bolivia has the lowest legal minimum working age, ten, instead of the international consensus of fourteen. This labor law remains controversial today, with some arguing that it destigmatizes child workers' struggle for fair labor, while others casting doubt on the legislation's efficacy and its implications for children's long-term well-being.
-                                      Given this reality, it is even more crucial to understand the conditions in which children live and work, as well as the persistent impact of social disparities.")
-  output$children_t1 <- renderText('Bolivia enjoys a high level of school enrollment among children.
-                                   Even among those in the category of "enrolled, not attending", the vast majority are simply due to school break or recess (i.e. the timing of the survey), not structural barriers.
-                                   There is no evidence for gender disparity in receiving education.')
-  output$children_t2 <- renderText('However, there is still a notable minority of children who could not go to school, and the survey largely fails to capture the complex reasons.
-                                   From the available data, poverty and inaccessibility appear to remain an obstacle for many children.')
-  output$children_t3 <- renderText("TBD")
-  output$children_t4 <- renderText("When we look at children individually, there is not a significant difference between boys' and girls' work hours and incomes,
-                                   except that boys start earning more than girls on a monthly basis as they approach 18.
-                                   Interestingly, their hourly incomes do not differ, which means that teenage boys probably work more hours than girls.
-                                   Overall, a large number of boys and girls merely help out with their families' work, rather than seeking outside employment.")
-  output$children_t5 <- renderText("More intriguing patterns emerge, however, when we examine children's work as contributions to their households.
-                                   Clearly, starting from age 16, boys begin to make a larger contribution to their family's income than girls, but their share of total work hours among all family members remains equal.
-                                   This likely means that girls start doing unpaid or family-based labor during adolescence.
-                                   Puberty -> devaluation of female labor. Sexualization and devaluation go hand in hand.
-                                   In terms of DRM, the data show that men/boys are more likely to have income sources outside their homes and access an additional channel of financial stability.
-                                   Yet, in some scenarios, teenage boys are actual the main breadwinners in their families, which denotes heightened vulnerability to social and economic shocks.")
-  output$children_t6 <- renderText("An even more stark contrast exists between children in rural and urban areas.
-                                   Children in cities start contributing to their family finances at an earlier age, work more hours, and bring home more money.
-                                   Additionally, while rural children work a similar amount of hours throughout their childhood and adolescence, city kids pick up more work as they grow older, especially from age 12.")
-  output$children_t7 <- renderText("Not much to note here yet, except that the indigenous population seems to be in decline (the trend is more obvious when all age groups are mapped together).
-                                   The exact reason remains to be investigated.")
+  output$children_intro <- renderText(children_intro1)
+                                      # output$children_t1 <- renderText('Bolivia enjoys a high level of school enrollment among children.
+  #                                  Even among those in the category of "enrolled, not attending", the vast majority are simply due to school break or recess (i.e. the timing of the survey), not structural barriers.
+  #                                  There is no evidence for gender disparity in receiving education.')
+  output$children_t2 <- renderText(children_t21)
   
-  output$children_overview1 <- renderPlot(
-    ggplot(children) +
-      geom_bar(aes(x = age, fill = sex), position = "stack", width = 1) +
-      theme_minimal() +
-      theme(legend.position = "bottom", legend.title = element_blank(), panel.grid.minor = element_blank()) +
-      scale_x_continuous(breaks = c(7, 10, 14, 17)) +
-      scale_fill_manual(values = c(color1, color2), labels = c("boys", "girls")) +
-      ylab("population")
-  )
-  output$children_overview2 <- renderPlot(
-    ggplot(children) +
-      geom_bar(aes(x = age, fill = sex), position = "fill", width = 1) +
-      geom_segment(aes(x = min(age) - 0.5, xend = max(age) + 0.5, y = 0.5, yend = 0.5), linetype = "dashed", color = "grey") +
-      theme_minimal() +
-      theme(legend.position = "bottom", legend.title = element_blank(), panel.grid.minor = element_blank()) +
-      scale_x_continuous(breaks = c(7, 10, 14, 17)) +
-      scale_fill_manual(values = c(color1, color2), labels = c("boys", "girls")) +
-      ylab("proportion")
-  )
+  # output$children_t3 <- renderText("TBD")
+  output$children_t4 <- renderText(children_t41)
+  output$children_t5 <- renderText(children_t51)
   
-  # output$children_ru1 <- renderPlot(
-  #   ggplot(children) +
-  #     geom_bar(aes(x = area, fill = sex), position = "stack", width = 0.5) +
-  #     theme_minimal() +
-  #     theme(legend.position = "bottom", legend.title = element_blank(), panel.grid.minor = element_blank()) +
-  #     scale_x_discrete(labels = c("Rural" = "rural", "Urbana" = "urban")) +
-  #     scale_fill_manual(values = c(color1, color2), labels = c("boys", "girls")) +
-  #     xlab("") + ylab("population")
-  # )
-  # output$children_ru2 <- renderPlot(
-  #   ggplot(children) +
-  #     geom_bar(aes(x = area, fill = sex), position = "fill", width = 0.5) +
-  #     theme_minimal() +
-  #     theme(legend.position = "bottom", legend.title = element_blank(), panel.grid.minor = element_blank()) +
-  #     scale_x_discrete(labels = c("Rural" = "rural", "Urbana" = "urban")) +
-  #     scale_fill_manual(values = c(color1, color2), labels = c("boys", "girls")) +
-  #     xlab("") + ylab("proportion")
-  # )
+  output$children_t6 <- renderText(children_t61)
+  output$children_t8 <- renderText(children_t81)
+  output$children_t9 <- renderText(children_t91)
+  output$children_t10 <- renderText(children_t101)
+  output$children_t11 <- renderText(children_t111)
   
-  output$children_indi1 <- renderPlot(
-    ggplot(children) +
-      geom_bar(aes(x = indigenous, fill = sex), position = "stack", width = 0.5) +
-      theme_minimal() +
-      theme(legend.position = "bottom", legend.title = element_blank(), panel.grid.minor = element_blank()) +
-      scale_x_discrete(labels = c("1. Pertenece" = "indigenous", "2. No pertenece" = "not\nindigenous",
-                                  "3. No soy boliviana o boliviano" = "not\nBolivian")) +
-      scale_fill_manual(values = c(color1, color2), labels = c("boys", "girls")) +
-      xlab("") + ylab("population")
-  )
-  output$children_indi2 <- renderPlot(
-    ggplot(children) +
-      geom_bar(aes(x = indigenous, fill = sex), position = "fill", width = 0.5) +
-      theme_minimal() +
-      theme(legend.position = "bottom", legend.title = element_blank(), panel.grid.minor = element_blank()) +
-      scale_x_discrete(labels = c("1. Pertenece" = "indigenous", "2. No pertenece" = "not\nindigenous",
-                                  "3. No soy boliviana o boliviano" = "not\nBolivian")) +
-      scale_fill_manual(values = c(color1, color2), labels = c("boys", "girls")) +
-      xlab("") + ylab("proportion")
-  )
-  output$children_indi3 <- renderPlot(
-    ggplot(children) +
-      geom_bar(aes(x = age, fill = indigenous), position = "stack", width = 1) +
-      theme_minimal() +
-      theme(legend.position = "bottom", legend.title = element_blank(), panel.grid.minor = element_blank()) +
-      scale_fill_manual(values = c(color1, color2, color3), labels = c("indigenous", "not\nindigenous", "not\nBolivian")) +
-      ylab("population")
-  )
-  output$children_indi4 <- renderPlot(
-    ggplot(children) +
-      geom_bar(aes(x = age, fill = indigenous), position = "fill", width = 1) +
-      theme_minimal() +
-      theme(legend.position = "bottom", legend.title = element_blank(), panel.grid.minor = element_blank()) +
-      scale_fill_manual(values = c(color1, color2, color3), labels = c("indigenous", "not\nindigenous", "not\nBolivian")) +
-      ylab("proportion")
-  )
   
-  output$children_edu1 <- renderPlot(
-    ggplot(children) +
-      geom_bar(aes(x = edu_status, fill = sex), position = "stack", width = 0.5) +
+  children_1_df <- children %>%
+    filter(age > 6) %>%
+    group_by(age, sex) %>%
+    summarize(tot = n(), in_school = sum(in_school == "1. Si") / tot * 100, job = sum(!is.na(primary_job)) / tot * 100)
+  
+  output$children_1 <- renderPlot(
+    ggplot(children_1_df) +
+      geom_line(aes(age, in_school), color = color1, size = 2) +
+      geom_text(aes(12, 85, label = "% of surveyed children who are in school"), color = color1) +
+      geom_line(aes(age, job), color = color2, size = 2) +
+      geom_text(aes(12, 25, label = "% of surveyed children\nwho are working"), color = color2) +
+      facet_wrap(vars(sex), labeller = labeller(sex = c("1.Hombre" = "boys", "2.Mujer" = "girls"))) +
       theme_minimal() +
-      theme(legend.position = "bottom", legend.title = element_blank(), panel.grid.minor = element_blank()) +
-      scale_fill_manual(values = c(color1, color2), labels = c("boys", "girls")) +
-      xlab("") + ylab("population")
-  )
-  output$children_edu2 <- renderPlot(
-    ggplot(children) +
-      geom_bar(aes(x = edu_status, fill = sex), position = "fill", width = 0.5) +
-      theme_minimal() +
-      theme(legend.position = "bottom", legend.title = element_blank(), panel.grid.minor = element_blank()) +
-      scale_fill_manual(values = c(color1, color2), labels = c("boys", "girls")) +
-      xlab("") + ylab("proportion")
+      theme(panel.grid.minor = element_blank()) +
+      scale_x_continuous(breaks = seq(7, 17, 2)) +
+      ylab("")
   )
   
   why_not_in_school_df <- children %>%
@@ -1022,7 +786,7 @@ server <- function(input, output, session) {
                                          startsWith(why_not_in_school, "11") ~ "work",
                                          startsWith(why_not_in_school, "2") ~ "illness,\naccident,\ndisability",
                                          startsWith(why_not_in_school, "3") ~ "pregnancy",
-                                         startsWith(why_not_in_school, "4") ~ "lack of money\nfor school supplies",
+                                         startsWith(why_not_in_school, "4") ~ "lack of money",
                                          startsWith(why_not_in_school, "5") ~ "school is\ntoo far",
                                          startsWith(why_not_in_school, "8") ~ "lack of\ninterest",
                                          startsWith(why_not_in_school, "9") ~ "household chores/\nchildcare",
@@ -1032,21 +796,21 @@ server <- function(input, output, session) {
     group_by(why_not_in_school, sex) %>%
     summarize(sum = n())
   
-  output$children_edu3 <- renderD3tree2(d3tree2(treemap(why_not_in_school_df,
-                                                        index = c("why_not_in_school", "sex"),
-                                                        vSize = "sum",
-                                                        type = "index",
-                                                        palette = color_pal,
-                                                        title = "",
-                                                        fontsize.labels = c(13, 10),
-                                                        fontcolor.labels = c("white"),
-                                                        fontface.labels = c(2, 3),
-                                                        bg.labels = c("transparent"),
-                                                        align.labels = list(c("center", "center"),
-                                                                            c("left", "bottom")),
-                                                        overlap.labels = 0.5,
-                                                        border.col = c("white")),
-                                                rootname = "Reasons for not enrolling in school: "))
+  # output$children_edu3 <- renderD3tree2(d3tree2(treemap(why_not_in_school_df,
+  #                                                       index = c("why_not_in_school", "sex"),
+  #                                                       vSize = "sum",
+  #                                                       type = "index",
+  #                                                       palette = color_pal,
+  #                                                       title = "",
+  #                                                       fontsize.labels = c(13, 10),
+  #                                                       fontcolor.labels = c("white"),
+  #                                                       fontface.labels = c(2, 3),
+  #                                                       bg.labels = c("transparent"),
+  #                                                       align.labels = list(c("center", "center"),
+  #                                                                           c("left", "bottom")),
+  #                                                       overlap.labels = 0.5,
+  #                                                       border.col = c("white")),
+  #                                               rootname = "Reasons for not enrolling in school: "))
   
   output$children_edu4 <- renderPlot(
     ggplot(why_not_in_school_df) +
@@ -1057,701 +821,951 @@ server <- function(input, output, session) {
       ylab("") + xlab("population")
   )
   
-  output$children_lfp1 <- renderPlot(
-    ggplot(children %>% filter(!is.na(tot_monthly_inc))) +
-      geom_jitter(aes(x = age, y = tot_work_week_hr, size = tot_monthly_inc, color = sex), alpha = 0.15) +
-      geom_line(data = children %>% filter(!is.na(tot_monthly_inc)) %>% group_by(age, sex) %>% summarize(mean_hr = mean(tot_work_week_hr), mean_inc = mean(tot_monthly_inc)),
-                aes(y = mean_hr, x = age, color = sex), size = 1) +
-      geom_point(data = children %>% filter(!is.na(tot_monthly_inc)) %>% group_by(age, sex) %>% summarize(mean_hr = mean(tot_work_week_hr), mean_inc = mean(tot_monthly_inc)),
-                 aes(y = mean_hr, x = age, size = mean_inc, color = sex)) +
+  children_var <- reactive(input$ses)
+  
+  ses1_p <- function(df, var, labels) {
+    df2 <- df %>%
+      filter(!is.na(lab_monthly_inc)) %>%
+      group_by(age, .data[[var]]) %>%
+      summarize(mean_hr = mean(tot_work_week_hr), mean_inc = mean(lab_monthly_inc), mean_pct = mean(hh_lab_inc_pct))
+    
+    ggplot(df2) +
+      geom_jitter(data = df %>% filter(!is.na(lab_monthly_inc)),
+                  aes(x = age, y = hh_lab_inc_pct, size = tot_work_week_hr, color = .data[[var]]), alpha = 0.15) +
+      geom_line(aes(y = mean_pct, x = age, color = .data[[var]]), size = 1) +
+      geom_point(aes(y = mean_pct, x = age, size = mean_hr, color = .data[[var]])) +
+      geom_text(aes(7, 85, label = "circle size =\nweekly work hours"), color = "grey", hjust = "left") +
       theme_minimal() +
-      theme(legend.position = "bottom", panel.grid.major.y = element_blank(), panel.grid.minor = element_blank()) +
+      theme(legend.position = "bottom", panel.grid.minor = element_blank()) +
+      scale_x_continuous(limits = c(7, 17.8)) +
+      scale_color_manual(values = c(color1, color2), labels = labels) +
+      scale_size(range = c(0.1, 10), guide = F) +
+      labs(y = "contribution to household labor income (%)", color = "average")
+  }
+  
+  ses2_p <- function(df, var, labels) {
+    df2 <- df %>%
+      filter(!is.na(lab_monthly_inc)) %>%
+      group_by(age, .data[[var]]) %>%
+      summarize(mean_hr = mean(tot_work_week_hr), mean_inc = mean(lab_monthly_inc), mean_pct = mean(hh_hr_pct))
+    
+    ggplot(df2) +
+      geom_jitter(data = df %>% filter(!is.na(lab_monthly_inc)),
+                  aes(x = age, y = hh_hr_pct, size = lab_monthly_inc, color = .data[[var]]), alpha = 0.15) +
+      geom_line(aes(y = mean_pct, x = age, color = .data[[var]]), size = 1) +
+      geom_point(aes(y = mean_pct, x = age, size = mean_inc, color = .data[[var]])) +
+      geom_text(aes(7, 85, label = "circle size =\nmonthly income (BOB)"), color = "grey", hjust = "left") +
+      theme_minimal() +
+      theme(legend.position = "bottom", panel.grid.minor = element_blank()) +
+      scale_x_continuous(limits = c(7, 17.8)) +
+      scale_color_manual(values = c(color1, color2), labels = labels) +
+      scale_size(range = c(0.1, 30), guide = F) +
+      labs(y = "share of household work hours (%)", color = "average")
+  }
+  
+  children_depto <- children %>%
+    filter(age > 6) %>%
+    group_by(depto, area, sex) %>%
+    summarize(cw = mean(!is.na(lab_monthly_inc)) * 100, tot = n(), school = mean(in_school == "2. No") * 100)
+  
+  # children_decile <- children %>%
+  #   group_by(folio) %>%
+  #   summarize(hh_tot_inc = first(hh_tot_inc)) %>%
+  #   mutate(decile = StatMeasures::decile(hh_tot_inc)) %>%
+  #   right_join(children)
+  
+  output$children_ses1 <- renderPlot(
+    if (children_var() == "sex") {
+      ses1_p(children, "sex", c("boys", "girls"))
+    } else if (children_var() == "area") {
+      ses1_p(children, "area", c("rural", "urban"))
+    } else if (children_var() == "indi") {
+      ses1_p(children %>% filter(!startsWith(indigenous, "3")), "indigenous", c("indigenous", "not indigenous"))
+    } else if (children_var() == "depto") {
+      ggplot(children_depto) +
+        geom_col(aes(cw, depto, fill = sex), position = "dodge", width = 0.5) +
+        facet_wrap(vars(area), labeller = labeller(area = c("Rural" = "rural", "Urbana" = "urban"))) +
+        theme_minimal() +
+        theme(legend.position = "bottom", panel.grid.minor = element_blank()) +
+        scale_fill_manual(values = c(color1, color2), labels = c("boys", "girls")) +
+        labs(x = "% children with a job", y = "", fill = "")
+    } else if (children_var() == "inc") {
+      # children_decile2 <- children_decile %>%
+      #   filter(!is.na(lab_monthly_inc)) %>%
+      #   group_by(decile, sex) %>%
+      #   summarize(mean_hr = mean(tot_work_week_hr), mean_inc = mean(lab_monthly_inc), mean_pct = mean(hh_lab_inc_pct))
+      
+      ggplot(children %>% filter(!is.na(lab_monthly_inc) & hh_tot_inc != 0)) +
+        geom_point(aes(hh_tot_inc + 1, y = hh_lab_inc_pct, size = tot_work_week_hr, color = sex), alpha = 0.15) +
+        geom_smooth(aes(hh_tot_inc + 1, hh_lab_inc_pct, color = sex), alpha = 0.1) +
+        # geom_line(aes(y = mean_pct, x = decile, color = sex), size = 1) +
+        # geom_point(aes(y = mean_pct, x = decile, size = mean_hr, color = sex)) +
+        geom_text(aes(120, 75, label = "circle size =\nweekly work hours"), color = "grey", hjust = "left") +
+        theme_minimal() +
+        theme(legend.position = "bottom", panel.grid.minor = element_blank()) +
+        scale_x_continuous(trans = "log10") +
+        ylim(-15, 100) +
+        scale_color_manual(values = c(color1, color2), labels = c("boys", "girls")) +
+        scale_size(range = c(0.1, 10), guide = F) +
+        labs(x = "household monthly income (BOB)", y = "contribution to household labor income (%)", color = "average")
+    }
+  )
+  
+  output$children_ses2 <- renderPlot(
+    if (children_var() == "sex") {
+      ses2_p(children, "sex", c("boys", "girls"))
+    } else if (children_var() == "area") {
+      ses2_p(children, "area", c("rural", "urban"))
+    } else if (children_var() == "indi") {
+      ses2_p(children %>% filter(!startsWith(indigenous, "3")), "indigenous", c("indigenous", "not indigenous"))
+    } else if (children_var() == "depto") {
+      ggplot(children_depto) +
+        geom_col(aes(school, depto, fill = sex), position = "dodge", width = 0.5) +
+        facet_wrap(vars(area), labeller = labeller(area = c("Rural" = "rural", "Urbana" = "urban"))) +
+        theme_minimal() +
+        theme(legend.position = "bottom", panel.grid.minor = element_blank()) +
+        scale_fill_manual(values = c(color1, color2), labels = c("boys", "girls")) +
+        labs(x = "% children not in school", y = "", fill = "")
+    } else if (children_var() == "inc") {
+      # children_decile3 <- children_decile %>%
+      #   filter(!is.na(lab_monthly_inc)) %>%
+      #   group_by(decile, sex) %>%
+      #   summarize(mean_hr = mean(tot_work_week_hr), mean_inc = mean(lab_monthly_inc), mean_pct = mean(hh_hr_pct))
+      
+      ggplot(children %>% filter(!is.na(lab_monthly_inc) & hh_tot_inc != 0)) +
+        geom_jitter(aes(hh_tot_inc + 1, y = hh_hr_pct, size = lab_monthly_inc, color = sex), alpha = 0.15) +
+        geom_smooth(aes(hh_tot_inc + 1, hh_hr_pct, color = sex), alpha = 0.1) +
+        # geom_line(aes(y = mean_pct, x = decile, color = sex), size = 1) +
+        # geom_point(aes(y = mean_pct, x = decile, size = mean_inc, color = sex)) +
+        geom_text(aes(120, 85, label = "circle size =\nmonthly income (BOB)"), color = "grey", hjust = "left") +
+        theme_minimal() +
+        theme(legend.position = "bottom", panel.grid.minor = element_blank()) +
+        scale_x_continuous(trans = "log10") +
+        scale_color_manual(values = c(color1, color2), labels = c("boys", "girls")) +
+        scale_size(range = c(0.1, 30), guide = F) +
+        labs(x = "household monthly income (BOB)", y = "share of household work hours (%)", color = "average")
+    }
+  )
+  
+  children %>%
+    ggplot() +
+    geom_smooth(aes(hh_tot_inc, hh_hr_pct, color = sex)) +
+    theme_minimal() +
+    scale_x_continuous(trans = "log10")
+  
+  output$children_lfp1 <- renderPlot(
+    ggplot(children %>% filter(!is.na(lab_monthly_inc))) +
+      geom_jitter(aes(x = age, y = tot_work_week_hr, size = lab_monthly_inc, color = sex), alpha = 0.15) +
+      geom_line(data = . %>% group_by(age, sex) %>% summarize(mean_hr = mean(tot_work_week_hr), mean_inc = mean(lab_monthly_inc)),
+                aes(y = mean_hr, x = age, color = sex), size = 1) +
+      geom_point(data = . %>% group_by(age, sex) %>% summarize(mean_hr = mean(tot_work_week_hr), mean_inc = mean(lab_monthly_inc)),
+                 aes(y = mean_hr, x = age, size = mean_inc, color = sex)) +
+      geom_text(aes(7, 85, label = "circle size =\nmonthly income (BOB)"), color = "grey", hjust = "left") +
+      theme_minimal() +
+      theme(legend.position = "bottom", panel.grid.minor = element_blank()) +
       scale_x_continuous(limits = c(7, 17.8)) +
       scale_color_manual(values = c(color1, color2), labels = c("boys", "girls")) +
-      scale_size(range = c(0.1, 30)) +
-      labs(y = "weekly work hours", size = "monthly income (BOB)", color = "")
+      scale_size(range = c(0.1, 30), guide = F) +
+      labs(y = "weekly work hours", color = "")
   )
   output$children_lfp2 <- renderPlot(
-    ggplot(children %>% filter(!is.na(tot_monthly_inc))) +
-      geom_jitter(aes(x = age, y = tot_work_week_hr, size = tot_monthly_inc / tot_work_week_hr / 4.33, color = sex), alpha = 0.15) +
-      geom_line(data = children %>% filter(!is.na(tot_monthly_inc)) %>% group_by(age, sex) %>% summarize(mean_hr = mean(tot_work_week_hr), mean_inc = mean(tot_monthly_inc / tot_work_week_hr / 4.33)),
+    ggplot(children %>% filter(!is.na(lab_monthly_inc))) +
+      geom_jitter(aes(x = age, y = tot_work_week_hr, size = lab_monthly_inc / tot_work_week_hr / 4.33, color = sex), alpha = 0.15) +
+      geom_line(data = . %>% group_by(age, sex) %>% summarize(mean_hr = mean(tot_work_week_hr), mean_inc = mean(lab_monthly_inc / tot_work_week_hr / 4.33)),
                 aes(y = mean_hr, x = age, color = sex), size = 1) +
-      geom_point(data = children %>% filter(!is.na(tot_monthly_inc)) %>% group_by(age, sex) %>% summarize(mean_hr = mean(tot_work_week_hr), mean_inc = mean(tot_monthly_inc / tot_work_week_hr / 4.33)),
+      geom_point(data = . %>% group_by(age, sex) %>% summarize(mean_hr = mean(tot_work_week_hr), mean_inc = mean(lab_monthly_inc / tot_work_week_hr / 4.33)),
                  aes(y = mean_hr, x = age, size = mean_inc, color = sex)) +
+      geom_text(aes(7, 85, label = "circle size =\nhourly income (BOB)"), color = "grey", hjust = "left") +
       theme_minimal() +
-      theme(legend.position = "bottom", panel.grid.major.y = element_blank(), panel.grid.minor = element_blank()) +
+      theme(legend.position = "bottom", panel.grid.minor = element_blank()) +
       scale_x_continuous(limits = c(7, 17.8)) +
       scale_color_manual(values = c(color1, color2), labels = c("boys", "girls")) +
-      scale_size(range = c(0.1, 30)) +
-      labs(y = "weekly work hours", size = "hourly income (BOB)", color = "")
+      scale_size(range = c(0.1, 30), guide = F) +
+      labs(y = "weekly work hours", color = "")
   )
   
-  output$children_lfp3 <- renderPlot(hh_inc_sex)
-  output$children_lfp4 <- renderPlot(hh_hr_sex)
   
-  output$children_ru1 <- renderPlot(hh_inc_area)
-  output$children_ru2 <- renderPlot(hh_hr_area)
+  # Tab panel: youth ------------------------------------------------
+    # Youth: intro ----------------------------------
+  output$youth_intro <- renderText(youth_intro1)
   
-  # Tab panel: entering the job market --------------------------
-  output$age_t_lfp <- renderText('There are different trends in Labor Force Participation for each segment')
-  output$pop_emp <- renderPlot(age_lfp(employed))
-  output$pop_unemp <- renderPlot(age_lfp(unemployed))
-  output$pop_inac <- renderPlot(age_lfp(inactive))
+  youth1 <- youth %>%
+    group_by(age, sex) %>%
+    summarize(tot = n(), in_school = sum(in_school == "1. Si") / tot * 100, job = sum(!is.na(primary_job)) / tot * 100)
   
-  
-  output$proportion_exp <- renderText("Let's look at the proportions of people in each category")
-  output$waf_emp <- renderPlot(wfl_plot(employed_gender,50000))
-  output$waf_unemp <- renderPlot(wfl_plot(unemp_gender,50000))
-  output$waf_inac <- renderPlot(wfl_plot(inactive_gender,50000))
-  
-  output$sch_lf <- renderText("let's look at the distributions by education, gender, age and participation in the labor force")
-  output$ed_emp <- renderPlot(ridge_educ(employed))
-  output$ed_unemp <- renderPlot(ridge_educ(unemployed))
-  output$ed_inac <- renderPlot(ridge_educ(inactive))
-  
-  output$ar_lf <- renderText("Population Distributions by gender, area, age and participation in the labor force")
-  output$ar_emp <- renderPlot(ridge_urban(employed))
-  output$ar_unemp <- renderPlot(ridge_urban(unemployed))
-  output$ar_inac <- renderPlot(ridge_urban(inactive))
-  
-  output$ind_lf <- renderText("Population Distributions by gender, indigenous belonging, age and participation in the labor force")
-  output$ind_emp <- renderPlot(ridge_indigen(employed))
-  output$ind_unemp <- renderPlot(ridge_indigen(unemployed))
-  output$ind_inac <- renderPlot(ridge_indigen(inactive))
-  
-  # Tab panel: age ------------------------------
-  # age_all <- function(df) {
-  #   ggplot(df) +
-  #     geom_bar(aes(x = age, fill = sex), position = "fill") +
-  #     geom_segment(aes(x = min(age) - 0.5, xend = max(age) + 0.5, y = 0.5, yend = 0.5), linetype = "dashed", color = "grey") +
-  #     geom_segment(aes(x = 10, xend = 10, y = 0, yend = 1), linetype = "dotted", color = "grey") +
-  #     geom_segment(aes(x = 18, xend = 18, y = 0, yend = 1), linetype = "dotted", color = "grey") +
-  #     geom_segment(aes(x = 60, xend = 60, y = 0, yend = 1), linetype = "dotted", color = "grey") +
-  #     theme_minimal() +
-  #     theme(legend.position = "bottom", legend.title = element_blank(), panel.grid.minor = element_blank()) +
-  #     scale_x_continuous(breaks = c(10, 18, 60)) +
-  #     scale_fill_manual(values = c(color1, color2), labels = c("men", "women")) +
-  #     ylab("proportion")
-  # }
-  # 
-  # output$age_all_t <- renderText("Although men make up a larger proportion of the labor force,
-  #                                 women are overwhelmingly overrepresented in unpaid labor.
-  #                                 Moreover, men are slightly more likely to do unpaid work only during their teenage years,
-  #                                 while women tend to work without pay throughout their lifetime and well into old age.")
-  # output$pop_age_all <- renderPlot(age_all(personas))
-  # output$with_job_age_all <- renderPlot(age_all(with_job))
-  # output$unpaid_age_all <- renderPlot(age_all(unpaid_job))
-  # 
-  # age_18 <- function(df) {
-  #   df <- df %>%
-  #     filter(age < 18)
-  #   ggplot(df) +
-  #     geom_bar(aes(x = age, fill = sex), position = "fill") +
-  #     geom_segment(aes(x = min(age) - 0.5, xend = max(age) + 0.5, y = 0.5, yend = 0.5), linetype = "dashed", color = "grey") +
-  #     theme_minimal() +
-  #     theme(legend.position = "bottom", legend.title = element_blank(), panel.grid.minor = element_blank()) +
-  #     scale_x_continuous(breaks = c(7, 10, 14, 17)) +
-  #     scale_fill_manual(values = c(color1, color2), labels = c("boys", "girls")) +
-  #     ylab("proportion")
-  # }
-  # 
-  # output$age_18_t <- renderText("While the international consensus for minimum working age is 14,
-  #                               Bolivia reduced it to 10 in 2014, lowest in the world.
-  #                               In the survey questionnaire, individuals 7 years and above are asked to report work status.")
-  # output$pop_age_18 <- renderPlot(age_18(personas))
-  # output$with_job_age_18 <- renderPlot(age_18(with_job))
-  # output$unpaid_age_18 <- renderPlot(age_18(unpaid_job))
-  # 
-  # age_18_60 <- function(df) {
-  #   df <- df %>%
-  #     filter(age > 17 & age < 61)
-  #   ggplot(df) +
-  #     geom_bar(aes(x = age, fill = sex), position = "fill") +
-  #     geom_segment(aes(x = min(age) - 0.5, xend = max(age) + 0.5, y = 0.5, yend = 0.5), linetype = "dashed", color = "grey") +
-  #     theme_minimal() +
-  #     theme(legend.position = "bottom", legend.title = element_blank(), panel.grid.minor = element_blank()) +
-  #     scale_fill_manual(values = c(color1, color2), labels = c("men", "women")) +
-  #     ylab("proportion")
-  # }
-  # 
-  # output$pop_age_18_60 <- renderPlot(age_18_60(personas))
-  # output$with_job_age_18_60 <- renderPlot(age_18_60(with_job))
-  # output$unpaid_age_18_60 <- renderPlot(age_18_60(unpaid_job))
-  # 
-  # age_60 <- function(df) {
-  #   df <- df %>%
-  #     filter(age > 60)
-  #   ggplot(df) +
-  #     geom_bar(aes(x = age, fill = sex), position = "fill") +
-  #     geom_segment(aes(x = min(age) - 0.5, xend = max(age) + 0.5, y = 0.5, yend = 0.5), linetype = "dashed", color = "grey") +
-  #     theme_minimal() +
-  #     theme(legend.position = "bottom", legend.title = element_blank(), panel.grid.minor = element_blank()) +
-  #     scale_fill_manual(values = c(color1, color2), labels = c("men", "women")) +
-  #     ylab("proportion")
-  # }
-  # 
-  # output$pop_age_60 <- renderPlot(age_60(personas))
-  # output$with_job_age_60 <- renderPlot(age_60(with_job))
-  # output$unpaid_age_60 <- renderPlot(age_60(unpaid_job))
-  
-  # Tab panel: indigenous ---------------------------
-  output$indi_all <- renderPlot({
-    ggplot(personas) +
-      geom_bar(aes(x = age, fill = indigenous), position = "fill") +
+  output$youth_overview <- renderPlot(
+    ggplot(youth1) +
+      geom_line(aes(age, in_school), color = color1, size = 1) +
+      geom_text(aes(20.5, 70, label = "% of surveyed youth\nwho are in school"), color = color1) +
+      geom_line(aes(age, job), color = color2, size = 1) +
+      geom_text(aes(19, 30, label = "% of surveyed youth\nwho are working"), color = color2) +
+      facet_wrap(vars(sex), labeller = labeller(sex = c("1.Hombre" = "men", "2.Mujer" = "women"))) +
       theme_minimal() +
-      theme(legend.position = "bottom", legend.title = element_blank(), panel.grid.minor = element_blank()) +
-      scale_fill_manual(values = c(color1, color2, color3), labels = c("indigeous", "not indigenous", "not Bolivian")) +
-      ylab("proportion")
-  })
+      theme(panel.grid.minor = element_blank()) +
+      ylim(0, 100) +
+      ylab("")
+  )
   
-  output$indi_w <- renderPlot({
-    ggplot(personas %>% filter(sex == "2.Mujer")) +
-      geom_bar(aes(x = age, fill = indigenous), position = "fill") +
+    # Youth: education -------------------------------------
+  output$youth_edu_t1 <- renderText(youth_edu_t11)
+  output$youth_edu_marital <- renderText(youth_edu_marital1)
+  output$youth_edu_internet <- renderText(youth_edu_internet1)
+  output$youth_edu_area <- renderText(youth_edu_area1)
+  output$youth_edu_indi <- renderText(youth_edu_indi1)
+  output$youth_edu_depto <- renderText(youth_edu_depto1)
+  output$youth_edu_lang <- renderText(youth_edu_lang1)
+  output$youth_edu_t2 <- renderText(youth_edu_t21)
+  
+  output$youth_edu_imp <- renderPlot(
+    read_csv("data/youth_ses_rf1_imp.csv") %>%
+      ggplot() +
+      geom_segment(aes(x = 0, y = reorder(name, MeanDecreaseAccuracy), xend = MeanDecreaseAccuracy, yend = reorder(name, MeanDecreaseAccuracy)), color = "grey") +
+      geom_point(aes(MeanDecreaseAccuracy, name), color = color1, size = 3) +
       theme_minimal() +
-      theme(legend.position = "bottom", legend.title = element_blank(), panel.grid.minor = element_blank()) +
-      scale_fill_manual(values = c(color1, color2, color3), labels = c("indigeous", "not indigenous", "not Bolivian")) +
-      ylab("proportion")
-  })
+      theme(panel.grid.major.y = element_blank(), panel.grid.minor = element_blank(), axis.text.x = element_blank()) +
+      scale_x_continuous(position = "top", breaks = c(0)) +
+      xlab("variable importance") + ylab("")
+  )
   
-  output$indi_m <- renderPlot({
-    ggplot(personas %>% filter(sex == "1.Hombre")) +
-      geom_bar(aes(x = age, fill = indigenous), position = "fill") +
+  youth_edu1_p <- function(df, var, labels) {
+    df2 <- df %>%
+      group_by(age, sex, .data[[var]]) %>%
+      summarize(mean = mean(in_school == "1. Si") * 100, count = n()) %>%
+      filter(count > 9)
+    
+    n <- length(unique(df2[[var]]))
+    
+    ggplot(df2) +
+      geom_line(aes(age, mean, color = .data[[var]]), size = 1) +
+      facet_wrap(vars(sex), labeller = labeller(sex = c("1.Hombre" = "men", "2.Mujer" = "women"))) +
       theme_minimal() +
-      theme(legend.position = "bottom", legend.title = element_blank(), panel.grid.minor = element_blank()) +
-      scale_fill_manual(values = c(color1, color2, color3), labels = c("indigeous", "not indigenous", "not Bolivian")) +
-      ylab("proportion")
-  })
+      theme(legend.position = "bottom", panel.grid.minor = element_blank()) +
+      scale_color_manual(values = color_pal[1:n], labels = labels) +
+      labs(y = "% student", color = "") + ylim(0, 100)
+  }
   
-  indi_work <- function(df) {
-    ggplot(df) +
-      geom_bar(aes(x = indigenous, fill = sex), position = "fill", width = 0.5) +
+  youth_edu1_var <- reactive(input$youth_edu_ses)
+  
+  output$youth_edu1 <- renderPlot(
+    if (youth_edu1_var() == "internet") {
+      youth %>% mutate(decile = cut(pc_inc, 
+                                    breaks = unique(quantile(pc_inc, probs = seq.int(0, 1, by = 0.1))), 
+                                    include.lowest = T)) %>%
+        group_by(sex, decile, internet_use) %>%
+        summarize(mean = mean(in_school == "1. Si") * 100, count = n()) %>%
+        mutate(decile = as.numeric(decile)) %>%
+        ggplot() +
+        geom_line(aes(decile, mean, color = internet_use), size = 1) +
+        facet_wrap(vars(sex), labeller = labeller(sex = c("1.Hombre" = "men", "2.Mujer" = "women"))) +
+        theme_minimal() +
+        theme(legend.position = "bottom", panel.grid.minor = element_blank()) +
+        scale_color_manual(values = color_pal[1:2], labels = c("with Internet", "without Internet")) +
+        scale_x_continuous(breaks = 1:10) +
+        labs(x = "per capita household income decile", y = "% student", color = "") + ylim(0, 100)
+    } else if (youth_edu1_var() == "area") {
+      youth_edu1_p(youth, "area", c("rural", "urban"))
+    } else if (youth_edu1_var() == "indi") {
+      youth_edu1_p(youth %>% mutate(indigenous = ifelse(startsWith(indigenous, "3"), "2. No pertenece", indigenous)),
+                   "indigenous", c("indigenous", "not indigenous"))
+    } else if (youth_edu1_var() == "depto") {
+      youth_depto <- youth %>%
+        group_by(depto, area, sex) %>%
+        summarize(mean = mean(in_school == "1. Si") * 100)
+      
+      ggplot(youth_depto) +
+        geom_col(aes(mean, depto, fill = sex), position = "dodge", width = 0.5) +
+        facet_wrap(vars(area), labeller = labeller(area = c("Rural" = "rural", "Urbana" = "urban"))) +
+        theme_minimal() +
+        theme(legend.position = "bottom", panel.grid.minor = element_blank()) +
+        scale_fill_manual(values = c(color1, color2), labels = c("men", "women")) +
+        labs(x = "% student", y = "", fill = "")
+    } else if (youth_edu1_var() == "lang") {
+      youth_lang <- youth %>%
+        mutate(language_1 = ifelse(language_1 %in% c("QUECHUA", "CASTELLANO"), language_1, "OTHER"),
+               indigenous = ifelse(startsWith(indigenous, "3"), "2. No pertenece", indigenous)) %>%
+        group_by(language_1, sex, indigenous) %>%
+        summarize(mean = mean(in_school == "1. Si") * 100)
+      
+      ggplot(youth_lang) +
+        geom_col(aes(mean, language_1, fill = sex), position = "dodge", width = 0.5) +
+        facet_wrap(vars(indigenous), labeller = labeller(indigenous = c("1. Pertenece" = "indigenous", "2. No pertenece" = "not indigenous"))) +
+        theme_minimal() +
+        theme(legend.position = "bottom", panel.grid.minor = element_blank()) +
+        scale_fill_manual(values = c(color1, color2), labels = c("men", "women")) +
+        labs(x = "% student", y = "", fill = "")
+    } else if (youth_edu1_var() == "marital") {
+      youth_edu1_p(youth %>% filter(str_detect(marital, "^[1-3]")), "marital", c("single", "married", "cohabiting"))
+    }
+  )
+
+  output$youth_edu2 <- renderPlot(
+    ggplot(youth) +
+      geom_bar(aes(age, fill = education), position = "fill") +
+      scale_fill_manual(values = c(color1, color2, color3, color4)) +
+      facet_wrap(vars(sex), labeller = labeller(sex = c("1.Hombre" = "men", "2.Mujer" = "women"))) +
+      theme_minimal() +
+      theme(legend.position = "bottom", legend.title = element_blank()) +
+      ylab("proportion")
+  )
+  
+    # Youth: employment --------------------
+  
+  output$youth_emp_overview <- renderText(youth_emp_ov)
+  # output$youth_emp_t1 <- renderText("Below is the relative importance of various socioeconomic factors that affect youths' employment.")
+  output$youth_emp_stu <- renderText(youth_emp_stu1)
+  output$youth_emp_edu <- renderText(youth_emp_edu1)
+  output$youth_emp_marital <- renderText(youth_emp_marital1)
+  output$youth_emp_area <- renderText(youth_emp_area1)
+  
+  output$youth_edu_sex <- renderPlot(
+    ggplot(youth %>% filter(in_school == "1. Si")) +
+      geom_bar(aes(age, fill = sex), width = 0.5, position = "fill") +
       theme_minimal() +
       theme(legend.position = "bottom", legend.title = element_blank(), panel.grid.minor = element_blank()) +
       scale_fill_manual(values = c(color1, color2), labels = c("men", "women")) +
       ylab("proportion")
-  }
+  )
   
-  output$pop_indi_work <- renderPlot(indi_work(personas))
-  output$with_job_indi_work <- renderPlot(indi_work(with_job))
-  output$unpaid_indi_work <- renderPlot(indi_work(unpaid_job))
-  
-  indi_ru <- function(df) {
-    ggplot(df) +
-      geom_bar(aes(x = age, fill = indigenous), position = "fill") +
+  output$youth_emp_sex <- renderPlot(
+    ggplot(youth %>% filter(!is.na(primary_job))) +
+      geom_bar(aes(age, fill = sex), width = 0.5, position = "fill") +
       theme_minimal() +
       theme(legend.position = "bottom", legend.title = element_blank(), panel.grid.minor = element_blank()) +
-      scale_fill_manual(values = c(color1, color2, color3), labels = c("indigeous", "not indigenous", "not Bolivian")) +
+      scale_fill_manual(values = c(color1, color2), labels = c("men", "women")) +
       ylab("proportion")
-  }
+  )
   
-  output$indi_r_all <- renderPlot(indi_ru(personas %>% filter(area == "Rural")))
-  output$indi_r_w <- renderPlot(indi_ru(personas %>% filter(area == "Rural" & sex == "2.Mujer")))
-  output$indi_r_m <- renderPlot(indi_ru(personas %>% filter(area == "Rural" & sex == "1.Hombre")))
-  
-  output$pop_indi_r <- renderPlot(indi_work(personas %>% filter(area == "Rural")))
-  output$with_job_indi_r <- renderPlot(indi_work(with_job %>% filter(area == "Rural")))
-  output$unpaid_indi_r <- renderPlot(indi_work(unpaid_job %>% filter(area == "Rural")))
-  
-  output$indi_u_all <- renderPlot(indi_ru(personas %>% filter(area == "Urbana")))
-  output$indi_u_w <- renderPlot(indi_ru(personas %>% filter(area == "Urbana" & sex == "2.Mujer")))
-  output$indi_u_m <- renderPlot(indi_ru(personas %>% filter(area == "Urbana" & sex == "1.Hombre")))
-  
-  output$pop_indi_u <- renderPlot(indi_work(personas %>% filter(area == "Urbana")))
-  output$with_job_indi_u <- renderPlot(indi_work(with_job %>% filter(area == "Urbana")))
-  output$unpaid_indi_u <- renderPlot(indi_work(unpaid_job %>% filter(area == "Urbana")))
-  
-  
-  # Tab panel: figures -------------------------------
-  output$pop <- renderText(round(nrow(personas), 0))
-  output$with_job <- renderText(round(nrow(with_job), 0))
-  output$unpaid <- renderText(round(nrow(unpaid_job), 0))
-  output$unpaid_sec <- renderText(round(nrow(unpaid_sec_job), 0))
-  
-  age <- function(df) {
-    ggplot(df) +
-      geom_bar(aes(x = age, fill = sex), position = "dodge") +
+  output$youth_emp_imp <- renderPlot(
+    read_csv("data/youth_ses_rf2_imp.csv") %>%
+      ggplot() +
+      geom_segment(aes(x = 0, y = reorder(name, MeanDecreaseAccuracy), xend = MeanDecreaseAccuracy, yend = reorder(name, MeanDecreaseAccuracy)), color = "grey") +
+      geom_point(aes(MeanDecreaseAccuracy, name), color = color1, size = 3) +
       theme_minimal() +
-      theme(legend.position = "bottom", legend.title = element_blank()) +
-      scale_x_continuous(breaks = c(7, 18, 90))
+      theme(panel.grid.major.y = element_blank(), panel.grid.minor = element_blank(), axis.text.x = element_blank()) +
+      scale_x_continuous(position = "top", breaks = c(0)) +
+      xlab("variable importance") + ylab("")
+  )
+  
+  youth_emp1_p <- function(df, var, labels) {
+    df2 <- df %>%
+      group_by(age, sex, .data[[var]]) %>%
+      summarize(mean = mean(!is.na(primary_job)) * 100, count = n()) %>%
+      filter(count > 9)
+    
+    n <- length(unique(df2[[var]]))
+    
+    ggplot(df2) +
+      geom_line(aes(age, mean, color = .data[[var]]), size = 1) +
+      facet_wrap(vars(sex), labeller = labeller(sex = c("1.Hombre" = "men", "2.Mujer" = "women"))) +
+      theme_minimal() +
+      theme(legend.position = "bottom", panel.grid.minor = element_blank()) +
+      scale_color_manual(values = color_pal[1:n], labels = labels) +
+      labs(y = "% working", color = "") + ylim(0, 100)
   }
   
-  output$age_t <- renderText('Men are more likely to do unpaid labor during their teenage years,
-                             while women tend to work without pay throughout their lifetime.')
-  output$pop_age <- renderPlot(age(personas))
-  output$with_job_age <- renderPlot(age(with_job))
-  output$unpaid_age <- renderPlot(age(unpaid_job))
-  output$unpaid_sec_age <- renderPlot(age(unpaid_sec_job))
+  youth_emp1_var <- reactive(input$youth_emp_ses)
+  
+  output$youth_emp1 <- renderPlot(
+    if (youth_emp1_var() == "marital") {
+      youth_emp1_p(youth, "marital", c("single", "married", "cohabiting"))
+    } else if (youth_emp1_var() == "edu") {
+      youth_emp1_p(youth, "education", c("primary", "secondary", "tertiary"))
+    } else if (youth_emp1_var() == "area") {
+      youth_emp1_p(youth, "area", c("rural", "urban"))
+    } else if (youth_emp1_var() == "stu") {
+      youth_emp1_p(youth, "in_school", c("in school", "not in school"))
+    }
+  )
+  
+    # Youth: income ------------------------
+  output$youth_inc_t1 <- renderText(youth_inc_t11)
+  output$youth_inc_t2 <- renderText(youth_inc_t21)
+  
+  output$youth_inc_paid <- renderPlot(
+    youth %>%
+      filter(!is.na(primary_job)) %>%
+      mutate(paid = ifelse(str_detect(work_type, "^[78]"), "unpaid", "paid")) %>%
+      group_by(age, sex) %>%
+      summarize(mean = mean(paid == "unpaid") * 100) %>%
+      ggplot() +
+      geom_line(aes(age, mean, color = sex), size = 1) +
+      theme_minimal() +
+      theme(panel.grid.minor = element_blank(), legend.position = "bottom", legend.title = element_blank()) +
+      scale_color_manual(values = color_pal[1:2], labels = c("men", "women")) +
+      ylab("% unpaid worker") + ylim(0, 60)
+  )
+  
+  output$youth_inc_inc <- renderPlot(
+    youth %>%
+      filter(!is.na(lab_monthly_inc) & lab_monthly_inc != 0) %>%
+      group_by(age, sex) %>%
+      summarize(mean = mean(lab_monthly_inc), mean_hr = mean(tot_work_week_hr)) %>%
+      ggplot() +
+      geom_jitter(data = youth %>% filter(!is.na(lab_monthly_inc) & lab_monthly_inc != 0),
+                  aes(age, lab_monthly_inc, color = sex, size = tot_work_week_hr), alpha = 0.08, width = 0.5) +
+      geom_line(aes(age, mean, color = sex), size = 1) +
+      geom_point(aes(age, mean, color = sex, size = mean_hr)) +
+      geom_text(aes(18, 8500, label = "circle size =\nweekly work hours"), color = "grey") +
+      theme_minimal() +
+      theme(panel.grid.minor.y = element_blank(), legend.position = "bottom") +
+      scale_color_manual(values = color_pal[1:2], labels = c("men", "women")) +
+      scale_size_continuous(range = c(0.1, 8), guide = F) +
+      ylim(0, 10000) +
+      labs(y = "Monthly labor income (BOB)", color = "average")
+  )
+  
+  # Tab panel: entering the job market --------------------------
+  
+  output$lmarket_intro <- renderText(labor_intro)
+  
+  output$adult_educ <- renderPlot(area_chart_sex(adults))
+  output$wfl_labor <-  renderPlot(waffl_work(emp_per))
+  
+  output$labor_rf <-  renderPlot(emp_rfplot)
+  
+  output$labor_hrs <-  renderPlot(hours_worked_graph(adults))
+  
+  output$labor_t_1 <- renderText(labor_txt_1)
+  output$labor_t_2 <- renderText(labor_txt_2)
+  output$labor_t_3 <- renderText(labor_txt_3)
+  output$labor_t_4 <- renderText(labor_txt_4)
+  
+  
+  
 
-  sch <- function(df) {
-    ggplot(df) +
-      geom_bar(aes(x = age, fill = in_school), position = "dodge") +
+  
+  # Tab panel: neets  --------------------------------
+  
+  output$neet_t1 <- renderText(neet_txt_1)
+  output$neet_t2 <- renderText(neet_txt_2)
+  output$neet_t3 <- renderText(neet_txt_3)
+  output$neet_t4 <- renderText(neet_txt_4)
+  output$neet_t5 <- renderText(neet_txt_5)
+  
+  
+  output$neet_p1 <-  renderPlot(area_neet_cat_sex(ages_neet))
+  output$neet_p2 <-  renderPlot(waffl_neet(neets_waff))
+  output$neet_p3 <-  renderPlot(plot_bars_neet(why_neet_no_work))
+  output$neet_p4 <-  renderPlot(plot_bars_neet_study(why_neet_no_study))
+  
+  output$neet_p5 <-  renderPlot(neets_rfplot)
+  
+  
+  neet_decision_var <- reactive(input$neet_vars)
+  
+  output$neets_dec_graph <- renderPlot(
+    if (neet_decision_var() == "internet") {
+      ages_neet %>% mutate(decile = cut(pc_inc, 
+                                    breaks = unique(quantile(pc_inc, probs = seq.int(0, 1, by = 0.1))), 
+                                    include.lowest = T)) %>%
+        group_by(sex, decile, internet_use) %>%
+        summarize(mean = mean(neet_cat == "NEET") * 100, count = n()) %>%
+        mutate(decile = as.numeric(decile)) %>%
+        ggplot() +
+        geom_line(aes(decile, mean, color = internet_use), size = 1) +
+        facet_wrap(vars(sex), labeller = labeller(sex = c("1.Hombre" = "men", "2.Mujer" = "women"))) +
+        theme_minimal() +
+        theme(legend.position = "bottom", panel.grid.minor = element_blank()) +
+        scale_color_manual(values = color_pal[1:2], labels = c("with Internet", "without Internet")) +
+        scale_x_continuous(breaks = 1:10) +
+        labs(x = "per capita household income decile", y = "% NEET", color = "") + ylim(0, 100)
+    } else if (neet_decision_var() == "area") {
+      neet_pop_p(ages_neet, "area", c("rural", "urban"))
+    } else if (neet_decision_var() == "indi") {
+      neet_pop_p(ages_neet %>% mutate(indigenous = ifelse(startsWith(indigenous, "3"), "2. No pertenece", indigenous)),
+                   "indigenous", c("indigenous", "not indigenous"))
+    } else if (neet_decision_var() == "depto") {
+      youth_depto <- ages_neet %>%
+        group_by(depto, area, sex) %>%
+        summarize(mean = mean(neet_cat == "NEET") * 100)
+      
+      ggplot(youth_depto) +
+        geom_col(aes(mean, depto, fill = sex), position = "dodge", width = 0.5) +
+        facet_wrap(vars(area), labeller = labeller(area = c("Rural" = "rural", "Urbana" = "urban"))) +
+        theme_minimal() +
+        theme(legend.position = "bottom", panel.grid.minor = element_blank()) +
+        scale_fill_manual(values = c(color1, color2), labels = c("men", "women")) +
+        labs(x = "% NEET", y = "", fill = "")
+    } else if (neet_decision_var() == "lang") {
+      youth_lang <- ages_neet %>%
+        mutate(language_1 = ifelse(language_1 %in% c("QUECHUA", "CASTELLANO"), language_1, "OTHER"),
+               indigenous = ifelse(startsWith(indigenous, "3"), "2. No pertenece", indigenous)) %>%
+        group_by(language_1, sex, indigenous) %>%
+        summarize(mean = mean(neet_cat == "NEET") * 100)
+      
+      ggplot(youth_lang) +
+        geom_col(aes(mean, language_1, fill = sex), position = "dodge", width = 0.5) +
+        facet_wrap(vars(indigenous), labeller = labeller(indigenous = c("1. Pertenece" = "indigenous", "2. No pertenece" = "not indigenous"))) +
+        theme_minimal() +
+        theme(legend.position = "bottom", panel.grid.minor = element_blank()) +
+        scale_fill_manual(values = c(color1, color2), labels = c("men", "women")) +
+        labs(x = "% NEET", y = "", fill = "")
+    } else if (neet_decision_var() == "marital") {
+      neet_pop_p(ages_neet %>% filter(str_detect(marital, "^[1-3]")), "marital", c("single", "married", "cohabiting"))
+    }
+  )
+  
+  # Tab panel: paid and unpaid labor --------------------------------
+  output$pay_intro <- renderText(pay_intro1)
+  output$pay_t1 <- renderText(pay_t11)
+  output$pay_t2 <- renderText(pay_t21)
+  output$pay_t3 <- renderText(pay_t31)
+  output$pay_t4 <- renderText(pay_t41)
+  output$pay_t5 <- renderText(pay_t51)
+  output$pay_t6 <- renderText(pay_t61)
+  output$pay_t7 <- renderText(pay_t71)
+
+  output$pay_age <- renderPlot(
+    ggplot(adults %>% filter(!is.na(paid))) +
+      geom_bar(aes(age, fill = sex), position = "fill", width = 0.9) +
+      geom_hline(yintercept = 0.5, alpha = 0.2, linetype = "dashed") +
+      facet_wrap(vars(paid)) +
       theme_minimal() +
-      theme(legend.position = "bottom", legend.title = element_blank()) +
-      scale_x_continuous(breaks = c(7, 18, 90))
-  }
+      theme(legend.position = "bottom", legend.title = element_blank(), panel.grid.minor = element_blank()) +
+      scale_fill_manual(values = c(color1, color2), labels = c("men", "women")) +
+      ylab("proportion")
+  )
   
-  output$sch_t <- renderText("")
-  output$pop_sch <- renderPlot(sch(personas))
-  output$with_job_sch <- renderPlot(sch(with_job))
-  output$unpaid_sch <- renderPlot(sch(unpaid_job))
-  output$unpaid_sec_sch <- renderPlot(sch(unpaid_sec_job))
-  
-  ur <- function(df) {
-    ggplot(df) +
-      geom_bar(aes(x = area, fill = sex), width = 0.3) +
+  output$pay_lab_inc1 <- renderPlot(
+    ggplot(adults %>% filter(!is.na(paid))) +
+      geom_jitter(aes(x = age, y = lab_monthly_inc, color = sex), alpha = 0.05) +
+      geom_line(data = adults %>% filter(!is.na(paid)) %>% group_by(age, sex) %>% summarize(mean = mean(lab_monthly_inc, na.rm = T)),
+                aes(x = age, y = mean, color = sex), size = 1) +
+      geom_point(data = adults %>% filter(!is.na(paid)) %>% group_by(age, sex) %>% summarize(mean = mean(lab_monthly_inc, na.rm = T)),
+                 aes(x = age, y = mean, color = sex), size = 2.5) +
       theme_minimal() +
-      theme(legend.position = "bottom", legend.title = element_blank())
-  }
+      theme(legend.position = "bottom", legend.title = element_blank(), panel.grid.minor = element_blank()) +
+      scale_color_manual(values = c(color1, color2), labels = c("men", "women")) +
+      ylab("monthly labor income (BOB)") +
+      ylim(0, 20000)
+  )
   
-  output$ur_t <- renderText('Most of the unpaid labor is done by rural residents, especially rural women,
-                            even though they make up a small percentage of the national population.
-                            However, when it comes to juggling an unpaid "side hustle" on top of a paid job,
-                            men are more likely than women to do so.')
-  output$pop_ur <- renderPlot(ur(personas))
-  output$with_job_ur <- renderPlot(ur(with_job))
-  output$unpaid_ur <- renderPlot(ur(unpaid_job))
-  output$unpaid_sec_ur <- renderPlot(ur(unpaid_sec_job))
-  
-  indi <- function(df) {
-    ggplot(df) +
-      geom_bar(aes(x = indigenous, fill = sex), width = 0.4) +
+  output$pay_lab_inc2 <- renderPlot(
+    ggplot(adults %>% filter(paid == "paid")) +
+      geom_jitter(aes(x = age, y = lab_monthly_inc, color = sex), alpha = 0.05) +
+      geom_line(data = adults %>% filter(paid == "paid") %>% group_by(age, sex) %>% summarize(mean = mean(lab_monthly_inc, na.rm = T)),
+                aes(x = age, y = mean, color = sex), size = 1) +
+      geom_point(data = adults %>% filter(paid == "paid") %>% group_by(age, sex) %>% summarize(mean = mean(lab_monthly_inc, na.rm = T)),
+                 aes(x = age, y = mean, color = sex), size = 2.5) +
       theme_minimal() +
-      theme(legend.position = "bottom", legend.title = element_blank())
-  }
+      theme(legend.position = "bottom", legend.title = element_blank(), panel.grid.minor = element_blank()) +
+      scale_color_manual(values = c(color1, color2), labels = c("men", "women")) +
+      ylab("monthly labor income (BOB)") +
+      ylim(0, 20000)
+  )
   
-  output$pop_indi <- renderPlot(indi(personas))
-  output$with_job_indi <- renderPlot(indi(with_job))
-  output$unpaid_indi <- renderPlot(indi(unpaid_job))
-  output$unpaid_sec_indi <- renderPlot(indi(unpaid_sec_job))
-  
-  indi_p <- function(df) {
-    ggplot(df) +
-      geom_bar(aes(x = indigenous, fill = sex), width = 0.4, position = "fill") +
+  output$pay_worth <- renderPlot(
+    ggplot(adults %>% filter(paid == "unpaid") %>% mutate(unpaid_worth = hh_lab_inc * hh_hr_pct)) +
+      geom_density(aes(unpaid_worth, fill = sex), alpha = 0.35, color = "grey") +
       theme_minimal() +
-      theme(legend.position = "bottom", legend.title = element_blank(), axis.title.y = element_blank())
-  }
+      theme(legend.position = "bottom", legend.title = element_blank(), panel.grid.minor = element_blank(), axis.text.y = element_blank()) +
+      scale_fill_manual(values = c(color1, color2), labels = c("men", "women")) +
+      xlim(0, 1700000) + xlab("Contribution to monthly household labor income (BOB)")
+  )
   
-  output$pop_indi_p <- renderPlot(indi_p(personas))
-  output$with_job_indi_p <- renderPlot(indi_p(with_job))
-  output$unpaid_indi_p <- renderPlot(indi_p(unpaid_job))
-  output$unpaid_sec_indi_p <- renderPlot(indi_p(unpaid_sec_job))
+  adults_unpaid_worth <- adults %>%
+    filter(paid == "unpaid") %>%
+    mutate(unpaid_worth = hh_lab_inc * hh_hr_pct) %>%
+    group_by(sex) %>%
+    summarize(sum = sum(unpaid_worth))
+
+  output$pay_worth_tot1 <- renderText(comma(adults_unpaid_worth$sum[1]))
+  output$pay_worth_tot2 <- renderText(comma(adults_unpaid_worth$sum[2]))
   
-  indi_id <- function(df) {
-    df$indigenous_id <- replace(df$indigenous_id, df$indigenous_id == "Indígena u originario no especificado", "No especificado")
+  output$pay_ru1 <- renderPlot(
+    ggplot(adults %>% filter(paid == "unpaid")) +
+      geom_density(aes(hh_lab_inc, fill = sex), alpha = 0.35, color = "grey") +
+      facet_wrap(vars(area), labeller = labeller(area = c("Rural" = "rural", "Urbana" = "urban"))) +
+      theme_minimal() +
+      theme(legend.position = "bottom", legend.title = element_blank(), panel.grid.minor = element_blank(), axis.text.y = element_blank()) +
+      scale_fill_manual(values = c(color1, color2), labels = c("men", "women")) +
+      xlim(0, 40000) + xlab("Household monthly labor income (BOB)")
+  )
+  
+  adults_unpaid_worth_ru <- adults %>%
+    mutate(paid = paid == "unpaid", unpaid_hr = tot_work_week_hr * paid) %>%
+    group_by(folio) %>%
+    summarize(area = first(area), hr = first(hh_hr), inc = first(hh_lab_inc), unpaid_hr = sum(unpaid_hr, na.rm = T),
+              unpaid_inc = ifelse(hr == 0, 0, inc * unpaid_hr / hr)) %>%
+    group_by(area) %>%
+    summarize(tot_inc = sum(inc), tot_unpaid_inc = sum(unpaid_inc), unpaid_pct = round(tot_unpaid_inc / tot_inc * 100, 1))
+  
+  output$pay_ru2 <- renderText(paste0(adults_unpaid_worth_ru$unpaid_pct[1], "%"))
+  output$pay_ru3 <- renderText(paste0(adults_unpaid_worth_ru$unpaid_pct[2], "%"))
+  
+  adults_pay_depto <- adults %>%
+    filter(!is.na(paid)) %>%
+    group_by(depto, area) %>%
+    summarize(mean_unpaid = mean(paid == "unpaid") * 100) %>%
+    pivot_wider(names_from = area, values_from = mean_unpaid) %>%
+    arrange(Rural)
+  
+  depto_ru <- adults_pay_depto$depto
     
-    ggplot(df %>% filter(indigenous == "1. Pertenece")) +
-      geom_bar(aes(y = indigenous_id, fill = sex), width = 0.6) +
+  output$pay_depto1 <- renderPlot(
+    ggplot(adults_pay_depto) +
+      geom_segment(aes(x = Urbana, xend = Rural, y = factor(depto, levels = depto_ru), yend = depto), color = "grey") +
+      geom_point(aes(y = depto, x = Rural), color = color1, size = 6) +
+      geom_point(aes(y = depto, x = Urbana), color = color2, size = 6) +
+      geom_point(aes(25, 2.2), color = color1, size = 6) +
+      geom_text(aes(27, 2.2, label = "rural"), hjust = "left") +
+      geom_point(aes(25, 1.5), color = color2, size = 6) +
+      geom_text(aes(27, 1.5, label = "urban"), hjust = "left") +
       theme_minimal() +
-      theme(legend.position = "bottom", legend.title = element_blank())
-  }
+      theme(legend.position = "bottom", legend.title = element_blank(), panel.grid.minor = element_blank(),
+            panel.grid.major.y = element_blank()) +
+      xlab("% unpaid workers") + ylab("")
+  )
   
-  output$pop_indi_id <- renderPlot(indi_id(personas))
-  output$with_job_indi_id <- renderPlot(indi_id(with_job))
-  output$unpaid_indi_id <- renderPlot(indi_id(unpaid_job))
-  output$unpaid_sec_indi_id <- renderPlot(indi_id(unpaid_sec_job))
+  adults_marital <- adults %>%
+    filter(!is.na(paid)) %>%
+    mutate(marital = as.numeric(substr(marital, 1, 1))) %>%
+    mutate(marital = case_when(marital == 1 ~ "single", marital == 2 ~ "married", marital == 3 ~ "cohabiting",
+                               marital == 4 ~ "separated", marital == 5 ~ "divorced", marital == 6 ~ "widowed")) %>%
+    group_by(marital, sex) %>%
+    summarize(mean_unpaid = mean(paid == "unpaid") * 100) %>%
+    separate(sex, into = c(NA, "sex"), sep = 2, remove = T) %>%
+    pivot_wider(names_from = sex, values_from = mean_unpaid, names_sep = "_") %>%
+    arrange(Mujer)
   
-  mari <- function(df) {
-    ggplot(df) +
-      geom_bar(aes(y = marital, fill = sex), width = 0.4) +
+  marital_sex <- adults_marital$marital
+  
+  output$pay_marital1 <- renderPlot(
+    ggplot(adults_marital) +
+      geom_segment(aes(x = Hombre, xend = Mujer, y = factor(marital, levels = marital_sex), yend = marital), color = "grey") +
+      geom_point(aes(y = marital, x = Hombre), color = color1, size = 6) +
+      geom_point(aes(y = marital, x = Mujer), color = color2, size = 6) +
+      geom_point(aes(16, 2), color = color1, size = 6) +
+      geom_text(aes(17, 2, label = "men"), hjust = "left") +
+      geom_point(aes(16, 1.5), color = color2, size = 6) +
+      geom_text(aes(17, 1.5, label = "women"), hjust = "left") +
       theme_minimal() +
-      theme(legend.position = "bottom", legend.title = element_blank())
-  }
+      theme(legend.position = "bottom", legend.title = element_blank(), panel.grid.minor = element_blank(),
+            panel.grid.major.y = element_blank()) +
+      xlab("% unpaid workers") + ylab("")
+  )
   
-  output$mari_t <- renderText("Married women are much more likely than men to do unpaid labor,
-                              but this gender dynamic is reversed among single people.")
-  output$pop_mari <- renderPlot(mari(personas))
-  output$with_job_mari <- renderPlot(mari(with_job))
-  output$unpaid_mari <- renderPlot(mari(unpaid_job))
-  output$unpaid_sec_mari <- renderPlot(mari(unpaid_sec_job))
+  output$pay_cell1 <- renderPlot(
+    ggplot(adults %>% filter(paid == "unpaid")) +
+      geom_density(aes(hh_lab_inc, fill = sex), alpha = 0.35, color = "grey") +
+      facet_wrap(vars(cellphone), labeller = labeller(cellphone = c("1. Si" = "with cellphone", "2. No" = "without cellphone"))) +
+      theme_minimal() +
+      theme(legend.position = "bottom", legend.title = element_blank(), panel.grid.minor = element_blank(), axis.text.y = element_blank()) +
+      scale_fill_manual(values = c(color1, color2), labels = c("men", "women")) +
+      xlim(0, 40000) + xlab("household monthly labor income (BOB)")
+  )
+
   
-  mari_age <- function(df) {
-    ref <- data.frame(
-      marital_code = c("1", "2", "3", "4", "5", "6", NA),
-      sp = c(F, T, T, F, F, F, NA)
-    )
+  # Tab panel: older adults -----------------------------------------
+  output$older_t1 <- renderText(older_t11)
+  output$older_t2 <- renderText(older_t21)
+  output$older_t3 <- renderText(older_t31)
+  output$older_t4 <- renderText(older_t41)
+
+  output$older_p1 <- renderPlot(
+    older %>%
+      # mutate(primary_job = ifelse(is.na(primary_job), F, T)) %>%
+      ggplot() +
+      geom_jitter(aes(age, sp_monthly_inc, color = sex), width = 1, alpha = 0.25) +
+      geom_smooth(aes(age, sp_monthly_inc, color = sex), method = "loess", se = F, span = 0.1, method.args = list(degree = 1)) +
+      theme_minimal() +
+      theme(panel.grid.minor = element_blank(), legend.position = "bottom", legend.title = element_blank()) +
+      scale_color_manual(values = color_pal[1:2], labels = c("men", "women")) +
+      ylab("monthly social protection income (BOB)") + ylim(-1, 7000)
+  )
+  
+  output$older_p2 <- renderPlot(
+    read_csv("data/older_ses_rf1_imp.csv") %>%
+      ggplot() +
+      geom_segment(aes(x = 0, y = reorder(name, MeanDecreaseAccuracy), xend = MeanDecreaseAccuracy, yend = reorder(name, MeanDecreaseAccuracy)), color = "grey") +
+      geom_point(aes(MeanDecreaseAccuracy, name), color = color1, size = 3) +
+      theme_minimal() +
+      theme(panel.grid.major.y = element_blank(), panel.grid.minor = element_blank(), axis.text.x = element_blank()) +
+      scale_x_continuous(position = "top", breaks = c(0)) +
+      xlab("variable importance") + ylab("")
+  )
+  
+  older_job_var <- reactive(input$older_job)
+  
+  older_f1 <- function(var, ylab) {
+    fit1 <- loess(older %>% filter(is.na(primary_job) & startsWith(sex, "1")) %>% pull(.data[[var]]) ~ age, degree = 1, span = 0.1,
+                  data = older %>% filter(is.na(primary_job) & startsWith(sex, "1")))
+    fit2 <- loess(older %>% filter(is.na(primary_job) & startsWith(sex, "2")) %>% pull(.data[[var]]) ~ age, degree = 1, span = 0.1,
+                  data = older %>% filter(is.na(primary_job) & startsWith(sex, "2")))
+    fit3 <- loess(older %>% filter(!is.na(primary_job) & startsWith(sex, "1")) %>% pull(.data[[var]]) ~ age, degree = 1, span = 0.1,
+                  data = older %>% filter(!is.na(primary_job) & startsWith(sex, "1")))
+    fit4 <- loess(older %>% filter(!is.na(primary_job) & startsWith(sex, "2")) %>% pull(.data[[var]]) ~ age, degree = 1, span = 0.1,
+                  data = older %>% filter(!is.na(primary_job) & startsWith(sex, "2")))
     
-    df <- df %>%
-      mutate(marital_code = ifelse(is.na(marital), NA, substr(marital, 1, 1))) %>%
-      left_join(ref, by = "marital_code")
-    
-    ggplot(df) +
-      geom_bar(aes(x = age, fill = sp), width = 0.4, position = "fill") +
+    older %>%
+      mutate(primary_job = ifelse(!is.na(primary_job), "1 with job", "2 without job")) %>%
+      arrange(primary_job, sex) %>%
+      mutate(smooth = c(fit3$fitted, fit4$fitted, fit1$fitted, fit2$fitted)) %>%
+      ggplot() +
+      geom_jitter(aes(age, .data[[var]], color = primary_job), width = 1, alpha = 0.1) +
+      geom_line(aes(age, smooth, color = primary_job), size = 1) +
+      facet_wrap(vars(sex), labeller = labeller(sex = c("1.Hombre" = "men", "2.Mujer" = "women"))) +
       theme_minimal() +
-      theme(legend.position = "bottom") +
-      labs(fill = "with spouse or partner", y = "") +
-      scale_x_continuous(breaks = c(7, 18, 90))
+      theme(panel.grid.minor = element_blank(), legend.position = "bottom") +
+      scale_color_manual(values = color_pal[1:2], labels = c("working", "not working"), name = "") +
+      ylab(ylab) + ylim(-1, 5000)
   }
   
-  output$mari_age_t <- renderText("Married women are much more likely than men to do unpaid labor,
-                              but this gender dynamic is reversed among single people.")
-  output$pop_mari_age <- renderPlot(mari_age(personas))
-  output$with_job_mari_age <- renderPlot(mari_age(with_job))
-  output$unpaid_mari_age <- renderPlot(mari_age(unpaid_job))
-  output$unpaid_sec_mari_age <- renderPlot(mari_age(unpaid_sec_job))
-  
-  kid <- function(df) {
-    df$num_alive_child <- replace(df$num_alive_child, is.na(df$num_alive_child), 0)
-    ggplot(df) +
-      geom_bar(aes(x = num_alive_child, fill = sex), width = 0.4) +
-      theme_minimal() +
-      theme(legend.position = "bottom", legend.title = element_blank())
-  }
-  
-  output$kid_t <- renderText("Need some more data wrangling, because the survey logs children under women only.
-                             Where are the single dads?!")
-  output$pop_kid <- renderPlot(kid(personas))
-  output$with_job_kid <- renderPlot(kid(with_job))
-  output$unpaid_kid <- renderPlot(kid(unpaid_job))
-  output$unpaid_sec_kid <- renderPlot(kid(unpaid_sec_job))
-  
-  lit <- function(df) {
-    ggplot(df) +
-      geom_bar(aes(x = literate, fill = sex), width = 0.3) +
-      theme_minimal() +
-      theme(legend.position = "bottom", legend.title = element_blank())
-  }
-  
-  output$lit_t <- renderText("Compared to the total working population,
-                             people who are illiterate are more likely to work unpaid jobs.
-                             However, even for literate women, they are still more likely to do unpaid labor than their male counterparts.")
-  output$pop_lit <- renderPlot(lit(personas))
-  output$with_job_lit <- renderPlot(lit(with_job))
-  output$unpaid_lit <- renderPlot(lit(unpaid_job))
-  output$unpaid_sec_lit <- renderPlot(lit(unpaid_sec_job))
-  
-  edu <- function(df) {
-    ggplot(df) +
-      geom_bar(aes(y = edu, fill = sex), width = 0.4) +
-      theme_minimal() +
-      theme(legend.position = "bottom", legend.title = element_blank())
-  }
-  
-  output$edu_t <- renderText("These plots are hard to read,
-                              so I broke down the education variable into 2 binary variables:
-                              1) whether an individual has received any education and
-                              2) higher education attainment.")
-  output$pop_edu <- renderPlot(edu(personas))
-  output$with_job_edu <- renderPlot(edu(with_job))
-  output$unpaid_edu <- renderPlot(edu(unpaid_job))
-  output$unpaid_sec_edu <- renderPlot(edu(unpaid_sec_job))
-  
-  any_ed <- function(df) {
-    ggplot(df) +
-      geom_bar(aes(x = any_ed, fill = sex), width = 0.3) +
-      theme_minimal() +
-      theme(legend.position = "bottom", legend.title = element_blank()) +
-      xlab("received any education")
-  }
-  
-  output$any_ed_t <- renderText("The charts below represent people who have received any formal education (first row)
-                                and people who have received higher education (second row).
-                                As expected, people with more education tend to hold paid jobs.")
-  output$pop_any_ed <- renderPlot(any_ed(personas))
-  output$with_job_any_ed <- renderPlot(any_ed(with_job))
-  output$unpaid_any_ed <- renderPlot(any_ed(unpaid_job))
-  output$unpaid_sec_any_ed <- renderPlot(any_ed(unpaid_sec_job))
-  
-  higher_ed <- function(df) {
-    ggplot(df) +
-      geom_bar(aes(x = higher_ed, fill = sex), width = 0.3) +
-      theme_minimal() +
-      theme(legend.position = "bottom", legend.title = element_blank()) +
-      xlab("received higher education")
-  }
-  
-  output$pop_higher_ed <- renderPlot(higher_ed(personas))
-  output$with_job_higher_ed <- renderPlot(higher_ed(with_job))
-  output$unpaid_higher_ed <- renderPlot(higher_ed(unpaid_job))
-  output$unpaid_sec_higher_ed <- renderPlot(higher_ed(unpaid_sec_job))
-  
-  any_ed2 <- function(df) {
-    ggplot(df) +
-      geom_bar(aes(x = sex, fill = any_ed), width = 0.3) +
-      theme_minimal() +
-      theme(legend.position = "bottom") +
-      labs(fill = "received any education")
-  }
-  
-  
-  output$any_ed2_t <- renderText("The following two rows are the same data as the previous two rows,
-                                 but coded differently to better show the gender dynamics.")
-  output$pop_any_ed2 <- renderPlot(any_ed2(personas))
-  output$with_job_any_ed2 <- renderPlot(any_ed2(with_job))
-  output$unpaid_any_ed2 <- renderPlot(any_ed2(unpaid_job))
-  output$unpaid_sec_any_ed2 <- renderPlot(any_ed2(unpaid_sec_job))
-  
-  higher_ed2 <- function(df) {
-    ggplot(df) +
-      geom_bar(aes(x = sex, fill = higher_ed), width = 0.3) +
-      theme_minimal() +
-      theme(legend.position = "bottom") +
-      labs(fill = "received higher education")
-  }
-  
-  output$pop_higher_ed2 <- renderPlot(higher_ed2(personas))
-  output$with_job_higher_ed2 <- renderPlot(higher_ed2(with_job))
-  output$unpaid_higher_ed2 <- renderPlot(higher_ed2(unpaid_job))
-  output$unpaid_sec_higher_ed2 <- renderPlot(higher_ed2(unpaid_sec_job))
-  
-  disease <- function(df) {
-    df <- df %>% mutate(disease = chronic_disease_1 != "12. Ninguna?")
-    
-    ggplot(df) +
-      geom_bar(aes(x = sex, fill = disease), width = 0.3) +
-      theme_minimal() +
-      theme(legend.position = "bottom")
-  }
-  
-  output$pop_disease <- renderPlot(disease(personas))
-  output$with_job_disease <- renderPlot(disease(with_job))
-  output$unpaid_disease <- renderPlot(disease(unpaid_job))
-  output$unpaid_sec_disease <- renderPlot(disease(unpaid_sec_job))
-  
-  cell1 <- function(df) {
-    ggplot(df) +
-      geom_bar(aes(x = cellphone, fill = sex), width = 0.3) +
-      theme_minimal() +
-      theme(legend.position = "bottom", legend.title = element_blank())
-  }
-  cell2 <- function(df) {
-    ggplot(df) +
-      geom_bar(aes(x = sex, fill = cellphone), width = 0.3) +
-      theme_minimal() +
-      theme(legend.position = "bottom")
-  }
-  
-  output$tech1 <- renderText("Have a cellphone:\n
-                             Women who have unpaid jobs are much less likely to have cellphones,
-                             though the causal relationship is unclear.")
-  output$pop_cell1 <- renderPlot(cell1(personas))
-  output$with_job_cell1 <- renderPlot(cell1(with_job))
-  output$unpaid_cell1 <- renderPlot(cell1(unpaid_job))
-  output$unpaid_sec_cell1 <- renderPlot(cell1(unpaid_sec_job))
-  output$pop_cell2 <- renderPlot(cell2(personas))
-  output$with_job_cell2 <- renderPlot(cell2(with_job))
-  output$unpaid_cell2 <- renderPlot(cell2(unpaid_job))
-  output$unpaid_sec_cell2 <- renderPlot(cell2(unpaid_sec_job))
-  
-  internet1 <- function(df) {
-    ggplot(df) +
-      geom_bar(aes(x = internet_use, fill = sex), width = 0.3) +
-      theme_minimal() +
-      theme(legend.position = "bottom", legend.title = element_blank())
-  }
-  internet2 <- function(df) {
-    ggplot(df) +
-      geom_bar(aes(x = sex, fill = internet_use), width = 0.3) +
-      theme_minimal() +
-      theme(legend.position = "bottom")
-  }
-  
-  output$tech2 <- renderText("Internet access:")
-  output$pop_internet1 <- renderPlot(internet1(personas))
-  output$with_job_internet1 <- renderPlot(internet1(with_job))
-  output$unpaid_internet1 <- renderPlot(internet1(unpaid_job))
-  output$unpaid_sec_internet1 <- renderPlot(internet1(unpaid_sec_job))
-  output$pop_internet2 <- renderPlot(internet2(personas))
-  output$with_job_internet2 <- renderPlot(internet2(with_job))
-  output$unpaid_internet2 <- renderPlot(internet2(unpaid_job))
-  output$unpaid_sec_internet2 <- renderPlot(internet2(unpaid_sec_job))
-  
-  inter_home1 <- function(df) {
-    df <- df %>% mutate(inter_home = (internet_use_where_1 == "1. En el Hogar?" | internet_use_where_2 == "1. En el Hogar?"))
-    df$inter_home <- replace(df$inter_home, is.na(df$inter_home), F)
-    
-    ggplot(df) +
-      geom_bar(aes(x = inter_home, fill = sex), width = 0.3) +
-      theme_minimal() +
-      theme(legend.position = "bottom", legend.title = element_blank())
-  }
-  inter_home2 <- function(df) {
-    df <- df %>% mutate(inter_home = (internet_use_where_1 == "1. En el Hogar?" | internet_use_where_2 == "1. En el Hogar?"))
-    df$inter_home <- replace(df$inter_home, is.na(df$inter_home), F)
-    
-    ggplot(df) +
-      geom_bar(aes(x = sex, fill = inter_home), width = 0.3) +
-      theme_minimal() +
-      theme(legend.position = "bottom") +
-      labs(fill = "Internet at home")
-  }
-  
-  output$tech3 <- renderText("More specifically, Internet access at home:")
-  output$pop_inter_home1 <- renderPlot(inter_home1(personas))
-  output$with_job_inter_home1 <- renderPlot(inter_home1(with_job))
-  output$unpaid_inter_home1 <- renderPlot(inter_home1(unpaid_job))
-  output$unpaid_sec_inter_home1 <- renderPlot(inter_home1(unpaid_sec_job))
-  output$pop_inter_home2 <- renderPlot(inter_home2(personas))
-  output$with_job_inter_home2 <- renderPlot(inter_home2(with_job))
-  output$unpaid_inter_home2 <- renderPlot(inter_home2(unpaid_job))
-  output$unpaid_sec_inter_home2 <- renderPlot(inter_home2(unpaid_sec_job))
-  
-  union1 <- function(df) {
-    ggplot(df) +
-      geom_bar(aes(x = union_member, fill = sex), width = 0.3) +
-      theme_minimal() +
-      theme(legend.position = "bottom", legend.title = element_blank())
-  }
-  union2 <- function(df) {
-    ggplot(df) +
-      geom_bar(aes(x = sex, fill = union_member), width = 0.3) +
-      theme_minimal() +
-      theme(legend.position = "bottom", legend.title = element_blank())
-  }
-  
-  output$pop_union1 <- renderPlot(union1(personas))
-  output$with_job_union1 <- renderPlot(union1(with_job))
-  output$unpaid_union1 <- renderPlot(union1(unpaid_job))
-  output$unpaid_sec_union1 <- renderPlot(union1(unpaid_sec_job))
-  output$pop_union2 <- renderPlot(union2(personas))
-  output$with_job_union2 <- renderPlot(union2(with_job))
-  output$unpaid_union2 <- renderPlot(union2(unpaid_job))
-  output$unpaid_sec_union2 <- renderPlot(union2(unpaid_sec_job))
-  
-  salary <- function(df) {
-    df$primary_salary <- replace(df$primary_salary, is.na(df$primary_salary), 0)
+  older_f2 <- function(var, labels) {
+    df <- older %>%
+      mutate(primary_job = !is.na(primary_job)) %>%
+      group_by(age, .data[[var]]) %>%
+      summarize(n = n(), mean = mean(primary_job) * 100) %>%
+      filter(n > 9)
     
     ggplot(df) +
-      geom_violin(aes(x = sex, y = primary_salary, fill = sex), color = NA, alpha = 0.75, width = 1) +
-      geom_boxplot(aes(x = sex, y = primary_salary), width = 0.3, color = "black", fill = NA) +
+      geom_line(aes(age, mean, color = .data[[var]]), size = 1) +
       theme_minimal() +
-      theme(legend.position = "bottom", legend.title = element_blank())
+      theme(panel.grid.minor = element_blank(), legend.position = "bottom") +
+      scale_color_manual(values = color_pal[1:2], labels = labels, name = "average") +
+      ylab("% working")
   }
   
-  output$salary_t <- renderText("Wage income:")
-  output$pop_salary <- renderPlot(salary(personas))
-  output$with_job_salary <- renderPlot(salary(with_job))
-  output$unpaid_salary <- renderPlot(salary(unpaid_job))
-  output$unpaid_sec_salary <- renderPlot(salary(unpaid_sec_job))
+  output$older_job_p <- renderPlot(
+    if (older_job_var() == "nonlab") {
+      older_f1("nonlab_monthly_inc", "monthly non-labor income (BOB)")
+    } else if (older_job_var() == "rest_of_hh") {
+      older_f1("rest_of_hh", "monthly per capita income for rest of household (BOB)")
+    } else if (older_job_var() == "area") {
+      older_f2("area", c("rural", "urban"))
+    } else if (older_job_var() == "sex") {
+      older_f2("sex", c("men", "women"))
+    }
+  )
   
-  irr <- function(df) {
-    df$primary_nonsalaried_income <- replace(df$primary_nonsalaried_income, is.na(df$primary_nonsalaried_income), 0)
-    
-    ggplot(df) +
-      geom_violin(aes(x = sex, y = primary_nonsalaried_income, fill = sex), color = NA, alpha = 0.75, width = 1) +
-      geom_boxplot(aes(x = sex, y = primary_nonsalaried_income), width = 0.3, color = "black", fill = NA) +
+  output$older_p3 <- renderPlot(
+    read_csv("data/older_ses_rf2_imp.csv") %>%
+      ggplot() +
+      geom_segment(aes(x = 0, y = reorder(name, MeanDecreaseAccuracy), xend = MeanDecreaseAccuracy, yend = reorder(name, MeanDecreaseAccuracy)), color = "grey") +
+      geom_point(aes(MeanDecreaseAccuracy, name), color = color1, size = 3) +
       theme_minimal() +
-      theme(legend.position = "bottom", legend.title = element_blank())
+      theme(panel.grid.major.y = element_blank(), panel.grid.minor = element_blank(), axis.text.x = element_blank()) +
+      scale_x_continuous(position = "top", breaks = c(0)) +
+      xlab("variable importance") + ylab("")
+  )
+  
+  older_pay_var <- reactive(input$older_pay)
+  
+  older_f3 <- function(var, labels) {
+    older %>%
+      filter(!is.na(paid)) %>%
+      mutate(marital = case_when(str_detect(marital, "^[23]") ~ "married/cohabiting",
+                                 str_detect(marital, "^[1,456]") ~ "single/separated/divorced/widowed")) %>%
+      group_by(age, sex, .data[[var]]) %>%
+      summarize(n = n(), mean = mean(paid == "paid") * 100) %>%
+      filter(n > 5) %>%
+      ggplot() +
+      geom_line(aes(age, mean, color = .data[[var]]), size = 1) +
+      facet_wrap(vars(sex), labeller = labeller(sex = c("1.Hombre" = "men", "2.Mujer" = "women"))) +
+      theme_minimal() +
+      theme(panel.grid.minor = element_blank(), legend.position = "bottom") +
+      scale_color_manual(values = color_pal[1:2], labels = labels, name = "average") +
+      ylab("% workers who are paid")
   }
   
-  output$irr_t <- renderText("Irregular income:")
-  output$pop_irr <- renderPlot(irr(personas))
-  output$with_job_irr <- renderPlot(irr(with_job))
-  output$unpaid_irr <- renderPlot(irr(unpaid_job))
-  output$unpaid_sec_irr <- renderPlot(irr(unpaid_sec_job))
+  output$older_pay_p <- renderPlot(
+    if (older_pay_var() == "sex") {
+      older %>%
+        filter(!is.na(paid)) %>%
+        mutate(marital = case_when(str_detect(marital, "^[23]") ~ "married/cohabiting",
+                                   str_detect(marital, "^[1,456]") ~ "single/separated/divorced/widowed")) %>%
+        group_by(age, sex) %>%
+        summarize(n = n(), mean = mean(paid == "paid") * 100) %>%
+        filter(n > 9) %>%
+        ggplot() +
+        geom_line(aes(age, mean, color = sex), size = 1) +
+        theme_minimal() +
+        theme(panel.grid.minor = element_blank(), legend.position = "bottom") +
+        scale_color_manual(values = color_pal[1:2], labels = c("men", "women"), name = "average") +
+        ylab("% workers who are paid")
+    } else if (older_pay_var() == "area") {
+      older_f3("area", c("rural", "urban"))
+    } else if (older_pay_var() == "marital") {
+      older_f3("marital", c("married/cohabiting", "single/separated/divorced/widowed"))
+    } else if (older_pay_var() == "rest_of_hh") {
+      older %>%
+        filter(!is.na(paid)) %>%
+        ggplot() +
+        geom_density(aes(rest_of_hh, fill = paid), color = "grey", alpha = 0.3) +
+        theme_minimal() +
+        theme(panel.grid.minor = element_blank(), legend.position = "bottom", axis.text.y = element_blank()) +
+        scale_fill_manual(values = color_pal[1:2], labels = c("paid", "unpaid"), name = "") +
+        xlab("monthly per capita income for rest of household (BOB)") + xlim(0, 4000) + ylab("density")
+    } else if (older_pay_var() == "size") {
+      older %>%
+        filter(!is.na(paid)) %>%
+        group_by(size, sex) %>%
+        summarize(n = n(), mean = mean(paid == "paid") * 100) %>%
+        filter(n > 5) %>%
+        ggplot() +
+        geom_line(aes(size, mean, color = sex), size = 1) +
+        theme_minimal() +
+        theme(panel.grid.minor = element_blank(), legend.position = "bottom") +
+        scale_color_manual(values = color_pal[1:2], labels = c("men", "women"), name = "") +
+        scale_x_continuous(breaks = seq(1, 9, 2)) +
+        ylab("% works who are paid") + ylim(0, 100)
+    }
+  )
   
-  want1 <- function(df) {
-    ref <- data.frame(
-      want_work_more = c("1. Si", "1. Si", "2. No", "2. No"),
-      avail_work_more = c("1. Si", "2. No", "1. Si", "2. No"),
-      work_more = c("Want to and can work more", "Want to work more but can't", "Can work more but don't want to", "Neither")
-    )
-    
-    df <- df %>% left_join(ref, by = c("want_work_more", "avail_work_more"))
-    
-    ggplot(df) +
-      geom_bar(aes(x = work_more, fill = sex), width = 0.3) +
+  output$older_p4 <- renderPlot(
+    personas %>%
+      filter(paid == "paid") %>%
+      mutate(age_group = cut(age, breaks = c(7, seq(20, 100, 10)), include.lowest = T)) %>%
+      mutate(older = age > 60) %>%
+      ggplot() +
+      geom_jitter(aes(lab_monthly_inc+1, age_group, color = older), alpha = 0.1) +
+      geom_boxplot(aes(lab_monthly_inc+1, age_group, color = older), fill = "white", alpha = 0.5, outlier.shape = NA) +
+      # geom_density_ridges(aes(lab_monthly_inc+1, age_group, fill = older), alpha = 0.5, color = "grey") +
       theme_minimal() +
-      theme(legend.position = "bottom", legend.title = element_blank())
-  }
-  want2 <- function(df) {
-    ref <- data.frame(
-      want_work_more = c("1. Si", "1. Si", "2. No", "2. No"),
-      avail_work_more = c("1. Si", "2. No", "1. Si", "2. No"),
-      work_more = c("Want to and can work more", "Want to work more but can't", "Can work more but don't want to", "Neither")
-    )
+      theme(panel.grid.minor = element_blank(), legend.position = "none") +
+      scale_x_continuous(trans = 'log10') +
+      xlab("monthly labor income (BOB)") + ylab("age group") +
+      scale_color_manual(values = c("#E5E5E5", color1))
+  )
+  
+  
+  # Tab panel: summary -----------------------
+  output$sum_t1 <- renderText(summ1)
+  
+  # representative ages
+  a1 <- 16.5  # working
+  a2 <- 23  # in school
+  a3 <- 35  # paid work
+  a4 <- 45  # earning X bolivianos per month
+  a5 <- 65  # retired
+  
+  # nrow(personas %>% filter(between(age, 20, 24) & area == "Rural" & depto == "Potosi"))
+  
+  m1 <- function(rep_age, range, opp) {
+    df <- personas %>%
+      filter(between(age, rep_age - range, rep_age + range))
     
-    df <- df %>% left_join(ref, by = c("want_work_more", "avail_work_more"))
+    df <- if (opp == 1) {
+      df %>%
+        group_by(sex)
+    } else if (opp == 2) {
+      df %>%
+        filter((area == "Urbana" & depto == "La Paz") | (area == "Rural" & depto == "Potosi")) %>%
+        group_by(depto)
+    } else if (opp == 3) {
+      df %>%
+        mutate(decile = cut(pc_inc, 
+                            breaks = unique(quantile(pc_inc, probs = seq.int(0, 1, by = 0.1))), 
+                            include.lowest = T)) %>%
+        mutate(decile = as.numeric(decile)) %>%
+        filter(decile %in% c(1, 10)) %>%
+        mutate(decile = ifelse(decile == 1, "low", "high")) %>%
+        group_by(decile)
+    } else if (opp == 4) {
+      df %>%
+        filter(!is.na(marital)) %>%
+        mutate(mar = ifelse(str_detect(marital, "^[1456]"), "1single", "2married")) %>%
+        group_by(mar)
+    }
     
-    ggplot(df) +
-      geom_bar(aes(x = sex, fill = work_more), width = 0.3) +
-      theme_minimal() +
-      theme(legend.position = "bottom", legend.title = element_blank())
+    df <- if (rep_age == a1) {
+      df %>% summarize(mean = mean(!is.na(primary_job)) * 100) %>% pull(mean)
+    } else if (rep_age == a2) {
+      df %>% summarize(mean = mean(in_school == "1. Si") * 100) %>% pull(mean)
+    } else if (rep_age == a3) {
+      df %>% mutate(paid = ifelse(is.na(paid), "unpaid", paid)) %>% summarize(mean = mean(paid == "paid") * 100) %>% pull(mean)
+    } else if (rep_age == a4) {
+      df %>% summarize(mean = mean(tot_monthly_inc >= 3000) * 100) %>% pull(mean)
+    } else if (rep_age == a5) {
+      df %>% summarize(mean = mean(is.na(primary_job)) * 100) %>% pull(mean)
+    }
+    
+    diff <- df[2] - df[1]
+    
+    case_when(between(diff, -2, 2) ~ "about the same",
+              diff < -2 ~ paste0("-", abs(round(diff)), "pp"),
+              diff > 2 ~ paste0("+", round(diff), "pp"))
   }
   
-  output$want_t <- renderText("Want to work more vs. can work more")
-  output$pop_want1 <- renderPlot(want1(personas))
-  output$with_job_want1 <- renderPlot(want1(with_job))
-  output$unpaid_want1 <- renderPlot(want1(unpaid_job))
-  output$unpaid_sec_want1 <- renderPlot(want1(unpaid_sec_job))
-  output$pop_want2 <- renderPlot(want2(personas))
-  output$with_job_want2 <- renderPlot(want2(with_job))
-  output$unpaid_want2 <- renderPlot(want2(unpaid_job))
-  output$unpaid_sec_want2 <- renderPlot(want2(unpaid_sec_job))
+  output$sum_m11 <- renderText(m1(a1, 0.5, 1))
+  output$sum_m12 <- renderText(m1(a1, 0.5, 2))
+  output$sum_m13 <- renderText(m1(a1, 0.5, 3))
+  output$sum_m14 <- renderText("-")
   
-  # Tab panel: stories -----------------------------------
+  output$sum_m21 <- renderText(m1(a2, 1, 1))
+  output$sum_m22 <- renderText(m1(a2, 1, 2))
+  output$sum_m23 <- renderText(m1(a2, 1, 3))
+  output$sum_m24 <- renderText(m1(a2, 1, 4))
   
-  c1_df <- unpaid_job1 %>%
-    filter(sex == "2.Mujer", higher_ed == T) %>%
-    select(area, age, marital, indigenous, edu, in_school, chronic_disease_1, num_alive_child,
-           primary_job, work_type, want_work_more, avail_work_more)
-  c1_df2 <- eventReactive(input$b1, {
-    c1_df[sample(nrow(c1_df), 1), ]
+  output$sum_m31 <- renderText(m1(a3, 3, 1))
+  output$sum_m32 <- renderText(m1(a3, 3, 2))
+  output$sum_m33 <- renderText(m1(a3, 3, 3))
+  output$sum_m34 <- renderText(m1(a3, 3, 4))
+  
+  output$sum_m41 <- renderText(m1(a4, 3, 1))
+  output$sum_m42 <- renderText(m1(a4, 3, 2))
+  output$sum_m43 <- renderText(m1(a4, 3, 3))
+  output$sum_m44 <- renderText(m1(a4, 3, 4))
+  
+  output$sum_m51 <- renderText(m1(a5, 3, 1))
+  output$sum_m52 <- renderText(m1(a5, 3, 2))
+  output$sum_m53 <- renderText(m1(a5, 3, 3))
+  output$sum_m54 <- renderText(m1(a5, 3, 4))
+  
+  
+  # Page navigation ---------------------------------
+  # Children
+  observeEvent(input$to_youth, {
+    updateNavbarPage(session, "main", selected = "youth")
   })
   
-  output$t1 <- renderText(paste("Women with higher education working an unpaid job:", nrow(c1_df)))
-  observeEvent(input$b1, {
-    updateActionButton(session, "b1", label = " Tell me another story", icon = icon("redo"))
+  # Youth
+  observeEvent(input$to_children, {
+    updateNavbarPage(session, "main", selected = "children")
   })
-  output$c1 <- renderTable({ c1_df2() })
-  
-  c2_df <- unpaid_sec_job %>%
-    select(area, sex, age, marital, indigenous, edu, in_school, chronic_disease_1, num_alive_child,
-           primary_job, work_type, primary_salary, primary_salary_freq, primary_nonsalaried_income, primary_nonsalaried_income_freq,
-           sec_job, sec_employer_industry, sec_work_type,
-           want_work_more, avail_work_more)
-  c2_df2 <- eventReactive(input$b2, {
-    c2_df[sample(nrow(c2_df), 1), ]
+  observeEvent(input$to_employment, {
+    updateNavbarPage(session, "main", selected = "employment")
   })
   
-  output$t2 <- renderText(paste("People with a paid primary job and an unpaid secondary job:", nrow(c2_df)))
-  observeEvent(input$b2, {
-    updateActionButton(session, "b2", label = " Tell me another story", icon = icon("redo"))
+  # Adults - entering the job market
+  observeEvent(input$to_youth2, {
+    updateNavbarPage(session, "main", selected = "youth")
   })
-  output$c2 <- renderTable({ c2_df2() })
-  
-  c3_df <- unpaid_pri_job %>%
-    select(area, sex, age, marital, indigenous, edu, in_school, chronic_disease_1, num_alive_child,
-           primary_job, work_type, sec_job, sec_employer_industry, sec_work_type, sec_salary, sec_salary_freq, sec_nonsalaried_income, sec_nonsalaried_income_freq,
-           want_work_more, avail_work_more)
-  c3_df2 <- eventReactive(input$b3, {
-    c3_df[sample(nrow(c3_df), 1), ]
+  observeEvent(input$to_pay, {
+    updateNavbarPage(session, "main", selected = "pay")
   })
   
-  output$t3 <- renderText(paste("People with an unpaid primary job and a paid secondary job:", nrow(c3_df)))
-  observeEvent(input$b3, {
-    updateActionButton(session, "b3", label = " Tell me another story", icon = icon("redo"))
+  # Adults - paid and unpaid labor
+  observeEvent(input$to_employment2, {
+    updateNavbarPage(session, "main", selected = "employment")
   })
-  output$c3 <- renderTable({ c3_df2() })
-  
-  c4_df <- unpaid_job %>%
-    filter(union_member == "1. Si") %>%
-    select(area, sex, age, marital, indigenous, edu, in_school, literate, chronic_disease_1, num_alive_child,
-           primary_job, work_type, sec_job, sec_employer_industry, sec_work_type, sec_salary, sec_salary_freq, sec_nonsalaried_income, sec_nonsalaried_income_freq,
-           want_work_more, avail_work_more)
-  c4_df2 <- eventReactive(input$b4, {
-    c4_df[sample(nrow(c4_df), 1), ]
+  observeEvent(input$to_neet, {
+    updateNavbarPage(session, "main", selected = "neet")
   })
   
-  output$t4 <- renderText(paste("Union members with unpaid jobs:", nrow(c4_df)))
-  observeEvent(input$b4, {
-    updateActionButton(session, "b4", label = " Tell me another story", icon = icon("redo"))
+  # Adults - neet
+  observeEvent(input$to_pay2, {
+    updateNavbarPage(session, "main", selected = "pay")
   })
-  output$c4 <- renderTable({ c4_df2() })
-  
-  c5_df <- with_job %>%
-    filter(age < 10) %>%
-    select(area, sex, age, indigenous, edu, in_school,
-           primary_job, work_type, primary_salary, primary_salary_freq, primary_nonsalaried_income, primary_nonsalaried_income_freq,
-           sec_job, sec_employer_industry, sec_work_type, union_member)
-  c5_df2 <- eventReactive(input$b5, {
-    c5_df[sample(nrow(c5_df), 1), ]
+  observeEvent(input$to_older, {
+    updateNavbarPage(session, "main", selected = "older")
   })
   
-  output$t5 <- renderText(paste("Child laborers under ten:", nrow(c5_df)))
-  observeEvent(input$b5, {
-    updateActionButton(session, "b5", label = " Tell me another story", icon = icon("redo"))
+  # Older adults
+  observeEvent(input$to_neet2, {
+    updateNavbarPage(session, "main", selected = "neet")
   })
-  output$c5 <- renderTable({ c5_df2() })
+  observeEvent(input$to_sum, {
+    updateNavbarPage(session, "main", selected = "sum")
+  })
+  
+  # Summary
+  observeEvent(input$to_older2, {
+    updateNavbarPage(session, "main", selected = "older")
+  })
+  
+  # Link to github
+  # output$gh <- renderImage(list(src = "www/GitHub-Mark.png", width = "20px"), deleteFile = F)
 }
 
 shinyApp(ui = ui, server = server)
