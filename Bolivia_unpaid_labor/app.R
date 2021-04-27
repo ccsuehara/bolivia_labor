@@ -20,7 +20,6 @@ source("EDA.R")
 source("texts.R")
 source("EDA2.R")
 
-
 c1 <- "General population (2018)"
 c2 <- "People with at least 1 job, paid or unpaid"
 c3 <- "People with at least 1 unpaid job"
@@ -40,13 +39,6 @@ filler <- "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusm
 names_m <- c("Juan", "Jose", "Luis", "Carlos", "Mario", "Jorge", "Victor", "Miguel", "Pedro", "Antonio", "Fernando", "Roberto", "Felix", "Julio")
 names_w <- c("Maria", "Juana", "Ana", "Martha", "Carmen", "Rosa", "Julia", "Elizabeth", "Cristina", "Lidia", "Patricia", "Sonia", "Isabel", "Victoria")
 
-lf1 <- "Employed Population"
-lf2 <- "Unemployed Population"
-lf3 <- "Inactive Population"
-
-
-wgt <- 258.651824951171
-# wgt <- 1
 
 # UI -------------------------------
 ui <- fluidPage(
@@ -63,7 +55,7 @@ ui <- fluidPage(
              
              # Tab panel: home -----------------
              tabPanel("Home",
-                      fluidRow(width = 12, hr(),
+                      fluidRow(width = 12, hr(), hr(),
                                imageOutput("landing",
                                            width = "99%",
                                            height = "90%",
@@ -71,7 +63,7 @@ ui <- fluidPage(
              
              # Tab panel: children under 18 --------------------
              tabPanel("Children under 18",
-                      value = "children",
+                      value = "children", hr(), hr(),
                       
                       fluidRow(style = 'background-image: url("children.jpg"); background-size: cover;',
                                column(12, style = "padding: 80px 50px;", 
@@ -87,40 +79,12 @@ ui <- fluidPage(
                                h3("Overview: children in school and at work"),
                                plotOutput("children_1"),
                                
-                               # h3("Children population overview"),
-                               # fluidRow(
-                               #   column(6,
-                               #          plotOutput("children_overview1")),
-                               #   column(6,
-                               #          plotOutput("children_overview2"))
-                               # ),
-                               
-                               # hr(),
-                               # textOutput("children_t1"),
-                               # h3("School enrollment and attendance"),
-                               # fluidRow(
-                               #   column(6,
-                               #          plotOutput("children_edu1")),
-                               #   column(6,
-                               #          plotOutput("children_edu2"))
-                               # ),
-                               
                                hr(),
                                textOutput("children_t2"),
                                h3("Reasons for not enrolling in school"),
                                # d3tree2Output("children_edu3"),
                                plotOutput("children_edu4"),
                                hr(),
-                               
-                               # textOutput("children_t3"),
-                               # h3("Educational attainment"),
-                               # fluidRow(
-                               #   column(6,
-                               #          plotOutput("children_edu5")),
-                               #   column(6,
-                               #          plotOutput("children_edu6"))
-                               # ),
-                               # hr(),
                                
                                textOutput("children_t5"),
                                p(""),
@@ -147,36 +111,6 @@ ui <- fluidPage(
                                h3("Average work hours and income"),
                                plotOutput("children_lfp1"),
                                plotOutput("children_lfp2")
-                               # hr(),
-                               # textOutput("children_t5"),
-                               # h3("Work hours and income in relation to the household"),
-                               # plotOutput("children_lfp3"),
-                               # plotOutput("children_lfp4"),
-                               # hr(),
-                               # textOutput("children_t6"),
-                               # plotOutput("children_lfp5"),
-                               # plotOutput("children_lfp6"),
-                               # hr(),
-                               # textOutput("children_t7"),
-                               # plotOutput("children_lfp7"),
-                               # plotOutput("children_lfp8")
-                               
-                               # hr(),
-                               # textOutput("children_t9"),
-                               # h3("Children and indigeneity"),
-                               # fluidRow(
-                               #   column(6,
-                               #          plotOutput("children_indi1")),
-                               #   column(6,
-                               #          plotOutput("children_indi2"))
-                               # ),
-                               # hr(),
-                               # fluidRow(
-                               #   column(6,
-                               #          plotOutput("children_indi3")),
-                               #   column(6,
-                               #          plotOutput("children_indi4"))
-                               # )
                                ),
                         column(3,
                                fixedPanel(
@@ -567,112 +501,162 @@ ui <- fluidPage(
                                fluidRow(
                                  column(10, offset = 2,
                                         column(3, style = "padding-top: 2.5em;", 
-                                               p("Compared to a boy, a girl born in Bolivia has a")),
+                                               p("Compared to a boy, a girl born in Bolivia has a",
+                                                 style = "font-size: 0.8em; ")),
                                         column(3, style = "padding-top: 1.5em;", 
-                                               p("Compared to a person born in urban La Paz, a person born in rural Potosi has a")),
+                                               p("Compared to a person born in urban La Paz, a person born in rural Potosi has a",
+                                                 style = "font-size: 0.8em; ")),
                                         column(3,
-                                               p("Compared to a person born in a family in the highest income decile, a person born into the lowest income decile has a")),
+                                               p("Compared to a person born in a family in the highest income decile, a person born into the lowest income decile has a",
+                                                 style = "font-size: 0.8em; ")),
                                         column(3, style = "padding-top: 2em;", 
-                                               p("Compared to a single woman, a married woman has a")))
+                                               p("Compared to a single woman, a married woman has a",
+                                                 style = "font-size: 0.8em; ")))
                                ),
                                hr(style = "margin: 0.5em 0em;"),
                                
                                fluidRow(
-                                 column(2, style = "padding-top: 3em;",
-                                        p("at the age of 17")),
+                                 column(2, style = "padding-top: 1.5em;",
+                                        p("likelihood to be working at the age of 17",
+                                          style = "font-size: 0.8em; ")),
+                                 column(10, style = "height: 7em; ",
+                                        column(3,
+                                               plotOutput("sum_m11", height = "7em")),
+                                        column(3,
+                                               plotOutput("sum_m12", height = "7em")),
+                                        column(3,
+                                               plotOutput("sum_m13", height = "7em")),
+                                        column(3))
+                                 # column(10,
+                                 #        column(3,
+                                 #               h2(textOutput("sum_m11"))),
+                                 #        column(3,
+                                 #               h2(textOutput("sum_m12"))),
+                                 #        column(3,
+                                 #               h2(textOutput("sum_m13"))),
+                                 #        column(3,
+                                 #               h2(textOutput("sum_m14"))))
+                               ),
+                               # fluidRow(
+                               #   column(10, offset = 2,
+                               #          p("likelihood to be working"))
+                               # ),
+                               hr(style = "margin: 0em;"),
+                               
+                               fluidRow(
+                                 column(2, style = "padding-top: 1.5em;",
+                                        p("likelihood to be in school at the age of 23",
+                                          style = "font-size: 0.8em; ")),
                                  column(10,
                                         column(3,
-                                               h2(textOutput("sum_m11"))),
+                                               plotOutput("sum_m21", height = "7em")),
                                         column(3,
-                                               h2(textOutput("sum_m12"))),
+                                               plotOutput("sum_m22", height = "7em")),
                                         column(3,
-                                               h2(textOutput("sum_m13"))),
+                                               plotOutput("sum_m23", height = "7em")),
                                         column(3,
-                                               h2(textOutput("sum_m14"))))
+                                               plotOutput("sum_m24", height = "7em")))
+                                 # column(10,
+                                 #        column(3,
+                                 #               h3(textOutput("sum_m21"))),
+                                 #        column(3,
+                                 #               h2(textOutput("sum_m22"))),
+                                 #        column(3,
+                                 #               h2(textOutput("sum_m23"))),
+                                 #        column(3,
+                                 #               h2(textOutput("sum_m24"))))
                                ),
-                               fluidRow(
-                                 column(10, offset = 2,
-                                        p("likelihood to be working"))
-                               ),
-                               hr(style = "margin: 0.5em 0em;"),
+                               # fluidRow(
+                               #   column(10, offset = 2,
+                               #          p("likelihood to be in school"))
+                               # ),
+                               hr(style = "margin: 0em;"),
                                
                                fluidRow(
-                                 column(2, style = "padding-top: 3em;",
-                                        p("at the age of 23")),
+                                 column(2, style = "padding-top: 1.5em;",
+                                        p("likelihood to be doing paid work at the age of 35",
+                                          style = "font-size: 0.8em; ")),
                                  column(10,
                                         column(3,
-                                               h3(textOutput("sum_m21"))),
+                                               plotOutput("sum_m31", height = "7em")),
                                         column(3,
-                                               h2(textOutput("sum_m22"))),
+                                               plotOutput("sum_m32", height = "7em")),
                                         column(3,
-                                               h2(textOutput("sum_m23"))),
+                                               plotOutput("sum_m33", height = "7em")),
                                         column(3,
-                                               h2(textOutput("sum_m24"))))
+                                               plotOutput("sum_m34", height = "7em")))
+                                        # column(3,
+                                        #        h2(textOutput("sum_m31"))),
+                                        # column(3,
+                                        #        h2(textOutput("sum_m32"))),
+                                        # column(3,
+                                        #        h2(textOutput("sum_m33"))),
+                                        # column(3,
+                                        #        h2(textOutput("sum_m34"))))
                                ),
-                               fluidRow(
-                                 column(10, offset = 2,
-                                        p("likelihood to be in school"))
-                               ),
-                               hr(style = "margin: 0.5em 0em;"),
+                               # fluidRow(
+                               #   column(10, offset = 2,
+                               #          p("likelihood to be doing paid work"))
+                               # ),
+                               hr(style = "margin: 0em;"),
                                
                                fluidRow(
-                                 column(2, style = "padding-top: 3em;",
-                                        p("at the age of 35")),
+                                 column(2,
+                                        p("likelihood to be making 3,000+ bolivianos (~PPP$37/day) per month at the age of 45",
+                                          style = "font-size: 0.8em; ")),
                                  column(10,
                                         column(3,
-                                               h2(textOutput("sum_m31"))),
+                                               plotOutput("sum_m41", height = "7em")),
                                         column(3,
-                                               h2(textOutput("sum_m32"))),
+                                               plotOutput("sum_m42", height = "7em")),
                                         column(3,
-                                               h2(textOutput("sum_m33"))),
+                                               plotOutput("sum_m43", height = "7em")),
                                         column(3,
-                                               h2(textOutput("sum_m34"))))
+                                               plotOutput("sum_m44", height = "7em")))
+                                        # column(3,
+                                        #        h2(textOutput("sum_m41"))),
+                                        # column(3,
+                                        #        h2(textOutput("sum_m42"))),
+                                        # column(3,
+                                        #        h2(textOutput("sum_m43"))),
+                                        # column(3,
+                                        #        h2(textOutput("sum_m44"))))
                                ),
-                               fluidRow(
-                                 column(10, offset = 2,
-                                        p("likelihood to be doing paid work"))
-                               ),
-                               hr(style = "margin: 0.5em 0em;"),
+                               # fluidRow(
+                               #   column(10, offset = 2,
+                               #          p("likelihood to be making at least 3,000 bolivianos (~US$15/day) per month"))
+                               # ),
+                               hr(style = "margin: 0em;"),
                                
                                fluidRow(
-                                 column(2, style = "padding-top: 3em;",
-                                        p("at the age of 45")),
+                                 column(2, style = "padding-top: 1.5em;",
+                                        p("likelihood to be retired at the age of 65",
+                                          style = "font-size: 0.8em; ")),
                                  column(10,
                                         column(3,
-                                               h2(textOutput("sum_m41"))),
+                                               plotOutput("sum_m51", height = "7em")),
                                         column(3,
-                                               h2(textOutput("sum_m42"))),
+                                               plotOutput("sum_m52", height = "7em")),
                                         column(3,
-                                               h2(textOutput("sum_m43"))),
+                                               plotOutput("sum_m53", height = "7em")),
                                         column(3,
-                                               h2(textOutput("sum_m44"))))
+                                               plotOutput("sum_m54", height = "7em")))
+                                        # column(3,
+                                        #        h2(textOutput("sum_m51"))),
+                                        # column(3,
+                                        #        h2(textOutput("sum_m52"))),
+                                        # column(3,
+                                        #        h3(textOutput("sum_m53"))),
+                                        # column(3,
+                                        #        h2(textOutput("sum_m54"))))
                                ),
-                               fluidRow(
-                                 column(10, offset = 2,
-                                        p("likelihood to be making at least 3,000 bolivianos (~US$15/day) per month"))
-                               ),
-                               hr(style = "margin: 0.5em 0em;"),
+                               # fluidRow(
+                               #   column(10, offset = 2,
+                               #          p("likelihood to be retired"))
+                               # ),
+                               hr(style = "margin: 0em;"),
                                
-                               fluidRow(
-                                 column(2, style = "padding-top: 3em;",
-                                        p("at the age of 65")),
-                                 column(10,
-                                        column(3,
-                                               h2(textOutput("sum_m51"))),
-                                        column(3,
-                                               h2(textOutput("sum_m52"))),
-                                        column(3,
-                                               h3(textOutput("sum_m53"))),
-                                        column(3,
-                                               h2(textOutput("sum_m54"))))
-                               ),
-                               fluidRow(
-                                 column(10, offset = 2,
-                                        p("likelihood to be retired"))
-                               ),
-                               hr(style = "margin: 0.5em 0em;"),
-                               
-                               p("* pp = percentage point", style = "font-style: italic; font-size: 1em; text-align: right; padding-bottom: 3em; ")
+                               p("unit: percentage point", style = "font-style: italic; font-size: 0.8em; text-align: right; padding-bottom: 3em; ")
                                ),
                         column(2,
                                fixedPanel(
@@ -696,16 +680,6 @@ server <- function(input, output, session) {
     })
   })
   
-
-  output$pop <- renderText(round(nrow(personas) * wgt, 0))
-  output$with_job <- renderText(round(nrow(with_job) * wgt, 0))
-  output$unpaid <- renderText(round(nrow(unpaid_job) * wgt, 0))
-  output$unpaid_sec <- renderText(round(nrow(unpaid_sec_job) *wgt, 0))
-
-  output$empl <- renderText(round(nrow(employed) * wgt, 0))
-  output$unempl <- renderText(round(nrow(unemployed) * wgt, 0))
-  output$inactiv <- renderText(round(nrow(inactive) * wgt, 0))
-
 
   # Tab panel: children --------------------------
   output$children_madlib <- renderText({
@@ -735,12 +709,8 @@ server <- function(input, output, session) {
   })
   
   output$children_intro <- renderText(children_intro1)
-                                      # output$children_t1 <- renderText('Bolivia enjoys a high level of school enrollment among children.
-  #                                  Even among those in the category of "enrolled, not attending", the vast majority are simply due to school break or recess (i.e. the timing of the survey), not structural barriers.
-  #                                  There is no evidence for gender disparity in receiving education.')
   output$children_t2 <- renderText(children_t21)
   
-  # output$children_t3 <- renderText("TBD")
   output$children_t4 <- renderText(children_t41)
   output$children_t5 <- renderText(children_t51)
   
@@ -857,12 +827,6 @@ server <- function(input, output, session) {
     group_by(depto, area, sex) %>%
     summarize(cw = mean(!is.na(lab_monthly_inc)) * 100, tot = n(), school = mean(in_school == "2. No") * 100)
   
-  # children_decile <- children %>%
-  #   group_by(folio) %>%
-  #   summarize(hh_tot_inc = first(hh_tot_inc)) %>%
-  #   mutate(decile = StatMeasures::decile(hh_tot_inc)) %>%
-  #   right_join(children)
-  
   output$children_ses1 <- renderPlot(
     if (children_var() == "sex") {
       ses1_p(children, "sex", c("boys", "girls"))
@@ -879,16 +843,9 @@ server <- function(input, output, session) {
         scale_fill_manual(values = c(color1, color2), labels = c("boys", "girls")) +
         labs(x = "% children with a job", y = "", fill = "")
     } else if (children_var() == "inc") {
-      # children_decile2 <- children_decile %>%
-      #   filter(!is.na(lab_monthly_inc)) %>%
-      #   group_by(decile, sex) %>%
-      #   summarize(mean_hr = mean(tot_work_week_hr), mean_inc = mean(lab_monthly_inc), mean_pct = mean(hh_lab_inc_pct))
-      
       ggplot(children %>% filter(!is.na(lab_monthly_inc) & hh_tot_inc != 0)) +
         geom_point(aes(hh_tot_inc + 1, y = hh_lab_inc_pct, size = tot_work_week_hr, color = sex), alpha = 0.15) +
         geom_smooth(aes(hh_tot_inc + 1, hh_lab_inc_pct, color = sex), alpha = 0.1) +
-        # geom_line(aes(y = mean_pct, x = decile, color = sex), size = 1) +
-        # geom_point(aes(y = mean_pct, x = decile, size = mean_hr, color = sex)) +
         geom_text(aes(120, 75, label = "circle size =\nweekly work hours"), color = "grey", hjust = "left") +
         theme_minimal() +
         theme(legend.position = "bottom", panel.grid.minor = element_blank()) +
@@ -916,16 +873,9 @@ server <- function(input, output, session) {
         scale_fill_manual(values = c(color1, color2), labels = c("boys", "girls")) +
         labs(x = "% children not in school", y = "", fill = "")
     } else if (children_var() == "inc") {
-      # children_decile3 <- children_decile %>%
-      #   filter(!is.na(lab_monthly_inc)) %>%
-      #   group_by(decile, sex) %>%
-      #   summarize(mean_hr = mean(tot_work_week_hr), mean_inc = mean(lab_monthly_inc), mean_pct = mean(hh_hr_pct))
-      
       ggplot(children %>% filter(!is.na(lab_monthly_inc) & hh_tot_inc != 0)) +
         geom_jitter(aes(hh_tot_inc + 1, y = hh_hr_pct, size = lab_monthly_inc, color = sex), alpha = 0.15) +
         geom_smooth(aes(hh_tot_inc + 1, hh_hr_pct, color = sex), alpha = 0.1) +
-        # geom_line(aes(y = mean_pct, x = decile, color = sex), size = 1) +
-        # geom_point(aes(y = mean_pct, x = decile, size = mean_inc, color = sex)) +
         geom_text(aes(120, 85, label = "circle size =\nmonthly income (BOB)"), color = "grey", hjust = "left") +
         theme_minimal() +
         theme(legend.position = "bottom", panel.grid.minor = element_blank()) +
@@ -1398,7 +1348,6 @@ server <- function(input, output, session) {
 
   output$older_p1 <- renderPlot(
     older %>%
-      # mutate(primary_job = ifelse(is.na(primary_job), F, T)) %>%
       ggplot() +
       geom_jitter(aes(age, sp_monthly_inc, color = sex), width = 1, alpha = 0.25) +
       geom_smooth(aes(age, sp_monthly_inc, color = sex), method = "loess", se = F, span = 0.1, method.args = list(degree = 1)) +
@@ -1554,7 +1503,6 @@ server <- function(input, output, session) {
       ggplot() +
       geom_jitter(aes(lab_monthly_inc+1, age_group, color = older), alpha = 0.1) +
       geom_boxplot(aes(lab_monthly_inc+1, age_group, color = older), fill = "white", alpha = 0.5, outlier.shape = NA) +
-      # geom_density_ridges(aes(lab_monthly_inc+1, age_group, fill = older), alpha = 0.5, color = "grey") +
       theme_minimal() +
       theme(panel.grid.minor = element_blank(), legend.position = "none") +
       scale_x_continuous(trans = 'log10') +
@@ -1572,8 +1520,6 @@ server <- function(input, output, session) {
   a3 <- 35  # paid work
   a4 <- 45  # earning X bolivianos per month
   a5 <- 65  # retired
-  
-  # nrow(personas %>% filter(between(age, 20, 24) & area == "Rural" & depto == "Potosi"))
   
   m1 <- function(rep_age, range, opp) {
     df <- personas %>%
@@ -1614,37 +1560,105 @@ server <- function(input, output, session) {
       df %>% summarize(mean = mean(is.na(primary_job)) * 100) %>% pull(mean)
     }
     
-    diff <- df[2] - df[1]
+    data.frame(x = df[2] - df[1], y = 1)
     
-    case_when(between(diff, -2, 2) ~ "about the same",
-              diff < -2 ~ paste0("-", abs(round(diff)), "pp"),
-              diff > 2 ~ paste0("+", round(diff), "pp"))
+    # diff <- df[2] - df[1]
+    # 
+    # case_when(between(diff, -2, 2) ~ "about the same",
+    #           diff < -2 ~ paste0("-", abs(round(diff)), "pp"),
+    #           diff > 2 ~ paste0("+", round(diff), "pp"))
   }
   
-  output$sum_m11 <- renderText(m1(a1, 0.5, 1))
-  output$sum_m12 <- renderText(m1(a1, 0.5, 2))
-  output$sum_m13 <- renderText(m1(a1, 0.5, 3))
+  # m_plot <- function(df) {
+  #   df %>%
+  #     ggplot() +
+  #     geom_text(aes(x = x, y = 0, label = round(x)), hjust = "right", nudge_x = -5) +
+  #     geom_rect(aes(xmin = 0, xmax = x, ymin = -0.1, ymax = 0.1, fill = x > 0)) +
+  #     theme_minimal() +
+  #     theme(panel.grid.minor = element_blank(), panel.grid.major.y = element_blank(), panel.grid.major.x = element_line(linetype = "dotted"),
+  #           axis.text.y = element_blank(), legend.position = "none", axis.title = element_blank()) +
+  #     scale_fill_manual(values = setNames(c(color1, color2), c(T, F))) +
+  #     xlim(-85, 85)
+  # }
+  
+  m_plot <- function(df) {
+    neg <- ifelse(df$x < 0, T, F)
+    
+    p <- df %>%
+      ggplot() +
+      geom_col(aes(x, y, fill = x > 0), width = 0.3, orientation = "y") +
+      theme_minimal() +
+      theme(panel.grid.minor = element_blank(), panel.grid.major.y = element_blank(),
+            # panel.grid.major.x = element_line(color = "darkgrey"),
+            axis.text = element_blank(), legend.position = "none", axis.title = element_blank()) +
+      scale_fill_manual(values = setNames(c(color2, color1), c(T, F))) +
+      ylim(0.5, 1.5) +
+      scale_x_continuous(breaks = c(0), limits = c(-110, 110)) + coord_fixed(ratio = 140)
+    
+    if (neg) {
+      p + geom_text(aes(x = x, y = 1, label = round(x)), hjust = "right", nudge_x = -5)
+    } else {
+      p + geom_text(aes(x = x, y = 1, label = round(x)), hjust = "left", nudge_x = 5)
+    }
+    
+    
+    # df %>%
+    #   ggplot() +
+    #   geom_col(aes(x, y, fill = x > 0), width = 0.3, orientation = "y") +
+    #   geom_text(aes(x = x, y = 1, label = round(x)), hjust = "right", nudge_x = -5) +
+    #   theme_minimal() +
+    #   theme(panel.grid.minor = element_blank(), panel.grid.major.y = element_blank(),
+    #         # panel.grid.major.x = element_line(color = "darkgrey"),
+    #         axis.text = element_blank(), legend.position = "none", axis.title = element_blank()) +
+    #   scale_fill_manual(values = setNames(c(color2, color1), c(T, F))) +
+    #   ylim(0.5, 1.5) +
+    #   scale_x_continuous(breaks = c(0), limits = c(-100, 100)) + coord_fixed(ratio = 80)
+  }
+  
+  output$sum_m11 <- renderPlot(m_plot(m1(a1, 0.5, 1)))
+  output$sum_m12 <- renderPlot(m_plot(m1(a1, 0.5, 2)))
+  output$sum_m13 <- renderPlot(m_plot(m1(a1, 0.5, 3)))
+  
+  # output$sum_m11 <- renderText(m1(a1, 0.5, 1))
+  # output$sum_m12 <- renderText(m1(a1, 0.5, 2))
+  # output$sum_m13 <- renderText(m1(a1, 0.5, 3))
   output$sum_m14 <- renderText("-")
   
-  output$sum_m21 <- renderText(m1(a2, 1, 1))
-  output$sum_m22 <- renderText(m1(a2, 1, 2))
-  output$sum_m23 <- renderText(m1(a2, 1, 3))
-  output$sum_m24 <- renderText(m1(a2, 1, 4))
+  output$sum_m21 <- renderPlot(m_plot(m1(a2, 1, 1)))
+  output$sum_m22 <- renderPlot(m_plot(m1(a2, 1, 2)))
+  output$sum_m23 <- renderPlot(m_plot(m1(a2, 1, 3)))
+  output$sum_m24 <- renderPlot(m_plot(m1(a2, 1, 4)))
+  # output$sum_m21 <- renderText(m1(a2, 1, 1))
+  # output$sum_m22 <- renderText(m1(a2, 1, 2))
+  # output$sum_m23 <- renderText(m1(a2, 1, 3))
+  # output$sum_m24 <- renderText(m1(a2, 1, 4))
   
-  output$sum_m31 <- renderText(m1(a3, 3, 1))
-  output$sum_m32 <- renderText(m1(a3, 3, 2))
-  output$sum_m33 <- renderText(m1(a3, 3, 3))
-  output$sum_m34 <- renderText(m1(a3, 3, 4))
+  output$sum_m31 <- renderPlot(m_plot(m1(a3, 3, 1)))
+  output$sum_m32 <- renderPlot(m_plot(m1(a3, 3, 2)))
+  output$sum_m33 <- renderPlot(m_plot(m1(a3, 3, 3)))
+  output$sum_m34 <- renderPlot(m_plot(m1(a3, 3, 4)))
+  # output$sum_m31 <- renderText(m1(a3, 3, 1))
+  # output$sum_m32 <- renderText(m1(a3, 3, 2))
+  # output$sum_m33 <- renderText(m1(a3, 3, 3))
+  # output$sum_m34 <- renderText(m1(a3, 3, 4))
   
-  output$sum_m41 <- renderText(m1(a4, 3, 1))
-  output$sum_m42 <- renderText(m1(a4, 3, 2))
-  output$sum_m43 <- renderText(m1(a4, 3, 3))
-  output$sum_m44 <- renderText(m1(a4, 3, 4))
+  output$sum_m41 <- renderPlot(m_plot(m1(a4, 3, 1)))
+  output$sum_m42 <- renderPlot(m_plot(m1(a4, 3, 2)))
+  output$sum_m43 <- renderPlot(m_plot(m1(a4, 3, 3)))
+  output$sum_m44 <- renderPlot(m_plot(m1(a4, 3, 4)))
+  # output$sum_m41 <- renderText(m1(a4, 3, 1))
+  # output$sum_m42 <- renderText(m1(a4, 3, 2))
+  # output$sum_m43 <- renderText(m1(a4, 3, 3))
+  # output$sum_m44 <- renderText(m1(a4, 3, 4))
   
-  output$sum_m51 <- renderText(m1(a5, 3, 1))
-  output$sum_m52 <- renderText(m1(a5, 3, 2))
-  output$sum_m53 <- renderText(m1(a5, 3, 3))
-  output$sum_m54 <- renderText(m1(a5, 3, 4))
+  output$sum_m51 <- renderPlot(m_plot(m1(a5, 3, 1)))
+  output$sum_m52 <- renderPlot(m_plot(m1(a5, 3, 2)))
+  output$sum_m53 <- renderPlot(m_plot(m1(a5, 3, 3)))
+  output$sum_m54 <- renderPlot(m_plot(m1(a5, 3, 4)))
+  # output$sum_m51 <- renderText(m1(a5, 3, 1))
+  # output$sum_m52 <- renderText(m1(a5, 3, 2))
+  # output$sum_m53 <- renderText(m1(a5, 3, 3))
+  # output$sum_m54 <- renderText(m1(a5, 3, 4))
   
   
   # Page navigation ---------------------------------
@@ -1697,9 +1711,6 @@ server <- function(input, output, session) {
   observeEvent(input$to_older2, {
     updateNavbarPage(session, "main", selected = "older")
   })
-  
-  # Link to github
-  # output$gh <- renderImage(list(src = "www/GitHub-Mark.png", width = "20px"), deleteFile = F)
 }
 
 shinyApp(ui = ui, server = server)
