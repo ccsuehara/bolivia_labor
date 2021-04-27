@@ -125,34 +125,55 @@ youth_inc_t21 <- "Another form of gender pay gap is the different average income
                                     Thus, for women, the return on their education is undercut by gender discrimination, which potentially limits their potential in the workplace."
 # entering_labor_market ---------------------------------------------------
 
-labor_intro <- "Once adulthood is reached, education should be a vessel through which skills formation is complete and therefore, prepare people for the labor markets. 
-As we will see, participation is still limited by a series of structural characteristics. 
-We will focus on the gendered dimension of these boundaries and explain a new phenomenon that we started to notice on the previous life cycle: By the time girls turn into women, there are societal expectations that produce gendered gaps in the access to labor markets"
+labor_intro <- "Once adulthood is reached, education should be a vessel through which skills formation is complete enought and therefore,
+prepare people for the labor markets. As we will see, participation is still limited
+by a series of structural characteristics. We will focus on the gendered dimension of these boundaries
+and explain a new phenomenon that we started to notice on the previous life cycle: By the time girls
+turn into women, there are societal expectations that produce gendered gaps in the access to labor markets. 
+The following section focuses on the access gaps,to the labor market as well as their relation with other factors that may as well be correlated. "
 
-labor_txt_1 <- "Educational attainment both males and females received, have a fairly similar distribution for adults aged 40 or less.
-This gives us the first hypothesis that, for younger generations of adults, labor participation is independent of education, and if there are any outside differences due to this, is because of other factors.
-Nevertheless, we observe a wider gap for adults aged 40 or older, were lesser levels of educational attainment for women is observed."
+labor_txt_1 <- "Educational attainment that both males and females received, have a fairly similar 
+distribution for adults aged 40 or less.This gives us the first hypothesis that, for younger generations
+of adults, labor participation is independent of education, and if there are any outside differences due to this,
+is because of other factors.Nevertheless, we observe a wider gap for adults aged 40 or older, were lesser
+levels of educational attainment for women is observed. In this case, 
+we observe more women with primary education attained, while for the male population, more ma attain secondary and tertiary education.
+There is a classic education-to-income relation, modeled by the Mincerian equations, where a positive effect of  education on income is depicted.
+Nevertheless, we see that for older cohorts, education might also influene access to labor market."
 
-labor_txt_2 <- "The structure of the labor market looks different for women with respect to men. Women have a stronger likelihood to be employed, and a higher likelihood of being part of the 
-inactive or unemployed population."
 
-labor_txt_3 <- "Here we look at the importance of the following set of characteristics, which are deeply correlated with being employed.
-Out of the most important ones, "
+labor_txt_2 <- "The structure of the labor market looks different for women with respect to men. 
+Men have a stronger likelihood to be employed, and a higher likelihood of being part of the 
+inactive or unemployed population. For every man who is unemployed, there are two women unemployed. A similar situation happens with the inactive population:
+For every inactive man, there are 7 inactive women."
 
-labor_txt_4 <- "The gender disadvantage in the labor market comes along with other characteristics as well. For example, the number of hours worked for men and women are significantly different."
+labor_txt_3 <- "Here we look at which set of characteristics affect labor force participation (LFP) 
+For  stablishing the importance of these characteristics, as in other age groups, we focus on "
+
+labor_txt_4 <- "The gender disadvantage in the labor market comes along with other characteristics as well.
+For example, the number of hours worked for men and women are significantly different. Women tend to work less hours with respect to men. 
+This situation may come from a series  of structural limitations that are associated with the quality of the jobs women perform 
+(if they were even able to enter the labor market) and the sectors that they are allowed to participate. "
 
 # Tab panel: NEET section --------------------------------
-neet_txt_1 <- "The youth conform a great pool of  human capital assets. In particular for countries in the LAC region where the demographic bonus is currently on its peak. 
-The fact that a significant proportion of young adults aged 15 to 30, are neither studying  or working (or NEET, which stands for Not in Education, Employment or Training) may mean an underdevelopment where "
+neet_txt_1 <- "The youth conform a great pool of  human capital assets.
+In particular for countries in the LAC region where the demographic bonus is currently on its peak. 
+The fact that a significant proportion of young adults aged 15 to 30, are neither studying  or working,
+(or NEET, which stands for Not in Education, Employment or Training) may mean several things. 
+One, is the possibility that are a dormant source of unexploited abilities, waiting for oportunities to continue their education, or facing many personal barriers to get a job, and not even trying is a first choice. But it's not the whole story. 
+A more unexplored view about the NEETs population puts to question the very nature of what we call work, or what we think work is. This later thought should be put in contrast with what work should be."
 
-neet_txt_2 <- "hen looking at the total NEET population, we observe that the majority of them are women. Out of the "
+neet_txt_2 <- "When looking at the total NEET population, we observe that the overwhelming majority of them are women. Out of the approximately 340 thousand population of NEETs aged 15-30, 90% of them are women."
 
-neet_txt_3 <- "The NEET phenomenon has 2 sides: neither studying nor working. When looking at the reasons why these young adults are not working, they list the following: "
+neet_txt_3 <- "The NEET phenomenon has 2 sides: neither studying nor working. When looking at the reasons why
+, as young adults, the are not working, they list the following causes. As we can see, among the most important ones are  "
 
 neet_txt_4 <- "There is great concidence between the reasons for not studying and not working: household chores and childcare. 
 Families in Latin America are a patriarchal institution which extracts free labor out of women. At the same time, our results indicate that "
 
-neet_txt_5 <- "Which are important aspects that are related to "
+neet_txt_5 <- "What are the most important factors associated with being  a NEET? The following exercise points that gender stands
+out among the rest of  characteristics. 
+Another important feature is marital  status, which, as in previous sections, being married plays an important role in determining wether to study or work among the youth."
 
 # Tab panel: paid and unpaid labor --------------------------------
 pay_intro1 <- "The unpaid labor force is dominated by women, while men make up almost two thirds of the paid labor market."

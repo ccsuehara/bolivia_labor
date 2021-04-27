@@ -362,4 +362,19 @@ waffl_neet <- function(df) {
 
 
 
-
+neet_pop_p <- function(df, var, labels) {
+  df2 <- df %>%
+    group_by(age, sex, .data[[var]]) %>%
+    summarize(mean = mean(neet_cat == "NEET") * 100, count = n()) %>%
+    filter(count > 9)
+  
+  n <- length(unique(df2[[var]]))
+  
+  ggplot(df2) +
+    geom_line(aes(age, mean, color = .data[[var]]), size = 1) +
+    facet_wrap(vars(sex), labeller = labeller(sex = c("1.Hombre" = "men", "2.Mujer" = "women"))) +
+    theme_minimal() +
+    theme(legend.position = "bottom", panel.grid.minor = element_blank()) +
+    scale_color_manual(values = color_pal[1:n], labels = labels) +
+    labs(y = "% NEET", color = "") + ylim(0, 100)
+}
