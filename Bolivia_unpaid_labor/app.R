@@ -115,6 +115,8 @@ ui <- fluidPage(
                         column(3,
                                fixedPanel(
                                  tags$a(img(src = "GitHub-Mark.png", style = "width: 32px; "), href = "https://github.com/ccsuehara/bolivia_labor/tree/rui"),
+                                 tags$a(img(src = "cloud-computing.png", style = "width: 32px; "),
+                                        href = "https://www.ine.gob.bo/index.php/censos-y-banco-de-datos/censos/bases-de-datos-encuestas-sociales/"),
                                  right = 25, top = 85
                                ),
                                fixedPanel(
@@ -236,6 +238,8 @@ ui <- fluidPage(
                         column(3,
                                fixedPanel(
                                  tags$a(img(src = "GitHub-Mark.png", style = "width: 32px; "), href = "https://github.com/ccsuehara/bolivia_labor/tree/rui"),
+                                 tags$a(img(src = "cloud-computing.png", style = "width: 32px; "),
+                                        href = "https://www.ine.gob.bo/index.php/censos-y-banco-de-datos/censos/bases-de-datos-encuestas-sociales/"),
                                  right = 25, top = 85
                                ),
                                fixedPanel(
@@ -282,6 +286,8 @@ ui <- fluidPage(
                                    column(3,
                                           fixedPanel(
                                             tags$a(img(src = "GitHub-Mark.png", style = "width: 32px; "), href = "https://github.com/ccsuehara/bolivia_labor/tree/rui"),
+                                            tags$a(img(src = "cloud-computing.png", style = "width: 32px; "),
+                                                   href = "https://www.ine.gob.bo/index.php/censos-y-banco-de-datos/censos/bases-de-datos-encuestas-sociales/"),
                                             right = 25, top = 85
                                           ),
                                           fixedPanel(
@@ -358,6 +364,8 @@ ui <- fluidPage(
                                    column(3,
                                           fixedPanel(
                                             tags$a(img(src = "GitHub-Mark.png", style = "width: 32px; "), href = "https://github.com/ccsuehara/bolivia_labor/tree/rui"),
+                                            tags$a(img(src = "cloud-computing.png", style = "width: 32px; "),
+                                                   href = "https://www.ine.gob.bo/index.php/censos-y-banco-de-datos/censos/bases-de-datos-encuestas-sociales/"),
                                             right = 25, top = 85
                                           ),
                                           fixedPanel(
@@ -400,6 +408,8 @@ ui <- fluidPage(
                                    column(3,
                                           fixedPanel(
                                             tags$a(img(src = "GitHub-Mark.png", style = "width: 32px; "), href = "https://github.com/ccsuehara/bolivia_labor/tree/rui"),
+                                            tags$a(img(src = "cloud-computing.png", style = "width: 32px; "),
+                                                   href = "https://www.ine.gob.bo/index.php/censos-y-banco-de-datos/censos/bases-de-datos-encuestas-sociales/"),
                                             right = 25, top = 85
                                           ),
                                           fixedPanel(
@@ -461,6 +471,8 @@ ui <- fluidPage(
                         column(3,
                                fixedPanel(
                                  tags$a(img(src = "GitHub-Mark.png", style = "width: 32px; "), href = "https://github.com/ccsuehara/bolivia_labor/tree/rui"),
+                                 tags$a(img(src = "cloud-computing.png", style = "width: 32px; "),
+                                        href = "https://www.ine.gob.bo/index.php/censos-y-banco-de-datos/censos/bases-de-datos-encuestas-sociales/"),
                                  right = 25, top = 85
                                ),
                                fixedPanel(
@@ -527,20 +539,7 @@ ui <- fluidPage(
                                         column(3,
                                                plotOutput("sum_m13", height = "7em")),
                                         column(3))
-                                 # column(10,
-                                 #        column(3,
-                                 #               h2(textOutput("sum_m11"))),
-                                 #        column(3,
-                                 #               h2(textOutput("sum_m12"))),
-                                 #        column(3,
-                                 #               h2(textOutput("sum_m13"))),
-                                 #        column(3,
-                                 #               h2(textOutput("sum_m14"))))
                                ),
-                               # fluidRow(
-                               #   column(10, offset = 2,
-                               #          p("likelihood to be working"))
-                               # ),
                                hr(style = "margin: 0em;"),
                                
                                fluidRow(
@@ -556,20 +555,7 @@ ui <- fluidPage(
                                                plotOutput("sum_m23", height = "7em")),
                                         column(3,
                                                plotOutput("sum_m24", height = "7em")))
-                                 # column(10,
-                                 #        column(3,
-                                 #               h3(textOutput("sum_m21"))),
-                                 #        column(3,
-                                 #               h2(textOutput("sum_m22"))),
-                                 #        column(3,
-                                 #               h2(textOutput("sum_m23"))),
-                                 #        column(3,
-                                 #               h2(textOutput("sum_m24"))))
                                ),
-                               # fluidRow(
-                               #   column(10, offset = 2,
-                               #          p("likelihood to be in school"))
-                               # ),
                                hr(style = "margin: 0em;"),
                                
                                fluidRow(
@@ -585,19 +571,7 @@ ui <- fluidPage(
                                                plotOutput("sum_m33", height = "7em")),
                                         column(3,
                                                plotOutput("sum_m34", height = "7em")))
-                                        # column(3,
-                                        #        h2(textOutput("sum_m31"))),
-                                        # column(3,
-                                        #        h2(textOutput("sum_m32"))),
-                                        # column(3,
-                                        #        h2(textOutput("sum_m33"))),
-                                        # column(3,
-                                        #        h2(textOutput("sum_m34"))))
                                ),
-                               # fluidRow(
-                               #   column(10, offset = 2,
-                               #          p("likelihood to be doing paid work"))
-                               # ),
                                hr(style = "margin: 0em;"),
                                
                                fluidRow(
@@ -613,19 +587,7 @@ ui <- fluidPage(
                                                plotOutput("sum_m43", height = "7em")),
                                         column(3,
                                                plotOutput("sum_m44", height = "7em")))
-                                        # column(3,
-                                        #        h2(textOutput("sum_m41"))),
-                                        # column(3,
-                                        #        h2(textOutput("sum_m42"))),
-                                        # column(3,
-                                        #        h2(textOutput("sum_m43"))),
-                                        # column(3,
-                                        #        h2(textOutput("sum_m44"))))
                                ),
-                               # fluidRow(
-                               #   column(10, offset = 2,
-                               #          p("likelihood to be making at least 3,000 bolivianos (~US$15/day) per month"))
-                               # ),
                                hr(style = "margin: 0em;"),
                                
                                fluidRow(
@@ -641,19 +603,7 @@ ui <- fluidPage(
                                                plotOutput("sum_m53", height = "7em")),
                                         column(3,
                                                plotOutput("sum_m54", height = "7em")))
-                                        # column(3,
-                                        #        h2(textOutput("sum_m51"))),
-                                        # column(3,
-                                        #        h2(textOutput("sum_m52"))),
-                                        # column(3,
-                                        #        h3(textOutput("sum_m53"))),
-                                        # column(3,
-                                        #        h2(textOutput("sum_m54"))))
                                ),
-                               # fluidRow(
-                               #   column(10, offset = 2,
-                               #          p("likelihood to be retired"))
-                               # ),
                                hr(style = "margin: 0em;"),
                                
                                p("unit: percentage point", style = "font-style: italic; font-size: 0.8em; text-align: right; padding-bottom: 3em; ")
@@ -661,6 +611,8 @@ ui <- fluidPage(
                         column(2,
                                fixedPanel(
                                  tags$a(img(src = "GitHub-Mark.png", style = "width: 32px; "), href = "https://github.com/ccsuehara/bolivia_labor/tree/rui"),
+                                 tags$a(img(src = "cloud-computing.png", style = "width: 32px; "),
+                                        href = "https://www.ine.gob.bo/index.php/censos-y-banco-de-datos/censos/bases-de-datos-encuestas-sociales/"),
                                  right = 25, top = 85
                                )
                         )))
@@ -1561,25 +1513,7 @@ server <- function(input, output, session) {
     }
     
     data.frame(x = df[2] - df[1], y = 1)
-    
-    # diff <- df[2] - df[1]
-    # 
-    # case_when(between(diff, -2, 2) ~ "about the same",
-    #           diff < -2 ~ paste0("-", abs(round(diff)), "pp"),
-    #           diff > 2 ~ paste0("+", round(diff), "pp"))
   }
-  
-  # m_plot <- function(df) {
-  #   df %>%
-  #     ggplot() +
-  #     geom_text(aes(x = x, y = 0, label = round(x)), hjust = "right", nudge_x = -5) +
-  #     geom_rect(aes(xmin = 0, xmax = x, ymin = -0.1, ymax = 0.1, fill = x > 0)) +
-  #     theme_minimal() +
-  #     theme(panel.grid.minor = element_blank(), panel.grid.major.y = element_blank(), panel.grid.major.x = element_line(linetype = "dotted"),
-  #           axis.text.y = element_blank(), legend.position = "none", axis.title = element_blank()) +
-  #     scale_fill_manual(values = setNames(c(color1, color2), c(T, F))) +
-  #     xlim(-85, 85)
-  # }
   
   m_plot <- function(df) {
     neg <- ifelse(df$x < 0, T, F)
@@ -1589,7 +1523,6 @@ server <- function(input, output, session) {
       geom_col(aes(x, y, fill = x > 0), width = 0.3, orientation = "y") +
       theme_minimal() +
       theme(panel.grid.minor = element_blank(), panel.grid.major.y = element_blank(),
-            # panel.grid.major.x = element_line(color = "darkgrey"),
             axis.text = element_blank(), legend.position = "none", axis.title = element_blank()) +
       scale_fill_manual(values = setNames(c(color2, color1), c(T, F))) +
       ylim(0.5, 1.5) +
@@ -1600,66 +1533,33 @@ server <- function(input, output, session) {
     } else {
       p + geom_text(aes(x = x, y = 1, label = round(x)), hjust = "left", nudge_x = 5)
     }
-    
-    
-    # df %>%
-    #   ggplot() +
-    #   geom_col(aes(x, y, fill = x > 0), width = 0.3, orientation = "y") +
-    #   geom_text(aes(x = x, y = 1, label = round(x)), hjust = "right", nudge_x = -5) +
-    #   theme_minimal() +
-    #   theme(panel.grid.minor = element_blank(), panel.grid.major.y = element_blank(),
-    #         # panel.grid.major.x = element_line(color = "darkgrey"),
-    #         axis.text = element_blank(), legend.position = "none", axis.title = element_blank()) +
-    #   scale_fill_manual(values = setNames(c(color2, color1), c(T, F))) +
-    #   ylim(0.5, 1.5) +
-    #   scale_x_continuous(breaks = c(0), limits = c(-100, 100)) + coord_fixed(ratio = 80)
   }
   
   output$sum_m11 <- renderPlot(m_plot(m1(a1, 0.5, 1)))
   output$sum_m12 <- renderPlot(m_plot(m1(a1, 0.5, 2)))
   output$sum_m13 <- renderPlot(m_plot(m1(a1, 0.5, 3)))
-  
-  # output$sum_m11 <- renderText(m1(a1, 0.5, 1))
-  # output$sum_m12 <- renderText(m1(a1, 0.5, 2))
-  # output$sum_m13 <- renderText(m1(a1, 0.5, 3))
-  output$sum_m14 <- renderText("-")
+  # output$sum_m14 <- renderText("-")
   
   output$sum_m21 <- renderPlot(m_plot(m1(a2, 1, 1)))
   output$sum_m22 <- renderPlot(m_plot(m1(a2, 1, 2)))
   output$sum_m23 <- renderPlot(m_plot(m1(a2, 1, 3)))
   output$sum_m24 <- renderPlot(m_plot(m1(a2, 1, 4)))
-  # output$sum_m21 <- renderText(m1(a2, 1, 1))
-  # output$sum_m22 <- renderText(m1(a2, 1, 2))
-  # output$sum_m23 <- renderText(m1(a2, 1, 3))
-  # output$sum_m24 <- renderText(m1(a2, 1, 4))
-  
+
   output$sum_m31 <- renderPlot(m_plot(m1(a3, 3, 1)))
   output$sum_m32 <- renderPlot(m_plot(m1(a3, 3, 2)))
   output$sum_m33 <- renderPlot(m_plot(m1(a3, 3, 3)))
   output$sum_m34 <- renderPlot(m_plot(m1(a3, 3, 4)))
-  # output$sum_m31 <- renderText(m1(a3, 3, 1))
-  # output$sum_m32 <- renderText(m1(a3, 3, 2))
-  # output$sum_m33 <- renderText(m1(a3, 3, 3))
-  # output$sum_m34 <- renderText(m1(a3, 3, 4))
-  
+
   output$sum_m41 <- renderPlot(m_plot(m1(a4, 3, 1)))
   output$sum_m42 <- renderPlot(m_plot(m1(a4, 3, 2)))
   output$sum_m43 <- renderPlot(m_plot(m1(a4, 3, 3)))
   output$sum_m44 <- renderPlot(m_plot(m1(a4, 3, 4)))
-  # output$sum_m41 <- renderText(m1(a4, 3, 1))
-  # output$sum_m42 <- renderText(m1(a4, 3, 2))
-  # output$sum_m43 <- renderText(m1(a4, 3, 3))
-  # output$sum_m44 <- renderText(m1(a4, 3, 4))
-  
+
   output$sum_m51 <- renderPlot(m_plot(m1(a5, 3, 1)))
   output$sum_m52 <- renderPlot(m_plot(m1(a5, 3, 2)))
   output$sum_m53 <- renderPlot(m_plot(m1(a5, 3, 3)))
   output$sum_m54 <- renderPlot(m_plot(m1(a5, 3, 4)))
-  # output$sum_m51 <- renderText(m1(a5, 3, 1))
-  # output$sum_m52 <- renderText(m1(a5, 3, 2))
-  # output$sum_m53 <- renderText(m1(a5, 3, 3))
-  # output$sum_m54 <- renderText(m1(a5, 3, 4))
-  
+
   
   # Page navigation ---------------------------------
   # Children
