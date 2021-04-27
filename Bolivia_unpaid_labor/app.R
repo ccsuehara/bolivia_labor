@@ -4,7 +4,7 @@ library(shinythemes)
 library(tidyverse)
 library(shinyWidgets)
 library(plotly)
-library(waffle)
+# library(waffle)
 library(ggridges)
 library(treemap)
 # library(d3treeR)
@@ -12,6 +12,8 @@ library(wordcloud2)
 library(scales)
 library(StatMeasures)
 library(ggpubr)
+library(pkgload)
+pkgload::load_all("package/waffle")
 
 # change folder path
 #setwd("/Users/csolisu/Documents/Carla/chamba/shared_Bolivia/Bolivia_unpaid_labor")
@@ -111,10 +113,10 @@ ui <- fluidPage(
                                h3("Average work hours and income"),
                                plotOutput("children_lfp1"),
                                plotOutput("children_lfp2")
-                               ),
+                        ),
                         column(3,
                                fixedPanel(
-                                 tags$a(img(src = "GitHub-Mark.png", style = "width: 32px; "), href = "https://github.com/ccsuehara/bolivia_labor/tree/rui"),
+                                 tags$a(img(src = "GitHub-Mark.png", style = "width: 32px; "), href = "https://github.com/ccsuehara/bolivia_labor"),
                                  tags$a(img(src = "cloud-computing.png", style = "width: 32px; "),
                                         href = "https://www.ine.gob.bo/index.php/censos-y-banco-de-datos/censos/bases-de-datos-encuestas-sociales/"),
                                  right = 25, top = 85
@@ -237,7 +239,7 @@ ui <- fluidPage(
                         
                         column(3,
                                fixedPanel(
-                                 tags$a(img(src = "GitHub-Mark.png", style = "width: 32px; "), href = "https://github.com/ccsuehara/bolivia_labor/tree/rui"),
+                                 tags$a(img(src = "GitHub-Mark.png", style = "width: 32px; "), href = "https://github.com/ccsuehara/bolivia_labor"),
                                  tags$a(img(src = "cloud-computing.png", style = "width: 32px; "),
                                         href = "https://www.ine.gob.bo/index.php/censos-y-banco-de-datos/censos/bases-de-datos-encuestas-sociales/"),
                                  right = 25, top = 85
@@ -283,10 +285,10 @@ ui <- fluidPage(
                                           
                                           textOutput("labor_t_3"),
                                           plotOutput("labor_rf")
-                                          ),
+                                   ),
                                    column(3,
                                           fixedPanel(
-                                            tags$a(img(src = "GitHub-Mark.png", style = "width: 32px; "), href = "https://github.com/ccsuehara/bolivia_labor/tree/rui"),
+                                            tags$a(img(src = "GitHub-Mark.png", style = "width: 32px; "), href = "https://github.com/ccsuehara/bolivia_labor"),
                                             tags$a(img(src = "cloud-computing.png", style = "width: 32px; "),
                                                    href = "https://www.ine.gob.bo/index.php/censos-y-banco-de-datos/censos/bases-de-datos-encuestas-sociales/"),
                                             right = 25, top = 85
@@ -364,7 +366,7 @@ ui <- fluidPage(
                                    ),
                                    column(3,
                                           fixedPanel(
-                                            tags$a(img(src = "GitHub-Mark.png", style = "width: 32px; "), href = "https://github.com/ccsuehara/bolivia_labor/tree/rui"),
+                                            tags$a(img(src = "GitHub-Mark.png", style = "width: 32px; "), href = "https://github.com/ccsuehara/bolivia_labor"),
                                             tags$a(img(src = "cloud-computing.png", style = "width: 32px; "),
                                                    href = "https://www.ine.gob.bo/index.php/censos-y-banco-de-datos/censos/bases-de-datos-encuestas-sociales/"),
                                             right = 25, top = 85
@@ -400,7 +402,7 @@ ui <- fluidPage(
                                           textOutput("neet_t4"),
                                           h3("Why the NEETs won't study"),
                                           plotOutput("neet_p4"),
-                                         
+                                          
                                           textOutput("neet_t5"),
                                           h3("Which socioeconomic characteristics are related to NEET?"),
                                           plotOutput("neet_p5"),
@@ -415,10 +417,10 @@ ui <- fluidPage(
                                                                   "Primary language" = "lang")),
                                           plotOutput("neets_dec_graph")
                                           
-                                          ),
+                                   ),
                                    column(3,
                                           fixedPanel(
-                                            tags$a(img(src = "GitHub-Mark.png", style = "width: 32px; "), href = "https://github.com/ccsuehara/bolivia_labor/tree/rui"),
+                                            tags$a(img(src = "GitHub-Mark.png", style = "width: 32px; "), href = "https://github.com/ccsuehara/bolivia_labor"),
                                             tags$a(img(src = "cloud-computing.png", style = "width: 32px; "),
                                                    href = "https://www.ine.gob.bo/index.php/censos-y-banco-de-datos/censos/bases-de-datos-encuestas-sociales/"),
                                             right = 25, top = 85
@@ -481,7 +483,7 @@ ui <- fluidPage(
                         
                         column(3,
                                fixedPanel(
-                                 tags$a(img(src = "GitHub-Mark.png", style = "width: 32px; "), href = "https://github.com/ccsuehara/bolivia_labor/tree/rui"),
+                                 tags$a(img(src = "GitHub-Mark.png", style = "width: 32px; "), href = "https://github.com/ccsuehara/bolivia_labor"),
                                  tags$a(img(src = "cloud-computing.png", style = "width: 32px; "),
                                         href = "https://www.ine.gob.bo/index.php/censos-y-banco-de-datos/censos/bases-de-datos-encuestas-sociales/"),
                                  right = 25, top = 85
@@ -618,10 +620,10 @@ ui <- fluidPage(
                                hr(style = "margin: 0em;"),
                                
                                p("unit: percentage point", style = "font-style: italic; font-size: 0.8em; text-align: right; padding-bottom: 3em; ")
-                               ),
+                        ),
                         column(2,
                                fixedPanel(
-                                 tags$a(img(src = "GitHub-Mark.png", style = "width: 32px; "), href = "https://github.com/ccsuehara/bolivia_labor/tree/rui"),
+                                 tags$a(img(src = "GitHub-Mark.png", style = "width: 32px; "), href = "https://github.com/ccsuehara/bolivia_labor"),
                                  tags$a(img(src = "cloud-computing.png", style = "width: 32px; "),
                                         href = "https://www.ine.gob.bo/index.php/censos-y-banco-de-datos/censos/bases-de-datos-encuestas-sociales/"),
                                  right = 25, top = 85
@@ -643,7 +645,7 @@ server <- function(input, output, session) {
     })
   })
   
-
+  
   # Tab panel: children --------------------------
   output$children_madlib <- renderText({
     invalidateLater(10000)
@@ -660,14 +662,14 @@ server <- function(input, output, session) {
       madlib_name, "is", round(madlib_df$age, 0), "years old.",
       madlib_pron1, "lives in", ifelse(madlib_df$area == "Rural", "rural", "urban"), madlib_df$depto, "and primarily speaks", paste0(madlib_lang, "."),
       case_when(startsWith(madlib_df$in_school, "1") & startsWith(madlib_df$in_attendance, "1") ~ paste(madlib_pron1, "goes to school every day."),
-                      startsWith(madlib_df$in_school, "1") & startsWith(madlib_df$in_attendance, "2") ~ paste(madlib_pron1, "is enrolled in school but is not always able to attend it."),
-                      startsWith(madlib_df$in_school, "2") ~ paste(madlib_pron1, "is not going to school.")),
+                startsWith(madlib_df$in_school, "1") & startsWith(madlib_df$in_attendance, "2") ~ paste(madlib_pron1, "is enrolled in school but is not always able to attend it."),
+                startsWith(madlib_df$in_school, "2") ~ paste(madlib_pron1, "is not going to school.")),
       case_when(!is.na(madlib_df$primary_job) & startsWith(madlib_df$sec_job, "2") ~ paste(madlib_pron1, "works as a", tolower(madlib_df$primary_job), "for", madlib_df$tot_work_week_hr, "hours per week."),
-                      !is.na(madlib_df$primary_job) & startsWith(madlib_df$sec_job, "1") ~ paste(madlib_pron1, "mainly works as a", madlib_df$primary_job, "for", madlib_df$primary_work_week_hr, "hours per week, but", madlib_pron2, "also has a second job for another", madlib_df$sec_work_week_hr, "weekly hours."),
-                      is.na(madlib_df$primary_job) ~ paste(madlib_pron1, "does not have a job.")),
+                !is.na(madlib_df$primary_job) & startsWith(madlib_df$sec_job, "1") ~ paste(madlib_pron1, "mainly works as a", tolower(madlib_df$primary_job), "for", madlib_df$primary_work_week_hr, "hours per week, but", madlib_pron2, "also has a second job for another", madlib_df$sec_work_week_hr, "weekly hours."),
+                is.na(madlib_df$primary_job) ~ paste(madlib_pron1, "does not have a job.")),
       ifelse(round(madlib_df$lab_monthly_inc, 0) == 0,
-                   paste(madlib_pron1, "does not earn any income from", madlib_pron3, "work."),
-                   paste("In total,", madlib_pron2, "makes", round(madlib_df$lab_monthly_inc, 0), "Bolivianos every month."))
+             paste(madlib_pron1, "does not earn any income from", madlib_pron3, "work."),
+             paste("In total,", madlib_pron2, "makes", round(madlib_df$lab_monthly_inc, 0), "Bolivianos every month."))
     )
   })
   
@@ -888,7 +890,7 @@ server <- function(input, output, session) {
   
   
   # Tab panel: youth ------------------------------------------------
-    # Youth: intro ----------------------------------
+  # Youth: intro ----------------------------------
   output$youth_intro <- renderText(youth_intro1)
   
   youth1 <- youth %>%
@@ -908,7 +910,7 @@ server <- function(input, output, session) {
       ylab("")
   )
   
-    # Youth: education -------------------------------------
+  # Youth: education -------------------------------------
   output$youth_edu_t1 <- renderText(youth_edu_t11)
   output$youth_edu_marital <- renderText(youth_edu_marital1)
   output$youth_edu_internet <- renderText(youth_edu_internet1)
@@ -999,7 +1001,7 @@ server <- function(input, output, session) {
       youth_edu1_p(youth %>% filter(str_detect(marital, "^[1-3]")), "marital", c("single", "married", "cohabiting"))
     }
   )
-
+  
   output$youth_edu2 <- renderPlot(
     ggplot(youth) +
       geom_bar(aes(age, fill = education), position = "fill") +
@@ -1010,10 +1012,9 @@ server <- function(input, output, session) {
       ylab("proportion")
   )
   
-    # Youth: employment --------------------
+  # Youth: employment --------------------
   
   output$youth_emp_overview <- renderText(youth_emp_ov)
-  # output$youth_emp_t1 <- renderText("Below is the relative importance of various socioeconomic factors that affect youths' employment.")
   output$youth_emp_stu <- renderText(youth_emp_stu1)
   output$youth_emp_edu <- renderText(youth_emp_edu1)
   output$youth_emp_marital <- renderText(youth_emp_marital1)
@@ -1079,7 +1080,7 @@ server <- function(input, output, session) {
     }
   )
   
-    # Youth: income ------------------------
+  # Youth: income ------------------------
   output$youth_inc_t1 <- renderText(youth_inc_t11)
   output$youth_inc_t2 <- renderText(youth_inc_t21)
   
@@ -1116,6 +1117,7 @@ server <- function(input, output, session) {
       labs(y = "Monthly labor income (BOB)", color = "average")
   )
   
+  
   # Tab panel: entering the job market --------------------------
   
   output$lmarket_intro <- renderText(labor_intro)
@@ -1131,11 +1133,7 @@ server <- function(input, output, session) {
   output$labor_t_2 <- renderText(labor_txt_2)
   output$labor_t_3 <- renderText(labor_txt_3)
   output$labor_t_4 <- renderText(labor_txt_4)
-  
-  
-  
 
-  
   # Tab panel: neets  --------------------------------
   
   output$neet_t1 <- renderText(neet_txt_1)
@@ -1158,8 +1156,8 @@ server <- function(input, output, session) {
   output$neets_dec_graph <- renderPlot(
     if (neet_decision_var() == "internet") {
       ages_neet %>% mutate(decile = cut(pc_inc, 
-                                    breaks = unique(quantile(pc_inc, probs = seq.int(0, 1, by = 0.1))), 
-                                    include.lowest = T)) %>%
+                                        breaks = unique(quantile(pc_inc, probs = seq.int(0, 1, by = 0.1))), 
+                                        include.lowest = T)) %>%
         group_by(sex, decile, internet_use) %>%
         summarize(mean = mean(neet_cat == "NEET") * 100, count = n()) %>%
         mutate(decile = as.numeric(decile)) %>%
@@ -1175,7 +1173,7 @@ server <- function(input, output, session) {
       neet_pop_p(ages_neet, "area", c("rural", "urban"))
     } else if (neet_decision_var() == "indi") {
       neet_pop_p(ages_neet %>% mutate(indigenous = ifelse(startsWith(indigenous, "3"), "2. No pertenece", indigenous)),
-                   "indigenous", c("indigenous", "not indigenous"))
+                 "indigenous", c("indigenous", "not indigenous"))
     } else if (neet_decision_var() == "depto") {
       youth_depto <- ages_neet %>%
         group_by(depto, area, sex) %>%
@@ -1216,7 +1214,7 @@ server <- function(input, output, session) {
   output$pay_t5 <- renderText(pay_t51)
   output$pay_t6 <- renderText(pay_t61)
   output$pay_t7 <- renderText(pay_t71)
-
+  
   output$pay_age <- renderPlot(
     ggplot(adults %>% filter(!is.na(paid))) +
       geom_bar(aes(age, fill = sex), position = "fill", width = 0.9) +
@@ -1270,7 +1268,7 @@ server <- function(input, output, session) {
     mutate(unpaid_worth = hh_lab_inc * hh_hr_pct) %>%
     group_by(sex) %>%
     summarize(sum = sum(unpaid_worth))
-
+  
   output$pay_worth_tot1 <- renderText(comma(adults_unpaid_worth$sum[1]))
   output$pay_worth_tot2 <- renderText(comma(adults_unpaid_worth$sum[2]))
   
@@ -1303,7 +1301,7 @@ server <- function(input, output, session) {
     arrange(Rural)
   
   depto_ru <- adults_pay_depto$depto
-    
+  
   output$pay_depto1 <- renderPlot(
     ggplot(adults_pay_depto) +
       geom_segment(aes(x = Urbana, xend = Rural, y = factor(depto, levels = depto_ru), yend = depto), color = "grey") +
@@ -1356,14 +1354,14 @@ server <- function(input, output, session) {
       scale_fill_manual(values = c(color1, color2), labels = c("men", "women")) +
       xlim(0, 40000) + xlab("household monthly labor income (BOB)")
   )
-
+  
   
   # Tab panel: older adults -----------------------------------------
   output$older_t1 <- renderText(older_t11)
   output$older_t2 <- renderText(older_t21)
   output$older_t3 <- renderText(older_t31)
   output$older_t4 <- renderText(older_t41)
-
+  
   output$older_p1 <- renderPlot(
     older %>%
       ggplot() +
@@ -1610,22 +1608,22 @@ server <- function(input, output, session) {
   output$sum_m22 <- renderPlot(m_plot(m1(a2, 1, 2)))
   output$sum_m23 <- renderPlot(m_plot(m1(a2, 1, 3)))
   output$sum_m24 <- renderPlot(m_plot(m1(a2, 1, 4)))
-
+  
   output$sum_m31 <- renderPlot(m_plot(m1(a3, 3, 1)))
   output$sum_m32 <- renderPlot(m_plot(m1(a3, 3, 2)))
   output$sum_m33 <- renderPlot(m_plot(m1(a3, 3, 3)))
   output$sum_m34 <- renderPlot(m_plot(m1(a3, 3, 4)))
-
+  
   output$sum_m41 <- renderPlot(m_plot(m1(a4, 3, 1)))
   output$sum_m42 <- renderPlot(m_plot(m1(a4, 3, 2)))
   output$sum_m43 <- renderPlot(m_plot(m1(a4, 3, 3)))
   output$sum_m44 <- renderPlot(m_plot(m1(a4, 3, 4)))
-
+  
   output$sum_m51 <- renderPlot(m_plot(m1(a5, 3, 1)))
   output$sum_m52 <- renderPlot(m_plot(m1(a5, 3, 2)))
   output$sum_m53 <- renderPlot(m_plot(m1(a5, 3, 3)))
   output$sum_m54 <- renderPlot(m_plot(m1(a5, 3, 4)))
-
+  
   
   # Page navigation ---------------------------------
   # Children

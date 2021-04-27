@@ -138,7 +138,7 @@ color2 <- "#88CCEE"
 # 
 # personas %>% write_csv("data/personas.csv")
 
-personas <- read.csv("data/personas.csv")
+personas <- read.csv("data/personas.csv", encoding = "UTF-8")
 
 # Segment by age groups ----------------------------------------------
 

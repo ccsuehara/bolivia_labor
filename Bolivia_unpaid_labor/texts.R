@@ -147,8 +147,7 @@ Men have a stronger likelihood to be employed, and a higher likelihood of being 
 inactive or unemployed population. For every man who is unemployed, there are two women unemployed. A similar situation happens with the inactive population:
 For every inactive man, there are 7 inactive women."
 
-labor_txt_3 <- "Here we look at which set of characteristics affect labor force participation (LFP) 
-For  stablishing the importance of these characteristics, as in other age groups, we focus on "
+labor_txt_3 <- "Here we look at which set of characteristics affects labor force participation (LFP)."
 
 labor_txt_4 <- "The gender disadvantage in the labor market comes along with other characteristics as well.
 For example, the number of hours worked for men and women are significantly different. Women tend to work less hours with respect to men. 
