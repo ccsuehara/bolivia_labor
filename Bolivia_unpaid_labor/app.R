@@ -272,6 +272,7 @@ ui <- fluidPage(
                                                    column(12, style = "padding: 80px 50px;",
                                                           h3("PARTICIPATION", style = "color: white;"))),
                                           hr(),
+                                          h3("Adult population by employment status"),
                                           textOutput("labor_t_2"),
                                           plotOutput("wfl_labor"),
                                           hr(),
@@ -403,6 +404,16 @@ ui <- fluidPage(
                                           textOutput("neet_t5"),
                                           h3("Which socioeconomic characteristics are related to NEET?"),
                                           plotOutput("neet_p5"),
+                                          
+                                          selectInput("neet_vars",
+                                                      label = "What affects the chances of NEET?",
+                                                      choices = c("Marital status" = "marital",
+                                                                  "Internet access" = "internet",
+                                                                  "Area (rural/urban)" = "area",
+                                                                  "Department" = "depto",
+                                                                  "Indigenous identity" = "indi",
+                                                                  "Primary language" = "lang")),
+                                          plotOutput("neets_dec_graph")
                                           
                                           ),
                                    column(3,
@@ -1140,6 +1151,61 @@ server <- function(input, output, session) {
   output$neet_p4 <-  renderPlot(plot_bars_neet_study(why_neet_no_study))
   
   output$neet_p5 <-  renderPlot(neets_rfplot)
+  
+  
+  neet_decision_var <- reactive(input$neet_vars)
+  
+  output$neets_dec_graph <- renderPlot(
+    if (neet_decision_var() == "internet") {
+      ages_neet %>% mutate(decile = cut(pc_inc, 
+                                    breaks = unique(quantile(pc_inc, probs = seq.int(0, 1, by = 0.1))), 
+                                    include.lowest = T)) %>%
+        group_by(sex, decile, internet_use) %>%
+        summarize(mean = mean(neet_cat == "NEET") * 100, count = n()) %>%
+        mutate(decile = as.numeric(decile)) %>%
+        ggplot() +
+        geom_line(aes(decile, mean, color = internet_use), size = 1) +
+        facet_wrap(vars(sex), labeller = labeller(sex = c("1.Hombre" = "men", "2.Mujer" = "women"))) +
+        theme_minimal() +
+        theme(legend.position = "bottom", panel.grid.minor = element_blank()) +
+        scale_color_manual(values = color_pal[1:2], labels = c("with Internet", "without Internet")) +
+        scale_x_continuous(breaks = 1:10) +
+        labs(x = "per capita household income decile", y = "% NEET", color = "") + ylim(0, 100)
+    } else if (neet_decision_var() == "area") {
+      neet_pop_p(ages_neet, "area", c("rural", "urban"))
+    } else if (neet_decision_var() == "indi") {
+      neet_pop_p(ages_neet %>% mutate(indigenous = ifelse(startsWith(indigenous, "3"), "2. No pertenece", indigenous)),
+                   "indigenous", c("indigenous", "not indigenous"))
+    } else if (neet_decision_var() == "depto") {
+      youth_depto <- ages_neet %>%
+        group_by(depto, area, sex) %>%
+        summarize(mean = mean(neet_cat == "NEET") * 100)
+      
+      ggplot(youth_depto) +
+        geom_col(aes(mean, depto, fill = sex), position = "dodge", width = 0.5) +
+        facet_wrap(vars(area), labeller = labeller(area = c("Rural" = "rural", "Urbana" = "urban"))) +
+        theme_minimal() +
+        theme(legend.position = "bottom", panel.grid.minor = element_blank()) +
+        scale_fill_manual(values = c(color1, color2), labels = c("men", "women")) +
+        labs(x = "% NEET", y = "", fill = "")
+    } else if (neet_decision_var() == "lang") {
+      youth_lang <- ages_neet %>%
+        mutate(language_1 = ifelse(language_1 %in% c("QUECHUA", "CASTELLANO"), language_1, "OTHER"),
+               indigenous = ifelse(startsWith(indigenous, "3"), "2. No pertenece", indigenous)) %>%
+        group_by(language_1, sex, indigenous) %>%
+        summarize(mean = mean(neet_cat == "NEET") * 100)
+      
+      ggplot(youth_lang) +
+        geom_col(aes(mean, language_1, fill = sex), position = "dodge", width = 0.5) +
+        facet_wrap(vars(indigenous), labeller = labeller(indigenous = c("1. Pertenece" = "indigenous", "2. No pertenece" = "not indigenous"))) +
+        theme_minimal() +
+        theme(legend.position = "bottom", panel.grid.minor = element_blank()) +
+        scale_fill_manual(values = c(color1, color2), labels = c("men", "women")) +
+        labs(x = "% NEET", y = "", fill = "")
+    } else if (neet_decision_var() == "marital") {
+      neet_pop_p(ages_neet %>% filter(str_detect(marital, "^[1-3]")), "marital", c("single", "married", "cohabiting"))
+    }
+  )
   
   # Tab panel: paid and unpaid labor --------------------------------
   output$pay_intro <- renderText(pay_intro1)
