@@ -57,8 +57,7 @@ We have, however briefly, inhabited Bolivia's data-land, before having listened 
 Therefore, we invite your inputs and collaboration in holding us accountable to the people whose stories we try to tell and filling our blindspots as non-Bolivians.
 
 ## Vision
-This project is currently under development.
-We will continue to fill in the remaining pages in the shiny app and make small adjustments.
+After months of iterations, this project is drawing to a close, though we may continue to make small adjustments.
 In the future, we envision this type of analytics being broadly applicable to fields like social protection policy targeting,
 social inclusion, monitoring & evaluation, etc.  
 
