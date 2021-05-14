@@ -6,8 +6,9 @@
 Bolivia_unpaid_labor/www/*.ai
 Bolivia_unpaid_labor/rsconnect
 Bolivia_unpaid_labor/graveyard.R
+Bolivia_unpaid_labor/draft.R
+Bolivia_unpaid_labor/draft2.R
 Bolivia_unpaid_labor/data/EH2018_Personas2.xlsx
-Bolivia_unpaid_labor/data/personas.csv
 other
 data
 Bolivia\ Life\ of\ Labor\ shiny\ app\ use\ cases.pptx

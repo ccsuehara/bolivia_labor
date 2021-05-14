@@ -1,15 +1,10 @@
-
-# Tab panel: children --------------------------
+# Children --------------------------
 children_intro1 <- "In this household survey, children make up about 35% of the sampled population, indicating that children are an important demographic in Bolivia.
                                       It is also worth highlighting that Bolivia has the lowest legal minimum working age, ten, instead of the international consensus of fourteen. This labor law remains controversial today, with some arguing that it destigmatizes child workers' struggle for fair labor, while others casting doubt on the legislation's efficacy and its implications for children's long-term well-being.
                                       Given this reality, it is even more crucial to understand the conditions in which children live and work, as well as the persistent impact of social disparities."
-# children_t1 <- renderText('Bolivia enjoys a high level of school enrollment among children.
-#                                  Even among those in the category of "enrolled, not attending", the vast majority are simply due to school break or recess (i.e. the timing of the survey), not structural barriers.
-#                                  There is no evidence for gender disparity in receiving education.')
 children_t21 <-'Bolivia enjoys a high level of school enrollment among children.
                                    However, there is still a notable minority of children who could not go to school, and the survey largely fails to capture the complex reasons.
                                    From the available data, poverty and inaccessibility appear to remain an obstacle for many children.'
-# children_t3 <- renderText("TBD")
 children_t41 <- "When we look at children individually, there is not a significant difference between boys' and girls' work hours and incomes,
                                    except that boys start earning more than girls on a monthly basis as they approach 18.
                                    Interestingly, their hourly incomes do not differ, which means that teenage boys probably work more hours than girls.
@@ -38,7 +33,6 @@ children_t111 <- "Perhaps most surprisingly, household income does not seem to h
                                     In fact, some children from poorer families have even become the sole breadwinner, whereas such burden does not fall on children from better-off households."
 
 # Youth: intro ----------------------------------
-
 youth_intro1 <- "The youth period represents a pivotal moment in one's life.
                                    Faced with life-changing decisions on education and employment, and situated within diverse familial and societal contexts, youths not only shape their own life trajectories in important ways, but also determine a society's development for decades to come.
                                    Therefore, the well-being and opportunities of youths merit special consideration.
@@ -48,7 +42,6 @@ youth_intro1 <- "The youth period represents a pivotal moment in one's life.
                                    In the subsections below, we will delve further into the reasons and detailed manifestations of this disparity."
 
 # Youth: education -------------------------------------
-
 youth_edu_t11 <- "Further education is often the gateway to more desirable employment 
                                     opportunities and better life outcomes, but access to education, especially beyond 
                                     the 12 years of compulsory education, is by no means equal."
@@ -83,7 +76,6 @@ youth_edu_t21 <- "The overall education landscape in Bolivia shows that more tha
 
 
 # Youth: employment --------------------
-
 youth_emp_ov <- "Although gender undoubtedly influences youths' education in intricate ways, young women and men actually attend school at similar rates overall.
                                           Where the differentiation truly manifests is in young adults' employment.
                                           There are almost twice as many men between the ages of 18 and 24 doing paid or unpaid work than women, a curious phenomenon that provokes further inquiries:
@@ -112,9 +104,7 @@ youth_emp_area1 <- "Lastly, the rural/urban divide shows that rural residents, r
                                       An important contributing factor is probably the fact that young adults in cities often remain students for a longer period of time before commencing their career.
                                       This sheds light on the diverging life trajectories for rural and urban dwellers, as well as the different skills and qualifications desired by rural and urban labor markets."
 
-
 # Youth: income ------------------------
-
 youth_inc_t11 <- "Gender disparity does not only manifest in the LFP rates, but also in pay gaps between women and men,
 compounding women's economic vulnerability. Women consistently perform unpaid labor at a higher rate than men of the same age.
 At the same time, we also see that the percentage of unpaid workers goes down as one ages, signaling that young adulthood marks the transition from unpaid labor, mostly family-based, to more formal, paid work."
@@ -123,8 +113,8 @@ youth_inc_t21 <- "Another form of gender pay gap is the different average income
                                     From age 19, women's and men's incomes start to diverge, even though their average work hours remain approximately the same.
                                     This means that women receive less compensation for their labor, even though they obtain similar levels of education compared to men.
                                     Thus, for women, the return on their education is undercut by gender discrimination, which potentially limits their potential in the workplace."
-# entering_labor_market ---------------------------------------------------
 
+# Entering labor market ---------------------------------------------------
 labor_intro <- "Once adulthood is reached, education should be a vessel through which skills formation is complete enought and therefore,
 prepare people for the labor markets. As we will see, participation is still limited
 by a series of structural characteristics. We will focus on the gendered dimension of these boundaries
@@ -141,7 +131,6 @@ we observe more women with primary education attained, while for the male popula
 There is a classic education-to-income relation, modeled by the Mincerian equations, where a positive effect of  education on income is depicted.
 Nevertheless, we see that for older cohorts, education might also influene access to labor market."
 
-
 labor_txt_2 <- "The structure of the labor market looks different for women with respect to men. 
 Men have a stronger likelihood to be employed, and a higher likelihood of being part of the 
 inactive or unemployed population. For every man who is unemployed, there are two women unemployed. A similar situation happens with the inactive population:
@@ -154,7 +143,7 @@ For example, the number of hours worked for men and women are significantly diff
 This situation may come from a series  of structural limitations that are associated with the quality of the jobs women perform 
 (if they were even able to enter the labor market) and the sectors that they are allowed to participate. "
 
-# Tab panel: NEET section --------------------------------
+# NEET section --------------------------------
 neet_txt_1 <- "The youth conform a great pool of  human capital assets.
 In particular for countries in the LAC region where the demographic bonus is currently on its peak. 
 The fact that a significant proportion of young adults aged 15 to 30, are neither studying  or working,
@@ -184,10 +173,7 @@ pay_t51 <- "Yet, not all rural areas are equal. In departments like Potosi, a hi
 pay_t61 <- "Another factor influencing people's, especially women's, pay status is marriage. As single women enter into marriage or cohabiting relationships, their rate of doing unpaid labor triples, while the corresponding rate for men is cut in third. Hence, (heterosexual) marriage enhances existing gender inequalities, and such effects persist even after the end of marital relationships, as is evident in the noticeable gap between female and male divorcees and widow(er)s."
 pay_t71 <- "Finall, cellphone usage emerges as a surprising factor with a significant correlation with unpaid labor, and this is true even after accounting for household labor income. Although, as expected, members of lower-income households are less likely to have access to cellphones, women without cellphones are more likely to be doing unpaid labor than those with cellphones from households of similar levels of income."
 
-
 # Tab panel: older adults -----------------------------------------
-
-
 older_t11 <- "In the 2000s, Bolivia instituted the Renta Dignidad program, a non-contributory cash transfer program that guarantees a basic income for everyone over 60.
                                 Unlike pensions, Renta Dignidad is not contingent on one's prior participation in the formal labor market, which entails enormous and tangible benefits for the large part of Bolivian labor force who work informally.
                                 While this program has achieved notable successes in terms of improving older adults' quality of life and reducing child labor rates, many questions remain regarding older adults' well-being.
@@ -212,11 +198,7 @@ older_t41 <- "The final question we interrogate is the labor income among the pa
                                 The data show that one's income decreases as one ages, though the numbers are tend to be wide-ranging and become less generalizable as we get to the oldest age groups, as the sample size tapers off.
                                 Overall, though, some possible reasons for the income differences include household income, educational attainment, age, non-labor income, area, department, and household size."
 
-
-
-# Summary -----------
-
-
+# Summary ---------------------
 summ1 <- "Across various age groups, there are common structural factors that forcefully alter one's life trajectories.
                               These factors create and reinforce hierarchies by compromising the chances of certain populations to live a \"good life\":
                               to go to school and not have to work as a teenager, to receive higher education, to get compensated for one's work,
@@ -227,5 +209,3 @@ summ1 <- "Across various age groups, there are common structural factors that fo
                               it becomes palpably clear how one enormity compounds and morphs into another.
                               These numbers not only expose the multiple vulnerabilities in the Bolivian society,
                               but also urge the cause for policy interventions to build a resilient society by reducing inequalities."
-
-
