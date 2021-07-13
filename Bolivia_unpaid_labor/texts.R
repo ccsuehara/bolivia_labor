@@ -12,7 +12,7 @@ children_t41 <- "When we look at children individually, there is not a significa
 children_t51 <- "More intriguing patterns emerge, however, when we examine children's work as contributions to their households.
                                    Clearly, starting from age 16, boys begin to make a larger contribution to their family's income than girls, but their share of total work hours among all family members remains equal.
                                    This likely means that girls start doing unpaid or family-based labor during adolescence.
-                                   Puberty -> devaluation of female labor. Sexualization and devaluation go hand in hand.
+                                   Sexualization and devaluation of female labor go hand in hand.
                                    In terms of DRM, the data show that men/boys are more likely to have income sources outside their homes and access an additional channel of financial stability.
                                    Yet, in some scenarios, teenage boys are actually the main breadwinners in their families, which denotes heightened vulnerability to social and economic shocks."
 children_t61 <- "Although working children only make up about 3% of the total children population, their characteristics and vulnerabilities should not be overlooked.

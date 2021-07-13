@@ -16,11 +16,17 @@ source("texts.R")
 source("funs.R")
 
 # UI -------------------------------
+wb_icon <- fixedPanel(
+  tags$a(img(src = "globe.png", style = "width: 32px; margin-bottom: 4px; "), href = "https://www.worldbank.org/en/home"),
+  tags$a(img(src = "gfdrr_analytics.png", style = "width: 130px; "), href = "https://www.gfdrr.org/en"),
+  left = 25, top = 85, width = "32px"
+)
+
 panel_icon <- fixedPanel(
-  tags$a(img(src = "GitHub-Mark.png", style = "width: 32px; "), href = "https://github.com/ccsuehara/bolivia_labor"),
+  tags$a(img(src = "GitHub-Mark.png", style = "width: 32px; margin-bottom: 3px; "), href = "https://github.com/ccsuehara/bolivia_labor"),
   tags$a(img(src = "cloud-computing.png", style = "width: 32px; "),
          href = "https://www.ine.gob.bo/index.php/censos-y-banco-de-datos/censos/bases-de-datos-encuestas-sociales/"),
-  right = 25, top = 85
+  right = 25, top = 85, width = "32px"
 )
 
 ui <- fluidPage(
@@ -37,6 +43,7 @@ ui <- fluidPage(
              
              # Tab panel: home -----------------
              tabPanel("Home",
+                      wb_icon,
                       fluidRow(width = 12, hr(), hr(),
                                imageOutput("landing",
                                            width = "99%",
@@ -55,8 +62,11 @@ ui <- fluidPage(
                                                h3(textOutput("children_madlib")))))),
                       hr(),
                       fluidRow(
+                        column(3,
+                               wb_icon
+                               ),
                         column(6,
-                               offset = 3,
+                               # offset = 3,
                                textOutput("children_intro"),
                                h3("Overview: children in school and at work"),
                                plotOutput("children_1"),
@@ -108,6 +118,7 @@ ui <- fluidPage(
                       
                       fluidRow(
                         column(3,
+                               wb_icon,
                                fixedPanel(
                                  actionButton("to_children", label = "< children"),
                                  left = 10, bottom = 10
@@ -229,6 +240,7 @@ ui <- fluidPage(
                                  
                                  fluidRow(
                                    column(3,
+                                          wb_icon,
                                           fixedPanel(
                                             actionButton("to_youth2", label = "< youth"),
                                             left = 10, bottom = 10
@@ -270,6 +282,7 @@ ui <- fluidPage(
                                  
                                  fluidRow(
                                    column(3,
+                                          wb_icon,
                                           fixedPanel(
                                             actionButton("to_employment2", label = "< entering the job market"),
                                             left = 10, bottom = 10
@@ -342,6 +355,7 @@ ui <- fluidPage(
                                  
                                  fluidRow(
                                    column(3,
+                                          wb_icon,
                                           fixedPanel(
                                             actionButton("to_pay2", label = "< paid/unpaid labor"),
                                             left = 10, bottom = 10
@@ -392,6 +406,7 @@ ui <- fluidPage(
                       
                       fluidRow(
                         column(3,
+                               wb_icon,
                                fixedPanel(
                                  actionButton("to_neet2", label = "< adults - neet population"),
                                  left = 10, bottom = 10
@@ -450,6 +465,7 @@ ui <- fluidPage(
                       
                       fluidRow(
                         column(2,
+                               wb_icon,
                                fixedPanel(
                                  actionButton("to_older2", label = "< older adults"),
                                  left = 10, bottom = 10
